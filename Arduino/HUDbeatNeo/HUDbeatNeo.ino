@@ -1,10 +1,13 @@
 #include <Adafruit_DotStar.h>
+#include <Adafruit_NeoPixel.h>
 #include <SPI.h>         // COMMENT OUT THIS LINE FOR GEMMA OR TRINKET
 #ifdef __AVR__
   #include <avr/power.h>
 #endif
 
 Adafruit_DotStar dotstar = Adafruit_DotStar(1, INTERNAL_DS_DATA, INTERNAL_DS_CLK, DOTSTAR_BGR);
+Adafruit_NeoPixel pixel = Adafruit_NeoPixel(1, 2, NEO_RGB + NEO_KHZ400);
+
 
 const int BUTTON_PIN = 0;
 const int LED_PIN =  2;
