@@ -12,5 +12,5 @@ In its current iteration (02-27-2019), HUDbeat uses a Raspberry Pi Zero W to det
 
 Future updates will focus on integrating the Pi with the Arduino and other modules.
 
-
-![](https://github.com/agoramachina/HUDbeat/blob/master/images/20190227_02.jpg)
+.scad and .stl files can be found on my Thingiverse page in the HUDbeat collection
+https://www.thingiverse.com/agoramachina/collections/hudbeat 
