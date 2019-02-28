@@ -41,7 +41,7 @@ module case(){
 }
 
 module usb(){
-    translate([6,-2,0]) cube([8,8,5]);
+    translate([6,-2,0]) cube([8,9,5]);
 }
 
 module led(){
