@@ -46,7 +46,7 @@ module usb(){
 
 module led(){
     //translate([13,12,0]) cube([2,2,2]); //square
-    translate([14,13,0]) cylinder(r=1.25, h=3); //circle
+    translate([6,13,0]) cylinder(r=1.25, h=3); //circle
 
     }
   
