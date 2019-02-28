@@ -2,7 +2,7 @@ $fn=200;
 
 length = 36;
 width= 18;
-height = 7;
+height = 9.6;
 corner = 1;
 
 
@@ -19,7 +19,7 @@ difference(){
 // LID
 difference(){
     lid();
-    translate([0,0,height-4]) usb();  
+    translate([0,0,height-6]) usb();  
 } 
 
 module lid(){  
@@ -34,14 +34,14 @@ module case(){
        roundedBox(length+4, width+4, 1, corner);
         difference() {
             translate([1,1,0]) 
-                roundedBox(length+2,width+2,4,corner);
+                roundedBox(length+2,width+2,5,corner);
             translate([2,2,0]) 
-                roundedBox(length,width,4,corner);
+                roundedBox(length,width,5,corner);
         }            
 }
 
 module usb(){
-    translate([6,-2,0]) cube([8,9,5]);
+    translate([6,-2,0]) cube([8,9,7]);
 }
 
 module led(){
