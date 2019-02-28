@@ -1,6 +1,7 @@
 # HUDbeat
 ## A wearable Heads Up Display for biometric and environmental data
 
+
 *__This project is a work in progress. HUDbeat is not intended as a medical device!__*
 
 The goal of HUDbeat is to provide live biofeedback data through wearable technology.
