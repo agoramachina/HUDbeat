@@ -72,14 +72,15 @@ def print_term(data_row):
 # print EEG data to OLED display
 def draw_canvas(data_row):
     with canvas(device) as draw:
-        draw.text((0,0), data_row[4], fill="red") #delta
-        draw.text((0,0), "\n" + data_row[5], fill="yellow") #theta
-        draw.text((0,0), "\n\n" + data_row[6], fill="lime") #low alpha
-        draw.text((0,0), "\n\n\n" + data_row[7], fill="green") #high alpha
-        draw.text((0,0), "\n\n\n\n" + data_row[8], fill="blue") #low beta
-        draw.text((0,0), "\n\n\n\n\n" + data_row[9], fill="cyan") #high beta
-        draw.text((0,0), "\n\n\n\n\n\n" + data_row[10], fill="magenta") #low gamma
-        draw.text((0,0), "\n\n\n\n\n\n\n" + data_row[11], fill="violet") #mid gamma
+
+        draw.text((0,0),  data_row[4], fill="red", align="top") #delta
+        draw.text((0,12), data_row[5], fill="yellow") #theta
+        draw.text((0,24), data_row[6], fill="lime") #low alpha
+        draw.text((0,36), data_row[7], fill="green") #high alpha
+        draw.text((0,48), data_row[8], fill="blue") #low beta
+        draw.text((0,60), data_row[9], fill="cyan") #high beta
+        draw.text((0,72), data_row[10], fill="magenta") #low gamma
+        draw.text((0,84), data_row[11], fill="purple") #mid gamma
 
 def open_writer():
     # initialize writer
@@ -132,20 +133,20 @@ def main():
 # initialize mindwave reader
 if __name__ == '__main__':
 
+
+    # initialize OLED devices
+    serial = spi(device=0,port=0)
+    device = ssd1331(serial, rotate=1)
+    device.width = 96
+    device.height = 64
+
+    # initialize OLED terminal and fonts
+    term = terminal(device) 
+
     # initialize Mindwave
     mindwaveDataPointReader = MindwaveDataPointReader()
     mindwaveDataPointReader.start()
     if (mindwaveDataPointReader.isConnected()): 
-
-        # initialize OLED devices
-        serial = spi(device=0,port=0)
-        device = ssd1331(serial)
-        device.width = 96
-        device.height = 64
-        #device.rotate = 1
-
-        # initialize OLED terminal and fonts
-        term = terminal(device) 
 
         # initialize csv rows and header
         current_datetime = datetime.datetime.now().__str__()
