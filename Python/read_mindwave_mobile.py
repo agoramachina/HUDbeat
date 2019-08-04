@@ -35,7 +35,7 @@ if __name__ == '__main__':
             if (not dataPoint.__class__ is RawDataPoint):
                 data_cleaned = re.sub(r'[^\d\n]+', "", str(dataPoint))
                 data_row.extend(data_cleaned.split())
-                print(data_cleaned)
+                print(data_cleaned.split())
     else:
         print((textwrap.dedent("""\
             Exiting because the program could not connect
