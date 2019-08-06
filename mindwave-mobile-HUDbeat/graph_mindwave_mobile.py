@@ -13,10 +13,11 @@ import sys
 import textwrap
 import time
 
+#import gnuplot #set term xterm
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy as np
-from termgraph import termgraph as tg
+import termgraph
 import lehar
 
 #Neurosky dependenies
@@ -39,8 +40,8 @@ def open_writer():
     # initialize writer
   with open(filename, "a") as f:
       writer = csv.writer(f)
-      #writer.writerow([current_datetime])
-      #writer.writerow(fields)
+      writer.writerow([current_datetime])
+      writer.writerow(fields)
 
 def write_csv(data_row):
   with open(filename, "a") as f:
@@ -69,8 +70,14 @@ def animate(i, data_row):
   attns.append(float(attn))
   meds.append(float(med))
   ax1.clear()
-  ax1.plot(ts, attns)       
+  ax1.plot(ts, attns)    
 
+def pretty_print(data_row):   
+  os.system('cls' if os.name == 'nt' else 'clear')
+  print("t = " + data_row[0])
+  print("Signal: " + data_row[1])
+  print("Attention: " + data_row[2])
+  print("Meditation: " + data_row[3]
 # MAIN FUNCTION
 def main():
 
@@ -91,8 +98,8 @@ def main():
       # special formatting for EEGPowers dataPoint        
       if (dataPoint.__class__ is EEGPowersDataPoint): 
           if (i is 1):        
-              print(data_row)             
-              write_csv(data_row)              
+              pretty_print(data_row)             
+              write_csv(data_row)               
           i = 1
 
 
