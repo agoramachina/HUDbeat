@@ -16,8 +16,6 @@ import time
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy as np
-from termgraph import termgraph as tg
-import lehar
 
 #Neurosky dependenies
 from mindwavemobile.MindwaveDataPoints import RawDataPoint
@@ -37,15 +35,21 @@ if not os.path.exists(foldername):
 
 def open_writer():
     # initialize writer
-  with open(filename, "a") as f:
-      writer = csv.writer(f)
-      #writer.writerow([current_datetime])
-      #writer.writerow(fields)
+    with open(filename, "a") as f:
+        writer = csv.writer(f)
+        writer.writerow([current_datetime])
+        writer.writerow(fields)
 
-def write_csv(data_row):
-  with open(filename, "a") as f:
-      writer = csv.writer(f)
-      writer.writerow(data_row)
+def open_plot():
+  fig = plt.figure()
+
+
+
+
+def plot_powers(dataPoint):
+  ind = np.arrange(8)
+
+
 
 # MAIN FUNCTION
 def main():
@@ -54,22 +58,27 @@ def main():
     # continue writing as long as there exists data points to be read
     while(True):
 
-      # get next data point
-      dataPoint = mindwaveDataPointReader.readNextDataPoint()
-      if (not dataPoint.__class__ is RawDataPoint):
-          if (i is 1):
-              if (dataPoint.__class__ is PoorSignalLevelDataPoint):
-                  data_row = []
-                  data_row.append("{0:.3f}".format(time.time() - time_init))
-              data_cleaner = re.sub(r'[^\d\n]+', "", str(dataPoint))
-              data_row.extend(data_cleaner.split())
-      
-      # special formatting for EEGPowers dataPoint        
-      if (dataPoint.__class__ is EEGPowersDataPoint): 
-          if (i is 1):        
-              print(data_row)             
-              write_csv(data_row)              
-          i = 1
+            # get next data point
+            dataPoint = mindwaveDataPointReader.readNextDataPoint()
+            if (not dataPoint.__class__ is RawDataPoint):
+                if (i is 1):
+                    if (dataPoint.__class__ is PoorSignalLevelDataPoint):
+                        data_row = []
+                        data_row.append("{0:.3f}".format(time.time() - time_init))
+                    data_cleaner = re.sub(r'[^\d\n]+', "", str(dataPoint))
+                    data_row.extend(data_cleaner.split())
+            
+            # special formatting for EEGPowers dataPoint        
+            if (dataPoint.__class__ is EEGPowersDataPoint): 
+                if (i is 1):        
+                    # print to terminal    
+                    print(data_row)             
+                    
+                    # write to csv
+                    with open(filename, "a") as f:
+                        writer = csv.writer(f)
+                        writer.writerow(data_row)
+                i = 1
 
 
 # __MAIN__
