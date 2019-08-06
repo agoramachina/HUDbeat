@@ -47,6 +47,30 @@ def write_csv(data_row):
       writer = csv.writer(f)
       writer.writerow(data_row)
 
+def animate(i, data_row):
+  
+  ts = []
+  signals = []
+  attns = []
+  meds = []
+  deltas = []
+  thetas = []
+  low_alphas = []
+  high_alphas = []
+  low_betas = []
+  high_betas = []
+  low_gammas = []
+  mid_gammas = []
+
+
+  t, signal, attn, med, delta, theta, alpha_low, alpha_high, beta_low, beta_high, gamma_low, gamma_mid = data_row.split(',')
+  ts.append(float(t))
+  signals.append(float(signal))
+  attns.append(float(attn))
+  meds.append(float(med))
+  ax1.clear()
+  ax1.plot(ts, attns)       
+
 # MAIN FUNCTION
 def main():
 
@@ -86,6 +110,10 @@ if __name__ == '__main__':
         time_init = time.time() 
         data_row = []
         fields = ['Time', 'Poor Signal Level', 'Attention', 'Meditation', 'Delta', 'Theta', 'Low Alpha', 'High Alpha', 'Low Beta', 'High Beta', 'Low Gamma', 'Mid Gamma']
+
+        fig = plt.figure()
+        ax1 = fig.add_subplot(1,1,1)
+
         open_writer()
 
         # MAIN
