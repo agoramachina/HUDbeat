@@ -79,7 +79,7 @@ def animate(i, data_row):
 
 def pretty_print(data_row):   
   os.system('cls' if os.name == 'nt' else 'clear')
-  print("t = " + data_row[0])
+  print("t: " + str(datetime.timedelta(seconds=float(data_row[0]))).rstrip("0"))
   print("Signal: " + data_row[1] + "\n")
 
   print("Attention: " + data_row[2])
