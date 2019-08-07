@@ -45,8 +45,8 @@ def open_writer():
     # initialize writer
   with open(filename, "a") as f:
       writer = csv.writer(f)
-      writer.writerow([current_datetime])
-      writer.writerow(fields)
+      #writer.writerow([current_datetime])
+      #writer.writerow(fields)
 
 def write_csv(data_row):
   with open(filename, "a") as f:
