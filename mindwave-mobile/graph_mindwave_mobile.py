@@ -20,8 +20,10 @@ import numpy as np
 import termgraph
 import lehar
 import bashplotlib
-import spark
-import datahacks
+import sparklines
+# import data_hacks
+import hipsterplot
+#import termplot
 
 #Neurosky dependenies
 from mindwavemobile.MindwaveDataPoints import RawDataPoint
@@ -78,9 +80,20 @@ def animate(i, data_row):
 def pretty_print(data_row):   
   os.system('cls' if os.name == 'nt' else 'clear')
   print("t = " + data_row[0])
-  print("Signal: " + data_row[1])
+  print("Signal: " + data_row[1] + "\n")
+
   print("Attention: " + data_row[2])
-  print("Meditation: " + data_row[3]
+  print("Meditation: " + data_row[3] + "\n")
+
+  print("Delta: " + data_row[4])
+  print("Theta: " + data_row[5])
+  print("Low Alpha: " + data_row[6])
+  print("High Alpha: " + data_row[7])
+  print("Low Beta: " + data_row[8])
+  print("High Beta: " + data_row[9])
+  print("Low Gamma: " + data_row[10])
+  print("Mid Gamma: " + data_row[11] + "\n")
+
 # MAIN FUNCTION
 def main():
 
