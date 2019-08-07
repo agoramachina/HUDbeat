@@ -79,31 +79,38 @@ def plot_term(data_row):
   colors = [91,92]
   tg.stacked_graph(labels, data, normal_data, len_categories, args, colors)
 
-def animate(i):
-    with open(filename,'r') as f:
+def animate(i, data_row):
+    ts = []
+    signals = []
+    attns = []
+    meds = []
+    deltas = []
+    thetas = []
+    alpha_lows = []
+    alpha_highs = []
+    beta_lows = []
+    beta_highs = []
+    gamma_lows = []
+    gamma_mids = []
 
-      graph_data = f.readlines()[2:]
-      lines = graph_data.split('\n')
+    for data in data_row:
+        if len(data) > 1:
+            t, signal, attn, med, delta, theta, alpha_low, alpha_high, beta_low, beta_high, gamma_low, gamma_mid = data.split(',')
+            ts.append(float(t))
+            signals.append(int(signals))
+            attns.append(int(attns))
+            meds.append(int(meds))
+            deltas.append(int(deltas))
+            thetas.append(int(thetas))
+            alpha_lows.append(int(alpha_lows))
+            alpha_highs.append(int(alpha_highs))
+            beta_lows.append(int(beta_lows))
+            beta_highs.append(int(beta_highs))
+            gamma_lows.append(int(gamma_lows))
+            gamma_mids.append(int(gamma_mids))
 
-      ts = []
-      attns = []
-      meds = []
-      deltas = []
-      thetas = []
-      alpha_lows = []
-      alpha_highs = []
-      beta_lows = []
-      beta_highs = []
-      gamma_lows = []
-      gamma_mids = []
-
-      for line in lines[]:
-          if len(line) > 1:
-              t, signal, attn, med, delta, theta, alpha_low, alpha_high, beta_low, beta_high, gamma_low, gamma_mid = line.split(',')
-              ts.append(float(x))
-              signals.append(float(y))
-      ax1.clear()
-      ax1.plot(xs, ys)
+    ax1.clear()
+    ax1.plot(ts, attns)
 
 # MAIN FUNCTION
 def main():
@@ -127,6 +134,8 @@ def main():
           if (i is 1):        
               pretty_print(data_row)             
               #plot_term(data_row)
+              ani = animation.FuncAnimation(fig, animate, fargs=(data_row,),interval=1000)
+              plt.show()
               write_csv(data_row)               
           i = 1
 
