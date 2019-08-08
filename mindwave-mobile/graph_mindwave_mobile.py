@@ -16,13 +16,15 @@ import time
 #import gnuplot #set term xterm
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import gnuplotlib as gp 
 import numpy as np
-from termgraph import termgraph as tg
-import lehar
-import bashplotlib
-import sparklines
-# import data_hacks
-import hipsterplot
+from collections import deque
+#from termgraph import termgraph as tg
+#import lehar
+#import bashplotlib
+#import sparklines
+#import data_hacks
+#import hipsterplot
 #import termplot
 
 #Neurosky dependenies
@@ -34,7 +36,7 @@ from mindwavemobile.MindwaveDataPointReader import MindwaveDataPointReader
 # define folder and file names
 ## default folder name is:      /home/$user/data/EEG_data/yyyy-mm-dd
 ## defualt file name is:        EEGlog_hh:mm:ss_ yyyy-mm-dd.csv
-foldername = "/home/" + getpass.getuser() + "/data/EEG_data/" + time.strftime("%Y-%m-%d/")
+foldername = "./EEG_data/" + time.strftime("%Y-%m-%d/")
 filename = foldername + "EEGlog_" + time.strftime("%H:%M:%S_%Y-%m-%d") + ".csv"
 
 # if the folder doesn't exist, create it
@@ -71,39 +73,16 @@ def pretty_print(data_row):
   print("Mid Gamma: " + data_row[11] + "\n")
 
 def plot_term(data_row):
-  labels = [data_row[0]]
-  data = [data_row[2], data_row[3]]
-  normal_data = tg.normalize(int(data),2)
-  len_categories = 2
-  args = {'no_labels': True}
-  colors = [91,92]
-  tg.stacked_graph(labels, data, normal_data, len_categories, args, colors)
 
-def animate(i):
-    with open(filename,'r') as f:
+#  with open(filename,'r') as f:
+#    lines = deque(f,10)
+#  np.genfromtxt(lines delimiter=',', skip_header=1, names=true)
+  plot_powers = gp.gnuplotlib(_with = 'bars', terminal= 'dumb')
+  gp.plot(data_row)
 
-      graph_data = f.readlines()[2:]
-      lines = graph_data.split('\n')
 
-      ts = []
-      attns = []
-      meds = []
-      deltas = []
-      thetas = []
-      alpha_lows = []
-      alpha_highs = []
-      beta_lows = []
-      beta_highs = []
-      gamma_lows = []
-      gamma_mids = []
 
-      for line in lines[]:
-          if len(line) > 1:
-              t, signal, attn, med, delta, theta, alpha_low, alpha_high, beta_low, beta_high, gamma_low, gamma_mid = line.split(',')
-              ts.append(float(x))
-              signals.append(float(y))
-      ax1.clear()
-      ax1.plot(xs, ys)
+
 
 # MAIN FUNCTION
 def main():
@@ -126,9 +105,10 @@ def main():
       if (dataPoint.__class__ is EEGPowersDataPoint): 
           if (i is 1):        
               pretty_print(data_row)             
-              #plot_term(data_row)
               write_csv(data_row)               
+              plot_term()
           i = 1
+
 
 
 # __MAIN__
@@ -146,8 +126,7 @@ if __name__ == '__main__':
         data_row = []
         fields = ['Time', 'Poor Signal Level', 'Attention', 'Meditation', 'Delta', 'Theta', 'Low Alpha', 'High Alpha', 'Low Beta', 'High Beta', 'Low Gamma', 'Mid Gamma']
 
-        fig = plt.figure()
-        ax1 = fig.add_subplot(1,1,1)
+        g = gp.gnuplotlib()
 
         open_writer()
 
