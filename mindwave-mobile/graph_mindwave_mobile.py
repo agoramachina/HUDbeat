@@ -73,9 +73,9 @@ def pretty_print(data_row):
   print("Low Gamma: " + data_row[10])
   print("Mid Gamma: " + data_row[11] + "\n")
 
-def sparky(data_row):
-  for line in sparklines(list(map(int,data_row[4:])), num_lines = 3):
-    line = "".join([bar*2 for bar in line])
+def sparky(data_row, width, height):
+  for line in sparklines(list(map(int,data_row[4:])), num_lines = height):
+    line = "".join([bar*width for bar in line])
     print(line)
 
 def gal_plot(data_row):
@@ -105,7 +105,7 @@ def main():
           if (i is 1):        
               pretty_print(data_row)             
               write_csv(data_row)
-              sparky(data_row)
+              sparky(data_row, 2, 4)
               #gal_plot(data_row)
               
           i = 1
