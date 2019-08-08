@@ -76,15 +76,15 @@ def pretty_print(data_row):
 def sparky(data_row, width, height):
   pretty_line = []
   for line in sparklines(list(map(int,data_row[4:])), num_lines = height):
-    line = ''.join(color(str(line[0]), fg = '#FF0000') + 
-      color(str(line[1]), fg = '#FFFF00') +
-      color(str(line[2]), fg = '#00FF00') + 
-      color(str(line[3]), fg = '#00AA00') +
-      color(str(line[4]), fg = '#00FFFF') +
-      color(str(line[5]), fg = '#0000FF') +
-      color(str(line[6]), fg = '#FF00FF') + 
-      color(str(line[7]), fg = '#AA00AA'))
-    line = "".join([bar*width for bar in line])
+    line = ''.join(color(width * str(line[0]), fg = '#FF0000') + 
+      color(width * str(line[1]), fg = '#FFFF00') +
+      color(width * str(line[2]), fg = '#00FF00') + 
+      color(width * str(line[3]), fg = '#00AA00') +
+      color(width * str(line[4]), fg = '#00FFFF') +
+      color(width * str(line[5]), fg = '#0000FF') +
+      color(width * str(line[6]), fg = '#FF00FF') + 
+      color(width * str(line[7]), fg = '#AA00AA'))
+    #line = "".join([bar*width for bar in line])
     print(line)
 
 def gal_plot(data_row):
