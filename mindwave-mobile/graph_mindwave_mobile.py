@@ -22,7 +22,7 @@ from collections import deque
 #from termgraph import termgraph as tg
 #import lehar
 #import bashplotlib
-#import sparklines
+from sparklines import sparklines
 #import data_hacks
 #import hipsterplot
 #import termplot
@@ -72,15 +72,16 @@ def pretty_print(data_row):
   print("Low Gamma: " + data_row[10])
   print("Mid Gamma: " + data_row[11] + "\n")
 
-def plot_term(data_row):
+#def plot_term(data_row):
 
 #  with open(filename,'r') as f:
 #    lines = deque(f,10)
 #  np.genfromtxt(lines delimiter=',', skip_header=1, names=true)
-  plot_powers = gp.gnuplotlib(_with = 'bars', terminal= 'dumb')
-  gp.plot(data_row)
+#  gp.plot(data_row)
 
-
+def sparky(data_row):
+  for line in sparklines([int(data_row[2]), int(data_row[3])]):
+    print(line)
 
 
 
@@ -105,8 +106,9 @@ def main():
       if (dataPoint.__class__ is EEGPowersDataPoint): 
           if (i is 1):        
               pretty_print(data_row)             
-              write_csv(data_row)               
-              plot_term()
+              write_csv(data_row)
+              sparky(data_row)
+              
           i = 1
 
 
