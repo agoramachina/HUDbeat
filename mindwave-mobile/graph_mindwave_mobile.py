@@ -6,7 +6,6 @@
 import bluetooth
 import csv
 import datetime
-import getpass
 import os
 import re
 import sys
@@ -24,6 +23,7 @@ import numpy as np
 #import bashplotlib
 from sparklines import sparklines
 import pygal
+from colors import *
 #import data_hacks
 #import hipsterplot
 #import termplot
@@ -74,7 +74,16 @@ def pretty_print(data_row):
   print("Mid Gamma: " + data_row[11] + "\n")
 
 def sparky(data_row, width, height):
+  pretty_line = []
   for line in sparklines(list(map(int,data_row[4:])), num_lines = height):
+    line = ''.join(color(str(line[0]), fg = '#FF0000') + 
+      color(str(line[1]), fg = '#FFFF00') +
+      color(str(line[2]), fg = '#00FF00') + 
+      color(str(line[3]), fg = '#00AA00') +
+      color(str(line[4]), fg = '#00FFFF') +
+      color(str(line[5]), fg = '#0000FF') +
+      color(str(line[6]), fg = '#FF00FF') + 
+      color(str(line[7]), fg = '#AA00AA'))
     line = "".join([bar*width for bar in line])
     print(line)
 
@@ -105,7 +114,7 @@ def main():
           if (i is 1):        
               pretty_print(data_row)             
               write_csv(data_row)
-              sparky(data_row, 2, 4)
+              sparky(data_row, 3, 5)
               #gal_plot(data_row)
               
           i = 1
