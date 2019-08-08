@@ -18,11 +18,12 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import gnuplotlib as gp 
 import numpy as np
-from collections import deque
+# from collections import deque
 #from termgraph import termgraph as tg
 #import lehar
 #import bashplotlib
 from sparklines import sparklines
+import pygal
 #import data_hacks
 #import hipsterplot
 #import termplot
@@ -72,16 +73,14 @@ def pretty_print(data_row):
   print("Low Gamma: " + data_row[10])
   print("Mid Gamma: " + data_row[11] + "\n")
 
-#def plot_term(data_row):
-
-#  with open(filename,'r') as f:
-#    lines = deque(f,10)
-#  np.genfromtxt(lines delimiter=',', skip_header=1, names=true)
-#  gp.plot(data_row)
-
 def sparky(data_row):
-  for line in sparklines(list(map(int,data_row[4:]))):
+  for line in sparklines(list(map(int,data_row[4:])), num_lines=3):
     print(line)
+
+def gal(data_row):
+  chart = pygal.Line(interpolate='cubic')
+  chart.add('', list(map(int,data_row[4:])))
+  print(chart.render_sparktext())
 
 
 
@@ -107,7 +106,8 @@ def main():
           if (i is 1):        
               pretty_print(data_row)             
               write_csv(data_row)
-              sparky(data_row)
+              # sparky(data_row)
+              gal(data_row)
               
           i = 1
 
@@ -127,8 +127,6 @@ if __name__ == '__main__':
         time_init = time.time() 
         data_row = []
         fields = ['Time', 'Poor Signal Level', 'Attention', 'Meditation', 'Delta', 'Theta', 'Low Alpha', 'High Alpha', 'Low Beta', 'High Beta', 'Low Gamma', 'Mid Gamma']
-
-        g = gp.gnuplotlib()
 
         open_writer()
 
