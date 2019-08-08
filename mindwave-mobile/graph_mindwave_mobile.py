@@ -80,7 +80,7 @@ def pretty_print(data_row):
 #  gp.plot(data_row)
 
 def sparky(data_row):
-  for line in sparklines([int(data_row[2]), int(data_row[3])]):
+  for line in sparklines(list(map(int,data_row[4:]))):
     print(line)
 
 
