@@ -6,7 +6,6 @@
 import bluetooth
 import csv
 import datetime
-import getpass
 import os
 import re
 import sys
@@ -16,9 +15,18 @@ import time
 #import gnuplot #set term xterm
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import gnuplotlib as gp 
 import numpy as np
-import termgraph
-import lehar
+# from collections import deque
+#from termgraph import termgraph as tg
+#import lehar
+#import bashplotlib
+from sparklines import sparklines
+import pygal
+from colors import *
+#import data_hacks
+#import hipsterplot
+#import termplot
 
 #Neurosky dependenies
 from mindwavemobile.MindwaveDataPoints import RawDataPoint
@@ -29,7 +37,7 @@ from mindwavemobile.MindwaveDataPointReader import MindwaveDataPointReader
 # define folder and file names
 ## default folder name is:      /home/$user/data/EEG_data/yyyy-mm-dd
 ## defualt file name is:        EEGlog_hh:mm:ss_ yyyy-mm-dd.csv
-foldername = "/home/" + getpass.getuser() + "/data/EEG_data/" + time.strftime("%Y-%m-%d/")
+foldername = "./EEG_data/" + time.strftime("%Y-%m-%d/")
 filename = foldername + "EEGlog_" + time.strftime("%H:%M:%S_%Y-%m-%d") + ".csv"
 
 # if the folder doesn't exist, create it
@@ -48,36 +56,45 @@ def write_csv(data_row):
       writer = csv.writer(f)
       writer.writerow(data_row)
 
-def animate(i, data_row):
-  
-  ts = []
-  signals = []
-  attns = []
-  meds = []
-  deltas = []
-  thetas = []
-  low_alphas = []
-  high_alphas = []
-  low_betas = []
-  high_betas = []
-  low_gammas = []
-  mid_gammas = []
-
-
-  t, signal, attn, med, delta, theta, alpha_low, alpha_high, beta_low, beta_high, gamma_low, gamma_mid = data_row.split(',')
-  ts.append(float(t))
-  signals.append(float(signal))
-  attns.append(float(attn))
-  meds.append(float(med))
-  ax1.clear()
-  ax1.plot(ts, attns)    
-
 def pretty_print(data_row):   
   os.system('cls' if os.name == 'nt' else 'clear')
-  print("t = " + data_row[0])
-  print("Signal: " + data_row[1])
+  print("t: " + str(datetime.timedelta(seconds=float(data_row[0])))[:-3])
+  print("Signal: " + data_row[1] + "\n")
+
   print("Attention: " + data_row[2])
-  print("Meditation: " + data_row[3]
+  print("Meditation: " + data_row[3] + "\n")
+
+  print("Delta: " + data_row[4])
+  print("Theta: " + data_row[5])
+  print("Low Alpha: " + data_row[6])
+  print("High Alpha: " + data_row[7])
+  print("Low Beta: " + data_row[8])
+  print("High Beta: " + data_row[9])
+  print("Low Gamma: " + data_row[10])
+  print("Mid Gamma: " + data_row[11] + "\n")
+
+def sparky(data_row, width, height):
+  greek_head = ['δ', 'θ', 'α', 'Α', 'β', 'Β', 'γ', 'Γ']
+  pretty_line = []
+  for line in sparklines(list(map(int,data_row[4:])), num_lines = height):
+    line = ''.join(width * str(line[0]) + 
+      width * str(line[1]) +
+      width * str(line[2]) + 
+      width * str(line[3]) +
+      width * str(line[4]) +
+      width * str(line[5]) +
+      width * str(line[6]) + 
+      width * str(line[7]))
+    #line = "".join([bar*width for bar in line])
+    print(line)
+  print(" " + "  ".join([g for g in greek_head]))
+
+
+def gal_plot(data_row):
+  chart = pygal.Line(interpolate='cubic')
+  chart.add('', list(map(int,data_row[4:])))
+  print(chart.render_sparktext())
+
 # MAIN FUNCTION
 def main():
 
@@ -99,8 +116,12 @@ def main():
       if (dataPoint.__class__ is EEGPowersDataPoint): 
           if (i is 1):        
               pretty_print(data_row)             
-              write_csv(data_row)               
+              write_csv(data_row)
+              sparky(data_row, 3, 5)
+              #gal_plot(data_row)
+              
           i = 1
+
 
 
 # __MAIN__
@@ -117,9 +138,7 @@ if __name__ == '__main__':
         time_init = time.time() 
         data_row = []
         fields = ['Time', 'Poor Signal Level', 'Attention', 'Meditation', 'Delta', 'Theta', 'Low Alpha', 'High Alpha', 'Low Beta', 'High Beta', 'Low Gamma', 'Mid Gamma']
-
-        fig = plt.figure()
-        ax1 = fig.add_subplot(1,1,1)
+        greek_head = ['δ', 'θ', 'α', 'Α', 'β', 'Β', 'γ', 'Γ']
 
         open_writer()
 
