@@ -74,18 +74,21 @@ def pretty_print(data_row):
   print("Mid Gamma: " + data_row[11] + "\n")
 
 def sparky(data_row, width, height):
+  greek_head = ['δ', 'θ', 'α', 'Α', 'β', 'Β', 'γ', 'Γ']
   pretty_line = []
   for line in sparklines(list(map(int,data_row[4:])), num_lines = height):
-    line = ''.join(color(width * str(line[0]), fg = '#FF0000') + 
-      color(width * str(line[1]), fg = '#FFFF00') +
-      color(width * str(line[2]), fg = '#00FF00') + 
-      color(width * str(line[3]), fg = '#00AA00') +
-      color(width * str(line[4]), fg = '#00FFFF') +
-      color(width * str(line[5]), fg = '#0000FF') +
-      color(width * str(line[6]), fg = '#FF00FF') + 
-      color(width * str(line[7]), fg = '#AA00AA'))
+    line = ''.join(width * str(line[0]) + 
+      width * str(line[1]) +
+      width * str(line[2]) + 
+      width * str(line[3]) +
+      width * str(line[4]) +
+      width * str(line[5]) +
+      width * str(line[6]) + 
+      width * str(line[7]))
     #line = "".join([bar*width for bar in line])
     print(line)
+  print(" " + "  ".join([g for g in greek_head]))
+
 
 def gal_plot(data_row):
   chart = pygal.Line(interpolate='cubic')
@@ -135,6 +138,7 @@ if __name__ == '__main__':
         time_init = time.time() 
         data_row = []
         fields = ['Time', 'Poor Signal Level', 'Attention', 'Meditation', 'Delta', 'Theta', 'Low Alpha', 'High Alpha', 'Low Beta', 'High Beta', 'Low Gamma', 'Mid Gamma']
+        greek_head = ['δ', 'θ', 'α', 'Α', 'β', 'Β', 'γ', 'Γ']
 
         open_writer()
 
