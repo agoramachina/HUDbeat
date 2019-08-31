@@ -3,30 +3,14 @@
 # (c) 2019 agoramachina
 
 # general dependencies
-import bluetooth
-import csv
-import datetime
-import os
-import re
-import sys
-import textwrap
-import time
+import bluetooth, csv, datetime, os, re, sys, textwrap, time
 
 #import gnuplot #set term xterm
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
+import matplotlib.pyplot as plt, matplotlib.animation as animation
 import gnuplotlib as gp 
 import numpy as np
 # from collections import deque
-#from termgraph import termgraph as tg
-#import lehar
-#import bashplotlib
 from sparklines import sparklines
-import pygal
-from colors import *
-#import data_hacks
-#import hipsterplot
-#import termplot
 
 #Neurosky dependenies
 from mindwavemobile.MindwaveDataPoints import RawDataPoint
@@ -44,6 +28,24 @@ filename = foldername + "EEGlog_" + time.strftime("%H:%M:%S_%Y-%m-%d") + ".csv"
 if not os.path.exists(foldername):
     os.makedirs(foldername)
 
+class colors:
+
+#    attn = '\033[95m'
+#    med = 
+    delta = '\u001b[31m'
+    theta = '\u001b[33m'
+    lowAlpha = '\u001b[32m'
+    highAlpha = '\u001b[32;1m'
+    lowBeta = '\u001b[36m'
+    highBeta = '\u001b[36;1m'
+    lowGamma = '\u001b[35m'
+    midGamma = '\u001b[35;1m'
+#    rawData = 
+#    signalHi = green
+#    signalMed = yellow
+#    signalLow = red
+    reset = '\u001b[0m'
+
 def open_writer():
     # initialize writer
   with open(filename, "a") as f:
@@ -53,8 +55,13 @@ def open_writer():
 
 def write_csv(data_row):
   with open(filename, "a") as f:
-      writer = csv.writer(f)
-      writer.writerow(data_row)
+    writer = csv.writer(f)
+    writer.writerow(data_row)
+
+def write_raw(dataPoint):
+  with open(filename+"_raw", "a") as f:
+    writer = csv.writer(f)
+    writer.writerow(time.time(), dataPoint)
 
 def pretty_print(data_row):   
   os.system('cls' if os.name == 'nt' else 'clear')
@@ -77,23 +84,17 @@ def sparky(data_row, width, height):
   greek_head = ['δ', 'θ', 'α', 'Α', 'β', 'Β', 'γ', 'Γ']
   pretty_line = []
   for line in sparklines(list(map(int,data_row[4:])), num_lines = height):
-    line = ''.join(width * str(line[0]) + 
-      width * str(line[1]) +
-      width * str(line[2]) + 
-      width * str(line[3]) +
-      width * str(line[4]) +
-      width * str(line[5]) +
-      width * str(line[6]) + 
-      width * str(line[7]))
-    #line = "".join([bar*width for bar in line])
+    line = ''.join(colors.delta + width * str(line[0]) + 
+      colors.theta + width * str(line[1]) + 
+      colors.lowAlpha + width * str(line[2]) +
+      colors.highAlpha + width * str(line[3]) +
+      colors.lowBeta + width * str(line[4]) +
+      colors.highBeta + width * str(line[5]) +
+      colors.lowGamma + width * str(line[6]) + 
+      colors.midGamma + width * str(line[7])+ colors.reset)
     print(line)
   print(" " + "  ".join([g for g in greek_head]))
 
-
-def gal_plot(data_row):
-  chart = pygal.Line(interpolate='cubic')
-  chart.add('', list(map(int,data_row[4:])))
-  print(chart.render_sparktext())
 
 # MAIN FUNCTION
 def main():
@@ -104,6 +105,10 @@ def main():
 
       # get next data point
       dataPoint = mindwaveDataPointReader.readNextDataPoint()
+
+      if (dataPoint.__class__ is RawDataPoint):
+          print('%.6f'%(time.time()-time_init) + ",",  str(dataPoint)[11:])
+
       if (not dataPoint.__class__ is RawDataPoint):
           if (i is 1):
               if (dataPoint.__class__ is PoorSignalLevelDataPoint):
@@ -117,12 +122,8 @@ def main():
           if (i is 1):        
               pretty_print(data_row)             
               write_csv(data_row)
-              sparky(data_row, 3, 5)
-              #gal_plot(data_row)
-              
+              sparky(data_row, 3, 5)              
           i = 1
-
-
 
 # __MAIN__
 # initialize mindwave reader
@@ -138,7 +139,6 @@ if __name__ == '__main__':
         time_init = time.time() 
         data_row = []
         fields = ['Time', 'Poor Signal Level', 'Attention', 'Meditation', 'Delta', 'Theta', 'Low Alpha', 'High Alpha', 'Low Beta', 'High Beta', 'Low Gamma', 'Mid Gamma']
-        greek_head = ['δ', 'θ', 'α', 'Α', 'β', 'Β', 'γ', 'Γ']
 
         open_writer()
 
