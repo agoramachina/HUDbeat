@@ -106,14 +106,16 @@ def main():
       # get next data point
       dataPoint = mindwaveDataPointReader.readNextDataPoint()
 
-      if (dataPoint.__class__ is RawDataPoint):
-          print('%.6f'%(time.time()-time_init) + ",",  str(dataPoint)[11:])
+#      if (dataPoint.__class__ is RawDataPoint):
+#          rawData = str(dataPoint)[11:]
+          
+#          print('%.6f'%(time.time()-time_init) + ",",  rawData)
 
       if (not dataPoint.__class__ is RawDataPoint):
           if (i is 1):
               if (dataPoint.__class__ is PoorSignalLevelDataPoint):
                   data_row = []
-                  data_row.append("{0:.3f}".format(time.time() - time_init))
+                  data_row.append(str((time.time() - time_init)))
               data_cleaner = re.sub(r'[^\d\n]+', "", str(dataPoint))
               data_row.extend(data_cleaner.split())
       
