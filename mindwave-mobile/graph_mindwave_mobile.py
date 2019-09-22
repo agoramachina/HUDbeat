@@ -52,16 +52,19 @@ def open_writer():
       writer = csv.writer(f)
       writer.writerow([current_datetime])
       writer.writerow(fields)
+  with open(filename+"raw", "a") as fr:
+      writer = csv.writer(fr)
+      writer.writerow([current_datetime])
 
 def write_csv(data_row):
   with open(filename, "a") as f:
     writer = csv.writer(f)
     writer.writerow(data_row)
 
-def write_raw(dataPoint):
-  with open(filename+"_raw", "a") as f:
+def write_raw(data_row):
+  with open(filename+"raw", "a") as f:
     writer = csv.writer(f)
-    writer.writerow(time.time(), dataPoint)
+    writer.writerow(data_row)
 
 def pretty_print(data_row):   
   os.system('cls' if os.name == 'nt' else 'clear')
@@ -106,10 +109,11 @@ def main():
       # get next data point
       dataPoint = mindwaveDataPointReader.readNextDataPoint()
 
-#      if (dataPoint.__class__ is RawDataPoint):
-#          rawData = str(dataPoint)[11:]
-          
-#          print('%.6f'%(time.time()-time_init) + ",",  rawData)
+      if (dataPoint.__class__ is RawDataPoint):
+          rawData = str(dataPoint)[11:]
+          data_rrow = [time.time()-time_init, rawData]
+         # write_raw('%.6f'%(time()-time_init) + ",", rawData)     
+          print(data_rrow)
 
       if (not dataPoint.__class__ is RawDataPoint):
           if (i is 1):
