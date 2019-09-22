@@ -62,8 +62,8 @@ def write_csv(data_row):
     writer.writerow(data_row)
 
 def write_raw(data_row):
-  with open(filename+"raw", "a") as f:
-    writer = csv.writer(f)
+  with open(filename+"raw", "a") as fr:
+    writer = csv.writer(fr)
     writer.writerow(data_row)
 
 def pretty_print(data_row):   
@@ -113,6 +113,7 @@ def main():
           rawData = str(dataPoint)[11:]
           data_rrow = [time.time()-time_init, rawData]
          # write_raw('%.6f'%(time()-time_init) + ",", rawData)     
+          write_raw(data_rrow)
           print(data_rrow)
 
       if (not dataPoint.__class__ is RawDataPoint):
