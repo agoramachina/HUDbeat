@@ -111,8 +111,8 @@ def main():
 
       if (dataPoint.__class__ is RawDataPoint):
           rawData = str(dataPoint)[11:]
-          #write_raw(str(time.time()) , str(rawData))     
-          print(time.strftime("%H:%M:%S", time.localtime()), str(rawData))
+          write_raw(rawData)     
+          #print(time.strftime("%H:%M:%S", time.localtime()), str(rawData))
 
       if (not dataPoint.__class__ is RawDataPoint):
           if (i is 1):
