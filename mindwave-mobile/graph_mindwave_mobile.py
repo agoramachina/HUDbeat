@@ -3,7 +3,7 @@
 # (c) 2019 agoramachina
 
 # general dependencies
-import bluetooth, csv, time, datetime, os, re, sys, textwrap
+import bluetooth, csv, datetime, os, re, sys, textwrap, time
 
 #import gnuplot #set term xterm
 import matplotlib.pyplot as plt, matplotlib.animation as animation
@@ -62,8 +62,8 @@ def write_csv(data_row):
     writer.writerow(data_row)
 
 def write_raw(data_row):
-  with open(filename+"raw", "a") as fr:
-    writer = csv.writer(fr)
+  with open(filename+"raw", "a") as f:
+    writer = csv.writer(f)
     writer.writerow(data_row)
 
 def pretty_print(data_row):   
@@ -110,10 +110,9 @@ def main():
       dataPoint = mindwaveDataPointReader.readNextDataPoint()
 
       if (dataPoint.__class__ is RawDataPoint):
-          rawData = str(dataPoint)[10:]
-          data_rrow = [datetime.datetime.now(), rawData]
-          write_raw(data_rrow)
-          print(data_rrow)
+          rawData = str(dataPoint)[11:]
+          #write_raw(str(time.time()) , str(rawData))     
+          print(time.strftime("%H:%M:%S", time.localtime()), str(rawData))
 
       if (not dataPoint.__class__ is RawDataPoint):
           if (i is 1):
