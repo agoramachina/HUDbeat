@@ -103,47 +103,47 @@ def sparky(data_row, width, height):
     print(line)
   print(" " + "  ".join([g for g in greek_head]))
 
-def animate(i):
-    with open(filename) as f:
-        graph_data = f.readlines()[2:]
-    graph_data = open(filename,'r').read()
-    lines = graph_data.split('\n')
-
-    times = []
-    signals = []
-    attns = []
-    meds = []
-    deltas = []
-    thetas = []
-    lowAlphas = []
-    highAlphas = []
-    lowBetas = []
-    highBetas = []
-    lowGammas = []
-    midGammas = []
-    
-    for line in lines:
-        if len(line) > 1:
-            time, signal, attn, med, delta, theta, lowAlpha, highAlpha, lowBeta, highBeta, lowGamma, midGamma = line.split(',')
-            times.append(float(time))
-            signals.append(int(signal))
-            attns.append(int(attn))
-            meds.append(int(med))
-            deltas.append(int(delta))
-            thetas.append(int(theta))
-            lowAlphas.append(int(lowAlpha))
-            highAlphas.append(int(highAlpha))
-            lowBetas.append(int(lowBeta))
-            highBetas.append(int(highBeta))
-            lowGammas.append(int(lowGamma))
-            midGammas.append(int(midGamma))
-        ax1.clear()
-        ax1.plot(xs,ys)
+#def animate(i):
+#    with open(filename) as f:
+#        csv_data = f.readlines()[2:]
+#        lines = csv_data.split('\n')
+#
+#    times = []
+#    signals = []
+#    attns = []
+#    meds = []
+#    deltas = []
+#    thetas = []
+#    lowAlphas = []
+#    highAlphas = []
+#    lowBetas = []
+#    highBetas = []
+#    lowGammas = []
+#    midGammas = []
+#    
+#    for line in lines:
+#        if len(line) > 1:
+#            time, signal, attn, med, delta, theta, lowAlpha, highAlpha, lowBeta, highBeta, lowGamma, midGamma = line.split(',')
+#            times.append(float(time))
+#            signals.append(int(signal))
+#            attns.append(int(attn))
+#            meds.append(int(med))
+#            deltas.append(int(delta))
+#            thetas.append(int(theta))
+#            lowAlphas.append(int(lowAlpha))
+#            highAlphas.append(int(highAlpha))
+#            lowBetas.append(int(lowBeta))
+#            highBetas.append(int(highBeta))
+#            lowGammas.append(int(lowGamma))
+#            midGammas.append(int(midGamma))
+#        ax1.clear()
+#        ax1.plot(xs,ys)
 
 # MAIN FUNCTION
 def main():
 
     i = 0
+    
     # continue writing as long as there exists data points to be read
     while(True):
 
@@ -152,7 +152,7 @@ def main():
 
       if (dataPoint.__class__ is RawDataPoint):
           rawData = str(dataPoint)[11:]
-          write_raw(rawData)     
+          #write_raw(rawData)     
           #print(time.strftime("%H:%M:%S", time.localtime()), str(rawData))
 
       if (not dataPoint.__class__ is RawDataPoint):
@@ -172,8 +172,8 @@ def main():
           i = 1
 
       # graph matplot
-      ani = animation.FuncAnimation(fig,animate,interval=1000)
-      plt.show()
+      #ani = animation.FuncAnimation(fig,animate,interval=1000)
+      #plt.show()
 
 # __MAIN__
 # initialize mindwave reader
