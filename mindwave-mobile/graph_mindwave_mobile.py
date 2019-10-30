@@ -7,6 +7,7 @@ import bluetooth, csv, datetime, os, re, sys, textwrap, time
 
 #import gnuplot #set term xterm
 import matplotlib.pyplot as plt, matplotlib.animation as animation
+from matplotlib import style
 import gnuplotlib as gp 
 import numpy as np
 # from collections import deque
@@ -23,6 +24,10 @@ from mindwavemobile.MindwaveDataPointReader import MindwaveDataPointReader
 ## defualt file name is:        EEGlog_hh:mm:ss_ yyyy-mm-dd.csv
 foldername = "./EEG_data/" + time.strftime("%Y-%m-%d/")
 filename = foldername + "EEGlog_" + time.strftime("%H:%M:%S_%Y-%m-%d") + ".csv"
+
+# setup matplot animation
+fig = plt.figure()
+ax1 = fig.add_subplot(1,1,1)
 
 # if the folder doesn't exist, create it
 if not os.path.exists(foldername):
@@ -98,6 +103,42 @@ def sparky(data_row, width, height):
     print(line)
   print(" " + "  ".join([g for g in greek_head]))
 
+def animate(i):
+    with open(filename) as f:
+        graph_data = f.readlines()[2:]
+    graph_data = open(filename,'r').read()
+    lines = graph_data.split('\n')
+
+    times = []
+    signals = []
+    attns = []
+    meds = []
+    deltas = []
+    thetas = []
+    lowAlphas = []
+    highAlphas = []
+    lowBetas = []
+    highBetas = []
+    lowGammas = []
+    midGammas = []
+    
+    for line in lines:
+        if len(line) > 1:
+            time, signal, attn, med, delta, theta, lowAlpha, highAlpha, lowBeta, highBeta, lowGamma, midGamma = line.split(',')
+            times.append(float(time))
+            signals.append(int(signal))
+            attns.append(int(attn))
+            meds.append(int(med))
+            deltas.append(int(delta))
+            thetas.append(int(theta))
+            lowAlphas.append(int(lowAlpha))
+            highAlphas.append(int(highAlpha))
+            lowBetas.append(int(lowBeta))
+            highBetas.append(int(highBeta))
+            lowGammas.append(int(lowGamma))
+            midGammas.append(int(midGamma))
+        ax1.clear()
+        ax1.plot(xs,ys)
 
 # MAIN FUNCTION
 def main():
@@ -129,6 +170,10 @@ def main():
               write_csv(data_row)
               sparky(data_row, 3, 5)              
           i = 1
+
+      # graph matplot
+      ani = animation.FuncAnimation(fig,animate,interval=1000)
+      plt.show()
 
 # __MAIN__
 # initialize mindwave reader
