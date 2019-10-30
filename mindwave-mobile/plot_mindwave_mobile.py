@@ -1,3 +1,4 @@
+import time
 import glob
 import os
 import io
@@ -8,20 +9,25 @@ import matplotlib.pyplot as plt
 
 # Find most recent folder and file
 path = max(glob.glob(os.path.join('./EEG_data', '*/')))
-files = os.listdir(path)
-paths = [os.path.join(path, basename) for basename in files]
+paths = [os.path.join(path, file) for file in os.listdir(path)]
 file = max(paths, key=os.path.getctime)
 
 # get initial data frame
-data = pd.read_csv(file,header=1)
+df = pd.read_csv(file,header=1)
+header = list(df)
 
 # get last n samples
 while (True):
     with open (file, 'r') as f:
         q = deque(f,10)
-        df = pd.read_csv(io.StringIO('\n'.join(q)),header=None)
+        dfq = pd.read_csv(io.StringIO('\n'.join(q)))
+        dfq.columns = df.columns
+
     os.system('cls' if os.name == 'nt' else 'clear')
-    print(q)
+    print(dfq)
+    
+    time.sleep(1)
+
 # get current axis from matplotlib
 ax = plt.gca()
 
