@@ -107,7 +107,6 @@ def pretty_print(data_row):
 
 def sparky(data_row, width, height):
   greek_head = ['δ', 'θ', 'α', 'Α', 'β', 'Β', 'γ', 'Γ']
-  pretty_line = []
   for line in sparklines(list(map(int,data_row[4:])), num_lines = height):
     line = ''.join(colors.delta + width * str(line[0]) + 
       colors.theta + width * str(line[1]) + 
