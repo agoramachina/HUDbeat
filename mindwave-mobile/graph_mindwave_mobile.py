@@ -3,7 +3,7 @@
 # (c) 2019 agoramachina
 
 # general dependencies
-import bluetooth, csv, datetime, os, re, sys, textwrap, time
+import bluetooth, csv, datetime, os, re, sys, textwrap, time, math
 
 #import gnuplot #set term xterm
 import matplotlib.pyplot as plt, matplotlib.animation as animation
@@ -71,9 +71,26 @@ def write_raw(data_row):
     writer = csv.writer(f)
     writer.writerow(data_row)
 
-def pretty_print(data_row):   
+def pretty_printdb(data_row):   
   os.system('cls' if os.name == 'nt' else 'clear')
   print("t: " + str(datetime.timedelta(seconds=float(data_row[0])))[:-3])
+  print("Signal: " + data_row[1] + "\n")
+
+  print("Attention: " + data_row[2])
+  print("Meditation: " + data_row[3] + "\n")
+
+  print("Delta: " + data_row[4] + '\n' + "log: " + str(math.log(int(data_row[4]))))
+  print("Theta: " + data_row[5])
+  print("Low Alpha: " + data_row[6])
+  print("High Alpha: " + data_row[7])
+  print("Low Beta: " + data_row[8])
+  print("High Beta: " + data_row[9])
+  print("Low Gamma: " + data_row[10])
+  print("Mid Gamma: " + data_row[11] + "\n")
+  
+def pretty_print(data_row):   
+  os.system('cls' if os.name == 'nt' else 'clear')
+  print("t: " + str(datetime.timedelta(seconds=float(data_row[0])))[:])
   print("Signal: " + data_row[1] + "\n")
 
   print("Attention: " + data_row[2])
@@ -103,42 +120,6 @@ def sparky(data_row, width, height):
     print(line)
   print(" " + "  ".join([g for g in greek_head]))
 
-#def animate(i):
-#    with open(filename) as f:
-#        csv_data = f.readlines()[2:]
-#        lines = csv_data.split('\n')
-#
-#    times = []
-#    signals = []
-#    attns = []
-#    meds = []
-#    deltas = []
-#    thetas = []
-#    lowAlphas = []
-#    highAlphas = []
-#    lowBetas = []
-#    highBetas = []
-#    lowGammas = []
-#    midGammas = []
-#    
-#    for line in lines:
-#        if len(line) > 1:
-#            time, signal, attn, med, delta, theta, lowAlpha, highAlpha, lowBeta, highBeta, lowGamma, midGamma = line.split(',')
-#            times.append(float(time))
-#            signals.append(int(signal))
-#            attns.append(int(attn))
-#            meds.append(int(med))
-#            deltas.append(int(delta))
-#            thetas.append(int(theta))
-#            lowAlphas.append(int(lowAlpha))
-#            highAlphas.append(int(highAlpha))
-#            lowBetas.append(int(lowBeta))
-#            highBetas.append(int(highBeta))
-#            lowGammas.append(int(lowGamma))
-#            midGammas.append(int(midGamma))
-#        ax1.clear()
-#        ax1.plot(xs,ys)
-
 # MAIN FUNCTION
 def main():
 
@@ -159,7 +140,7 @@ def main():
           if (i is 1):
               if (dataPoint.__class__ is PoorSignalLevelDataPoint):
                   data_row = []
-                  data_row.append(str((time.time() - time_init)))
+                  data_row.append(int((time.time() - time_init)))
               data_cleaner = re.sub(r'[^\d\n]+', "", str(dataPoint))
               data_row.extend(data_cleaner.split())
       
@@ -188,7 +169,7 @@ if __name__ == '__main__':
         current_datetime = datetime.datetime.now().__str__()
         time_init = time.time() 
         data_row = []
-        fields = ['Time', 'Poor Signal Level', 'Attention', 'Meditation', 'Delta', 'Theta', 'Low Alpha', 'High Alpha', 'Low Beta', 'High Beta', 'Low Gamma', 'Mid Gamma']
+        fields = ['Time', 'Signal', 'Attention', 'Meditation', 'Delta', 'Theta', 'Low Alpha', 'High Alpha', 'Low Beta', 'High Beta', 'Low Gamma', 'Mid Gamma']
 
         open_writer()
 
