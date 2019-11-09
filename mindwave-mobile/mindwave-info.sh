@@ -5,7 +5,10 @@
 # live EEG data from a csv file.
 # use while python graph_mindwave_mobilei.py is running
 
-while true; do
+# set the sample rate
+SAMPLE=10
+
+while true; do 
 
 	# get the most recently modified file in the EEG_data directory
 	FILE=$(find ~/HUDbeat/mindwave-mobile/EEG_data -type f -printf "%T@ %p\n" -ls \
@@ -13,7 +16,14 @@ while true; do
 
     	# define header names
     	HEAD=$(head -n 2 $FILE)
-    	PHEAD=$(cut -d ',' -f 5- <<< "$HEAD")
+    	#PHEAD=$(cut -d ',' -f 5- <<< "$HEAD")
+	PHEAD=$(echo "delta,theta,alpha,Alpha,beta,Beta,gamma,Gamma")
+
+	# get last N lines of csv data
+	TAIL="$(tail $FILE -n10)"
+	PTAIL=$(cut -d ',' -f 5- <<< "$TAIL")
+	PTAIL="$(echo "${PTAIL}" | tr ',' '\t')"
+	echo "$PTAIL"
     	
 	# get the most recently written line in the csv file
 	ROW=$(tail $FILE -n1)
@@ -43,7 +53,9 @@ while true; do
 	# print data to terminal
 	echo Signal: $SIGNAL
 	echo AtnMed: $ATNMED
-	echo Powers: $POWER
+	echo
+	echo $PHEAD | tr ',' '\t'
+	echo $POWER | tr ',' '\t'
 	echo
 
 	echo LogPwr:
@@ -51,10 +63,9 @@ while true; do
 	#for i in ${POWERS[@]}
 	for ((i=0;i<8;i++))
 	do
-    		echo -n $i .
+    		echo -n $i
+    		echo -e -n ' \t  '
     		echo ${POWERS[$i]}
-    		TEST=$(cut -d ',' -f 5- <<< "$HEAD")
-    		echo $TEST
     		#gnuplot -e "set terminal dumb; plot [-5:5] sin(x)"
     		#perl -e 'print log(22.0);'
 		#echo 'l(0)' | bc -l
