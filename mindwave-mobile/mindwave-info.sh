@@ -1,6 +1,5 @@
 #!/bin/bash
-# @agoramachina
-# 2019-11-09
+# @agoramachina 2019
 #
 # a bash script for reading, manipulating, and viewing
 # live EEG data from a csv file.
@@ -12,6 +11,10 @@ while true; do
 	FILE=$(find ~/HUDbeat/mindwave-mobile/EEG_data -type f -printf "%T@ %p\n" -ls \
 	| sort -n | cut -d' ' -f 2- | tail -n 1)
 
+    	# define header names
+    	HEAD=$(head -n 2 $FILE)
+    	PHEAD=$(cut -d ',' -f 5- <<< "$HEAD")
+    	
 	# get the most recently written line in the csv file
 	ROW=$(tail $FILE -n1)
 	
@@ -50,6 +53,10 @@ while true; do
 	do
     		echo -n $i .
     		echo ${POWERS[$i]}
+    		TEST=$(cut -d ',' -f 5- <<< "$HEAD")
+    		echo $TEST
+    		#gnuplot -e "set terminal dumb; plot [-5:5] sin(x)"
+    		#perl -e 'print log(22.0);'
 		#echo 'l(0)' | bc -l
     		#echo ${POWERS[$i]} | cat
     		#echo 'L(${POWERS[$i]})' | bc -l
