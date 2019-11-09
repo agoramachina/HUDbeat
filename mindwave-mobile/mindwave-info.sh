@@ -20,8 +20,7 @@ while true; do
 
 	# get last N lines of csv data
 	TAIL="$(tail $FILE -n10)"
-	PTAIL=$(cut -d ',' -f 5- <<< "$TAIL")
-	PTAIL="$(echo "${PTAIL}" | tr ',' '\t')"
+	POWERS=$(echo "$(cut -d ',' -f 5- <<< "$TAIL") " | tr ',' '\t')
 	    	
 	# get the most recently written line in the csv file
 	ROW=$(tail $FILE -n1)
@@ -45,28 +44,22 @@ while true; do
 	SIGNAL=$(cut -d ',' -f 2 <<< "$ROW")
 	ATNMED=$(cut -d ',' -f 3-4 <<< "$ROW")
 	POWER=$(cut -d ',' -f 5- <<< "$ROW")
-	POWERS=($DELTA $THETA $ALPHA_L $ALPHA_H $BETA_L $BETA_H $GAMMA_L $GAMMA_M)
-	declare -a POWER_LOGS
-
+		
 	# print data to terminal
-	echo $(date -ud @${TIME} +"%T")
-	echo Signal: $SIGNAL
-	echo AtnMed: $ATNMED
+	echo ---------------------
+	echo '  ' Time:   $(date -ud @${TIME} +"%T")
+	echo '  ' Signal: $SIGNAL
+	echo '  ' Atn: $ATTN Med: $MED
+	echo ---------------------
 	echo
 	echo $PHEAD | tr ',' '\t'
 	echo $POWER | tr ',' '\t'
 	echo
+	echo "$POWERS"
 
-	echo LogPwr:
+	awk '{ print $1 }' fs='\t' <<< $POWERS
 
-	#for i in ${POWERS[@]}
-	for ((i=0;i<8;i++))
-	do
-    		echo -n $i
-    		echo -e -n ' \t  '
-    		echo ${POWERS[$i]}
-   		
-	done
+	echo -e '\n'LogPwr:
 
 sleep 1
 clear
