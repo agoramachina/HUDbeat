@@ -3,7 +3,7 @@
 # 2019-11-09
 #
 # a bash script for reading, manipulating, and viewing
-# live EEG data from a csv file
+# live EEG data from a csv file.
 # use while python graph_mindwave_mobilei.py is running
 
 while true; do
@@ -14,37 +14,43 @@ while true; do
 
 	# get the most recently written line in the csv file
 	ROW=$(tail $FILE -n1)
-	ROW_CLEAN=$(echo $ROW | tr ',' ' ')
-	echo $ROW_CLEAN
 	
-	#echo 'l(3) | bc -l
+	# define data variables
+	TIME=$(cut -d ',' -f 1 <<< "$ROW")
+	SIGNAL=$(cut -d ',' -f 2 <<< "$ROW")
+	
+	ATTN=$(cut -d ',' -f 3 <<< "$ROW")
+	MED=$(cut -d ',' -f 4 <<< "$ROW")
+	
+	DELTA=$(cut -d ',' -f 5 <<< "$ROW")
+	THETA=$(cut -d ',' -f 6 <<< "$ROW")
+	ALPHA_L=$(cut -d ',' -f 7 <<< "$ROW")
+	ALPHA_H=$(cut -d ',' -f 8 <<< "$ROW")
+	BETA_L=$(cut -d ',' -f 9 <<< "$ROW")
+	BETA_H=$(cut -d ',' -f 10 <<< "$ROW")
+	GAMMA_L=$(cut -d ',' -f 11 <<< "$ROW")
+	GAMMA_M=$(cut -d ',' -f 12 <<< "$ROW")
 
-	# define signal, atnmed, powers
 	SIGNAL=$(cut -d ',' -f 2 <<< "$ROW")
 	ATNMED=$(cut -d ',' -f 3-4 <<< "$ROW")
 	POWER=$(cut -d ',' -f 5- <<< "$ROW")
+	
 	echo Signal: $SIGNAL
 	echo AtnMed: $ATNMED
 	echo Powers: $POWER
+	echo
+
+	POWERS=($DELTA $THETA $ALPHA_L $ALPHA_H $BETA_L $BETA_H $GAMMA_L $GAMMA_M)
 
 	echo LogPwr:
-	
-	declare -a DATA[8]
-	for ((i=1;i<=8;i++)); do
-    		DATA=${(cut -d ',' -f $i <<< "$POWERS")}
-    		echo DATA
-    		#POWERS[i]=$("test $i")
+	for((i=0;i<8;i++))
+	do
+		#echo 'l(0)' | bc -l
+    		echo ${POWERS[$i]} | cat
 	done
-	echo $DATA[1]
 	
-	#awk -F',' '
-	#{
-	#    for (i=1;i<=8;i++)
-	#    	print $i
-	#}' <<< $POWERS
-	
-	#echo $LOGP
-	#echo $POWERS|awk -F',' '{print $i}'
+
+#echo 'l(3) | bc -l
 
 sleep 1
 clear
