@@ -34,20 +34,35 @@ while true; do
 	SIGNAL=$(cut -d ',' -f 2 <<< "$ROW")
 	ATNMED=$(cut -d ',' -f 3-4 <<< "$ROW")
 	POWER=$(cut -d ',' -f 5- <<< "$ROW")
-	
+	POWERS=($DELTA $THETA $ALPHA_L $ALPHA_H $BETA_L $BETA_H $GAMMA_L $GAMMA_M)
+	declare -a POWER_LOGS
+
+	# print data to terminal
 	echo Signal: $SIGNAL
 	echo AtnMed: $ATNMED
 	echo Powers: $POWER
 	echo
 
-	POWERS=($DELTA $THETA $ALPHA_L $ALPHA_H $BETA_L $BETA_H $GAMMA_L $GAMMA_M)
-
 	echo LogPwr:
-	for((i=0;i<8;i++))
+
+	#for i in ${POWERS[@]}
+	for ((i=0;i<8;i++))
 	do
+    		echo -n $i .
+    		echo ${POWERS[$i]}
 		#echo 'l(0)' | bc -l
-    		echo ${POWERS[$i]} | cat
+    		#echo ${POWERS[$i]} | cat
+    		#echo 'L(${POWERS[$i]})' | bc -l
+	#	POWER_LOGS=( "${arr[@]}" $i )
+	#	echo -n $POWER_LOGS
+		#echo  -n $i
+    		#echo $POWER_LOGS[$i] | cat
+
+    		
 	done
+	#echo ${POWERS[*]}
+	#echo $POWERS[1]
+
 	
 
 #echo 'l(3) | bc -l
