@@ -4,12 +4,14 @@
 
 # general dependencies
 import bluetooth, csv, datetime, os, re, sys, textwrap, time, math
+from collections import deque
 
 #import gnuplot #set term xterm
 import matplotlib.pyplot as plt, matplotlib.animation as animation
 from matplotlib import style
 import gnuplotlib as gp 
 import numpy as np
+import pandas as pd
 # from collections import deque
 from sparklines import sparklines
 
@@ -23,7 +25,7 @@ from mindwavemobile.MindwaveDataPointReader import MindwaveDataPointReader
 ## default folder name is:      /home/$user/data/EEG_data/yyyy-mm-dd
 ## defualt file name is:        EEGlog_hh:mm:ss_ yyyy-mm-dd.csv
 foldername = "./EEG_data/" + time.strftime("%Y-%m-%d/")
-filename = foldername + "EEGlog_" + time.strftime("%H:%M:%S_%Y-%m-%d") + ".csv"
+filename = foldername + "EEGlog_" + time.strftime("%H-%M-%S") + ".csv"
 
 # setup matplot animation
 fig = plt.figure()
@@ -106,6 +108,20 @@ def pretty_print(data_row):
   print("Mid Gamma: " + data_row[11] + "\n")
 
 def sparky(data_row, width, height):
+  greek_head = ['δ', 'θ', 'α', 'Α', 'β', 'Β', 'γ', 'Γ']
+  for line in sparklines(list(map(int,data_row[4:])), num_lines = height):
+    line = ''.join(colors.delta + width * str(line[0]) + 
+      colors.theta + width * str(line[1]) + 
+      colors.lowAlpha + width * str(line[2]) +
+      colors.highAlpha + width * str(line[3]) +
+      colors.lowBeta + width * str(line[4]) +
+      colors.highBeta + width * str(line[5]) +
+      colors.lowGamma + width * str(line[6]) + 
+      colors.midGamma + width * str(line[7])+ colors.reset)
+    print(line)
+  print(" " + "  ".join([g for g in greek_head]))
+
+def sparkydb(data_row, width, height):
   greek_head = ['δ', 'θ', 'α', 'Α', 'β', 'Β', 'γ', 'Γ']
   for line in sparklines(list(map(int,data_row[4:])), num_lines = height):
     line = ''.join(colors.delta + width * str(line[0]) + 
