@@ -1,11 +1,10 @@
 set terminal dumb #size 60, 20
 
 set logscale y
-set format x ''
-set format y '' 
-unset xtics
-unset ytics
+set format x ''; set format y '' 
+unset xtics; unset ytics
 unset key
+unset border
 
 plot "powers.dat" using 0:1 with lines, \
 "powers.dat" using 0:2 with lines, \

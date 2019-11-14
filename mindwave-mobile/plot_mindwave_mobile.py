@@ -9,9 +9,12 @@ import matplotlib.animation as ani
 import sparklines
 
 # Find most recent folder and file
-path = max(glob.glob(os.path.join('./EEG_data', '*/.csv')))
-paths = [os.path.join(path, file) for file in os.listdir(path)]
-file = max(paths, key=os.path.getctime)
+dir = max([f.path for f in os.scandir('./EEG_data/') if f.is_dir()])
+file = max(glob.glob(os.path.join(dir, '*')))
+
+#path = max(glob.glob(os.path.join('./EEG_data/', '.csv')))
+#paths = [os.path.join(path, file) for file in os.listdir(path)]
+#file = max(paths, key=os.path.getctime)
 
 # get initial data frame
 df = pd.read_csv(file,header=1)
