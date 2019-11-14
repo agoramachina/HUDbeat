@@ -6,7 +6,7 @@
 # use while python graph_mindwave_mobilei.py is running
 
 # set the sample rate
-SAMPLE=10
+SAMPLE=60
 
 while true; do 
 
@@ -61,30 +61,11 @@ while true; do
     	#	sparklines $(cut -f $i <<< "$POWERS")
 	#done
 
-	#DELTAS=$(cut -f 1 <<< "$POWERS")
-	#THETAS=$(cut -f 2 <<< "$POWERS")
-	#L_ALPHAS=$(cut -f 3 <<< "$POWERS")
-	#H_ALPHAS=$(cut -f 4 <<< "$POWERS")
-	#L_BETAS=$(cut -f 5 <<< "$POWERS")
-	#H_BETAS=$(cut -f 6 <<< "$POWERS")
-	#L_GAMMAS=$(cut -f 7 <<< "$POWERS")
-	#M_GAMMAS=$(cut -f 8 <<< $POWERS)
-
-	#pipe $POWERS to gnuplot
-	#spark $DELTAS
-	#spark $THETAS
-	#spark $L_ALPHAS
-	#spark $H_ALPHAS
-	#spark $L_BETAS
-	#spark $H_BETAS
-	#spark $L_GAMMAS
-	#echo $M_GAMMAS
-
 	#echo "$POWERS" | tr '\t' ' '
 
 	#awk '{ print $1 }' fs='\t' <<< $POWERS
-	echo "$POWERS" > test.dat
-	gnuplot 
+	echo "$POWERS" > powers.dat
+
 sleep 1
 clear
 done
