@@ -2,13 +2,10 @@ import time, glob, os, io, math
 from collections import deque
 import numpy as np
 import pandas as pd
-import matplotlib
-import matplotlib.pyplot as plt
-import matplotlib.animation as ani
-from matplotlib import style
-#matplotlib.use('dumb')
-import sparklines
+import mido
+from mido import MidiFile
 
+# Get last n samples of csv file
 def get_samples(sample_size):
     with open (file, 'r') as f:
         q = deque(f,sample_size+1)
@@ -23,13 +20,12 @@ def main():
   while (True):
 
       os.system('cls' if os.name == 'nt' else 'clear')
-      #print(dfq)
 
-      data = get_samples(10)
+      samples = 10
+      data = get_samples(samples)
       powers = data.iloc[:,4:12]
       print(powers)
-      #print(powers.values)
-
+      
       deltas = powers.values[:,0]
       thetas = powers.values[:,1]
       alphas = powers.values[:,2]
@@ -42,12 +38,8 @@ def main():
       #print("Deltas: ", deltas)
 
       power_log = np.log(powers.values[0,:])
-      print("Power log:")
-      print(power_log)
+      print("log: ", power_log.round(3))
 
-
-      #print("Power Mean:")
-      #print(powers.mean().values)
 
       #print("PowerStats:")
       #power_stats = pd.DataFrame(list(powers))
@@ -55,15 +47,11 @@ def main():
 
 
       #print(str(powers.values[:,0].min()) + " / " + str(powers.values[:,0].max()))
-      print(powers.min().values)
-      print(powers.max().values)
-      print(powers.mean().values)
+      print("min: ", powers.min().values)
+      print("max: ", powers.max().values)
+      print("mean: ", powers.mean().values)
+      print("diff: ", np.subtract(np.log(powers.values[samples-1,:]).round(3), np.log(powers.values[samples-2,:]).round(3)))
 
-      #print("Power Max:")
-      #print(powers.max())
-
-      ax.clear()
-      #df.plot(kind='line',x=0,y=4, ax=ax)
       time.sleep(1)
 
 if __name__ == '__main__':
@@ -77,11 +65,5 @@ if __name__ == '__main__':
 
   sample_size = 10;
 
-  # Initialize matplotlib graph
-  fig = plt.figure()
-  ax = fig.gca()
-
   main()
-  #plt.show()
-# get current axis from matplotlib
-
+  
