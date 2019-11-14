@@ -2,8 +2,10 @@ import time, glob, os, io, math
 from collections import deque
 import numpy as np
 import pandas as pd
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.animation as ani
+#matplotlib.use('dumb')
 import sparklines
 
 # Find most recent folder and file
@@ -58,7 +60,7 @@ while (True):
     
     #print("Deltas: ", deltas)
 
-    power_log = np.log(powers.values[0,:])
+    power_log = np.log10(powers.values[0,:])
     print("Power log:")
     print(power_log)
     
@@ -66,14 +68,12 @@ while (True):
     #print("Power Mean:")
     #print(powers.mean().values)
 
-    print("PowerStats:")
-    power_stats = pd.DataFrame(list(powers))
-    print(power_stats)
+    #print("PowerStats:")
+    #power_stats = pd.DataFrame(list(powers))
+    #print(power_stats)
     
 
-    print("Power MinMax")
-    #print(str(powers.min().values[0]) + " / " + str(powers.max().values[0]))
-    print(str(powers.values[:,0].min()) + " / " + str(powers.values[:,0].max()))
+    #print(str(powers.values[:,0].min()) + " / " + str(powers.values[:,0].max()))
     print(powers.min().values)
     print(powers.max().values)
     print(powers.mean().values)

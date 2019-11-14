@@ -16,15 +16,12 @@ while true; do
 
     	# define header names
     	HEAD=$(head -n 2 $FILE)
-    	#PHEAD=$(cut -d ',' -f 5- <<< "$HEAD")
-	PHEAD=$(echo "delta,theta,alpha,Alpha,beta,Beta,gamma,Gamma")
+    	PHEAD=$(echo "delta,theta,alpha,Alpha,beta,Beta,gamma,Gamma")
 
 	# get last N lines of csv data
 	TAIL="$(tail $FILE -n10)"
-	PTAIL=$(cut -d ',' -f 5- <<< "$TAIL")
-	PTAIL="$(echo "${PTAIL}" | tr ',' '\t')"
-	echo "$PTAIL"
-    	
+	POWERS=$(echo "$(cut -d ',' -f 5- <<< "$TAIL")" | tr ',' '\t')
+		    	
 	# get the most recently written line in the csv file
 	ROW=$(tail $FILE -n1)
 	
@@ -47,44 +44,22 @@ while true; do
 	SIGNAL=$(cut -d ',' -f 2 <<< "$ROW")
 	ATNMED=$(cut -d ',' -f 3-4 <<< "$ROW")
 	POWER=$(cut -d ',' -f 5- <<< "$ROW")
-	POWERS=($DELTA $THETA $ALPHA_L $ALPHA_H $BETA_L $BETA_H $GAMMA_L $GAMMA_M)
-	declare -a POWER_LOGS
-
+		
 	# print data to terminal
-	echo Signal: $SIGNAL
-	echo AtnMed: $ATNMED
+	echo ---------------------
+	echo '  ' Time:   $(date -ud @${TIME} +"%T")
+	echo '  ' Signal: $SIGNAL
+	echo '  ' Atn: $ATTN Med: $MED
+	echo ---------------------
 	echo
 	echo $PHEAD | tr ',' '\t'
-	echo $POWER | tr ',' '\t'
-	echo
+	#echo $POWER | tr ',' '\t'
+	#echo
+	echo "$POWERS"
 
-	echo LogPwr:
-
-	#for i in ${POWERS[@]}
-	for ((i=0;i<8;i++))
-	do
-    		echo -n $i
-    		echo -e -n ' \t  '
-    		echo ${POWERS[$i]}
-    		#gnuplot -e "set terminal dumb; plot [-5:5] sin(x)"
-    		#perl -e 'print log(22.0);'
-		#echo 'l(0)' | bc -l
-    		#echo ${POWERS[$i]} | cat
-    		#echo 'L(${POWERS[$i]})' | bc -l
-	#	POWER_LOGS=( "${arr[@]}" $i )
-	#	echo -n $POWER_LOGS
-		#echo  -n $i
-    		#echo $POWER_LOGS[$i] | cat
-
-    		
-	done
-	#echo ${POWERS[*]}
-	#echo $POWERS[1]
-
+	#awk '{ print $1 }' fs='\t' <<< $POWERS
 	
-
-#echo 'l(3) | bc -l
-
 sleep 1
 clear
 done
+
