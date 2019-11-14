@@ -19,7 +19,7 @@ while true; do
     	PHEAD=$(echo "delta,theta,alpha,Alpha,beta,Beta,gamma,Gamma")
 
 	# get last N lines of csv data
-	TAIL="$(tail $FILE -n10)"
+	TAIL="$(tail $FILE -n$SAMPLE)"
 	POWERS=$(echo "$(cut -d ',' -f 5- <<< "$TAIL")" | tr ',' '\t')
 		    	
 	# get the most recently written line in the csv file
@@ -58,17 +58,29 @@ while true; do
 	echo "$POWERS"
 	echo
 
+	#for i in {1..8}; do
+    	#	sparklines $(cut -f $i <<< "$POWERS")
+	#done
+
 	DELTAS=$(cut -f 1 <<< "$POWERS")
 	THETAS=$(cut -f 2 <<< "$POWERS")
 	L_ALPHAS=$(cut -f 3 <<< "$POWERS")
 	H_ALPHAS=$(cut -f 4 <<< "$POWERS")
+	L_BETAS=$(cut -f 5 <<< "$POWERS")
+	H_BETAS=$(cut -f 6 <<< "$POWERS")
+	L_GAMMAS=$(cut -f 7 <<< "$POWERS")
+	M_GAMMAS=$(cut -f 8 <<< $POWERS)
 
 
 	#pipe $POWERS to gnuplot
-	spark $DELTAS
-	spark $THETAS
-	spark $L_ALPHAS
-	spark $H_ALPHAS
+	#spark $DELTAS
+	#spark $THETAS
+	#spark $L_ALPHAS
+	#spark $H_ALPHAS
+	#spark $L_BETAS
+	#spark $H_BETAS
+	#spark $L_GAMMAS
+	#echo $M_GAMMAS
 
 
 	#gnuplot -p -e "set terminal dumb; plot $POWERS; pause -1"
