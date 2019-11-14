@@ -1,5 +1,4 @@
-set terminal dumb #size 60, 20
-set size 1,.5
+#set terminal dumb size 120,10
 
 set logscale y
 set format x ''; set format y '' 

@@ -5,6 +5,7 @@ import pandas as pd
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.animation as ani
+from matplotlib import style
 #matplotlib.use('dumb')
 import sparklines
 
@@ -21,6 +22,7 @@ sample_size = 10;
 # Initialize matplotlib graph
 fig = plt.figure()
 ax = fig.add_subplot(1,sample_size,1)
+#plt.show()
 
 def get_samples(sample_size):
     with open (file, 'r') as f:
@@ -29,10 +31,6 @@ def get_samples(sample_size):
         dfq.columns = df.columns
         dfv = dfq.values
 
-def sparky(powers):
-    for line in sparklines([1,2,3,4,5,4,3,2]):
-        print(line)
-    
 # get last n samples
 while (True):
     with open (file, 'r') as f:
@@ -91,6 +89,7 @@ ax = plt.gca()
 # plot power series
 data.plot(kind='line',x=0,y=4,ax=ax)
 data.plot(kind='line',x=0,y=5,ax=ax)
+plt.show()
 
 
 print(q)
