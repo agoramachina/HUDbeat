@@ -60,7 +60,7 @@ while (True):
     
     #print("Deltas: ", deltas)
 
-    power_log = np.log10(powers.values[0,:])
+    power_log = np.log(powers.values[0,:])
     print("Power log:")
     print(power_log)
     

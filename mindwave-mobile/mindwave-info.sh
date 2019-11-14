@@ -56,6 +56,22 @@ while true; do
 	#echo $POWER | tr ',' '\t'
 	#echo
 	echo "$POWERS"
+	echo
+
+	DELTAS=$(cut -f 1 <<< "$POWERS")
+	THETAS=$(cut -f 2 <<< "$POWERS")
+	L_ALPHAS=$(cut -f 3 <<< "$POWERS")
+	H_ALPHAS=$(cut -f 4 <<< "$POWERS")
+
+
+	#pipe $POWERS to gnuplot
+	spark $DELTAS
+	spark $THETAS
+	spark $L_ALPHAS
+	spark $H_ALPHAS
+
+
+	#gnuplot -p -e "set terminal dumb; plot $POWERS; pause -1"
 
 	#awk '{ print $1 }' fs='\t' <<< $POWERS
 	
