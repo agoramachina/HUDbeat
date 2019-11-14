@@ -27,6 +27,7 @@ while true; do
 	
 	# define data variables
 	TIME=$(cut -d ',' -f 1 <<< "$ROW")
+	TIMES=$(cut -d ',' -f 1 <<< "$TAIL")
 	SIGNAL=$(cut -d ',' -f 2 <<< "$ROW")
 	
 	ATTN=$(cut -d ',' -f 3 <<< "$ROW")
@@ -41,8 +42,6 @@ while true; do
 	GAMMA_L=$(cut -d ',' -f 11 <<< "$ROW")
 	GAMMA_M=$(cut -d ',' -f 12 <<< "$ROW")
 
-	SIGNAL=$(cut -d ',' -f 2 <<< "$ROW")
-	ATNMED=$(cut -d ',' -f 3-4 <<< "$ROW")
 	POWER=$(cut -d ',' -f 5- <<< "$ROW")
 		
 	# print data to terminal
@@ -62,15 +61,14 @@ while true; do
     	#	sparklines $(cut -f $i <<< "$POWERS")
 	#done
 
-	DELTAS=$(cut -f 1 <<< "$POWERS")
-	THETAS=$(cut -f 2 <<< "$POWERS")
-	L_ALPHAS=$(cut -f 3 <<< "$POWERS")
-	H_ALPHAS=$(cut -f 4 <<< "$POWERS")
-	L_BETAS=$(cut -f 5 <<< "$POWERS")
-	H_BETAS=$(cut -f 6 <<< "$POWERS")
-	L_GAMMAS=$(cut -f 7 <<< "$POWERS")
-	M_GAMMAS=$(cut -f 8 <<< $POWERS)
-
+	#DELTAS=$(cut -f 1 <<< "$POWERS")
+	#THETAS=$(cut -f 2 <<< "$POWERS")
+	#L_ALPHAS=$(cut -f 3 <<< "$POWERS")
+	#H_ALPHAS=$(cut -f 4 <<< "$POWERS")
+	#L_BETAS=$(cut -f 5 <<< "$POWERS")
+	#H_BETAS=$(cut -f 6 <<< "$POWERS")
+	#L_GAMMAS=$(cut -f 7 <<< "$POWERS")
+	#M_GAMMAS=$(cut -f 8 <<< $POWERS)
 
 	#pipe $POWERS to gnuplot
 	#spark $DELTAS
@@ -82,11 +80,11 @@ while true; do
 	#spark $L_GAMMAS
 	#echo $M_GAMMAS
 
-
-	#gnuplot -p -e "set terminal dumb; plot $POWERS; pause -1"
+	#echo "$POWERS" | tr '\t' ' '
 
 	#awk '{ print $1 }' fs='\t' <<< $POWERS
-	
+	echo "$POWERS" > test.dat
+	gnuplot 
 sleep 1
 clear
 done
