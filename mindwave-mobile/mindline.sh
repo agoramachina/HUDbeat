@@ -11,9 +11,9 @@ SAMPLE=10
 while true; do 
 
 	# get the most recently modified file in the EEG_data directory
-	FILE=$(find ~/HUDbeat/mindwave-mobile/EEG_data -type f -printf "%T@ %p\n" -ls \
-	| sort -n | cut -d' ' -f 2- | tail -n 1)
-
+	FOLDER=$(ls -td ~/HUDbeat/mindwave-mobile/EEG_data/*/ | head -1)
+	FILE=$(ls -t $FOLDER/EEGlog_* | head -1)
+	
     	# define header names
     	HEAD=$(head -n 2 $FILE)
     	PHEAD=$(echo "delta,theta,alpha,Alpha,beta,Beta,gamma,Gamma")

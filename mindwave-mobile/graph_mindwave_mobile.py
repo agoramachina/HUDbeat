@@ -26,6 +26,7 @@ from mindwavemobile.MindwaveDataPointReader import MindwaveDataPointReader
 ## defualt file name is:        EEGlog_hh:mm:ss_ yyyy-mm-dd.csv
 foldername = "./EEG_data/" + time.strftime("%Y-%m-%d/")
 filename = foldername + "EEGlog_" + time.strftime("%H-%M-%S") + ".csv"
+filename_raw = foldername + "EEGlogRAW_" + time.strftime("%H-%M-%S") + ".csv"
 
 # setup matplot animation
 fig = plt.figure()
@@ -59,7 +60,7 @@ def open_writer():
       writer = csv.writer(f)
       writer.writerow([current_datetime])
       writer.writerow(fields)
-  with open(filename+"raw", "a") as fr:
+  with open(filename_raw, "a") as fr:
       writer = csv.writer(fr)
       writer.writerow([current_datetime])
 
@@ -69,9 +70,9 @@ def write_csv(data_row):
     writer.writerow(data_row)
 
 def write_raw(data_row):
-  with open(filename+"raw", "a") as f:
+  with open(filename_raw, "a") as f:
     writer = csv.writer(f)
-    writer.writerow(data_row)
+    writer.writerow([data_row])
 
 def pretty_printdb(data_row):   
   os.system('cls' if os.name == 'nt' else 'clear')
@@ -148,8 +149,9 @@ def main():
 
       if (dataPoint.__class__ is RawDataPoint):
           rawData = str(dataPoint)[11:]
-          #write_raw(rawData)     
-          #print(time.strftime("%H:%M:%S", time.localtime()), str(rawData))
+          #data_row=time.strftime("%H:%M:%S", time.localtime()), str(rawData)
+          #print (rawData)
+          write_raw(rawData)
 
       if (not dataPoint.__class__ is RawDataPoint):
           if (i is 1):
