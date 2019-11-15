@@ -6,7 +6,7 @@
 # use while python graph_mindwave_mobilei.py is running
 
 # set the sample rate
-SAMPLE=60
+SAMPLE=10
 RAWSAMPLE=60
 
 while true; do 

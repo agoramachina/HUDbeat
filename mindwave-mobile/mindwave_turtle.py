@@ -3,7 +3,7 @@ from collections import deque
 import numpy as np
 import pandas as pd
 import turtle
-from Tkinter import *
+import svgwrite
 
 # Get last n samples of csv file
 def get_samples(sample_size):
@@ -15,9 +15,12 @@ def get_samples(sample_size):
         return dfq
 
 def draw_turtle(turtle, distance, angle):
-    turtle.forward(int(distance*10))
-    turtle.left(int(45))
+    turtle.forward(int(distance*50))
+    turtle.left(int(165))
+    turtle.forward(int(distance*50))
+    turtle.left(int(165))
     #turtle.backward(int(distance*10))
+    ts.getcanvas().postscript(file="turtle.ps")
     
 def main():
 
@@ -74,8 +77,9 @@ if __name__ == '__main__':
 
   sample_size = 10;
 
-  wn = turtle.Screen()
-  wn.bgcolor("black")
+  ts = turtle.Screen()
+  ts.bgcolor("black")
+  ts.getcanvas().postscript(file="turtle.ps")
 
   turtles = []
   for t in range(8):
