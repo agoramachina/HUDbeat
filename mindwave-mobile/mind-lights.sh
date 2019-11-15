@@ -16,18 +16,30 @@ for ip in $IP; do
 
 #declare -A DEVICES
 echo "${DEVICES[@]} "
+LOW=20
+UNDER=40
+OVER=60
+HIGH=80
 
 while true; do
-	ATN=$(cut -d ',' -f 3 <<< "$(tail $FILE -n1)")
-	MED=$(cut -d ',' -f 4 <<< "$(tail $FILE -n1)")
+	ATNMED[0]=$(cut -d ',' -f 3 <<< "$(tail $FILE -n1)")
+	ATNMED[1]=$(cut -d ',' -f 4 <<< "$(tail $FILE -n1)")
+	
+	echo "${ATNMED[@]} "
+	
+	ATN="$(echo "2.55*"${ATNMED[0]}"" | bc)"
+	MED="$(echo "2.55*"${ATNMED[1]}"" | bc)"
 
-	echo "$ATN $MED"
-
-	ATNS="$(echo "2.55*"$ATN"" | bc)"
-	MEDS="$(echo "2.55*"$MED"" | bc)"
-
-	python -W ignore -m flux_led "${DEVICES[0]}" -c 0,$ATNS,0 >/dev/null
-	python -W ignore -m flux_led "${DEVICES[1]}" -c 0,0,$MEDS >/dev/null
+	echo "$ATN $MED "
+	
+	python -W ignore -m flux_led "${DEVICES[0]}" -c 0,"$ATN",0 >/dev/null
+	python -W ignore -m flux_led "${DEVICES[1]}" -c 0,0,$MED >/dev/null
+	
+    	#if [ "${ATNMED[0]%.*}" -gt 60 ]; then
+	#	python -W ignore -m flux_led "${DEVICES[0]}" -p 50 100 >/dev/null
+	#fi
+	
 	sleep 1
 	clear
 done
+
