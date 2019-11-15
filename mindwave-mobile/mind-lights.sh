@@ -21,12 +21,13 @@ while true; do
 	ATN=$(cut -d ',' -f 3 <<< "$(tail $FILE -n1)")
 	MED=$(cut -d ',' -f 4 <<< "$(tail $FILE -n1)")
 
-	echo "$ATN, $MED"
+	echo "$ATN $MED"
 
 	ATNS="$(echo "2.55*"$ATN"" | bc)"
 	MEDS="$(echo "2.55*"$MED"" | bc)"
 
-	python -m flux_led "${DEVICES[0]}" -c 0,$ATNS,0
-	python -m flux_led "${DEVICES[1]}" -c 0,0,$MEDS
+	python -W ignore -m flux_led "${DEVICES[0]}" -c 0,$ATNS,0 >/dev/null
+	python -W ignore -m flux_led "${DEVICES[1]}" -c 0,0,$MEDS >/dev/null
 	sleep 1
+	clear
 done
