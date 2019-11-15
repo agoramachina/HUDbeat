@@ -9,16 +9,17 @@
 SAMPLE=10
 RAWSAMPLE=60
 
+# get the most recently modified file in the EEG_data directory
+FOLDER=$(ls -td ~/HUDbeat/mindwave-mobile/EEG_data/*/ | head -1)
+FILE=$(ls -t $FOLDER/EEGlog_* | head -1)    	 
+RAWFILE=$(ls -t $FOLDER/EEGlogRAW* | head -1)
+
+# define header names
+HEAD=$(head -n 2 $FILE)
+PHEAD=$(echo "delta,theta,alpha,Alpha,beta,Beta,gamma,Gamma")
+
+
 while true; do 
-
-	# get the most recently modified file in the EEG_data directory
-	FOLDER=$(ls -td ~/HUDbeat/mindwave-mobile/EEG_data/*/ | head -1)
-	FILE=$(ls -t $FOLDER/EEGlog_* | head -1)    	 
-	RAWFILE=$(ls -t $FOLDER/EEGlogRAW* | head -1)
-
-    	# define header names
-    	HEAD=$(head -n 2 $FILE)
-    	PHEAD=$(echo "delta,theta,alpha,Alpha,beta,Beta,gamma,Gamma")
 
 	# get last N lines of csv data
 	TAIL="$(tail $FILE -n$SAMPLE)"
@@ -28,6 +29,7 @@ while true; do
 	ROW=$(tail $FILE -n1)
 	
 	# define data variables
+	# todo: make this an array
 	TIME=$(cut -d ',' -f 1 <<< "$ROW")
 	TIMES=$(cut -d ',' -f 1 <<< "$TAIL")
 	SIGNAL=$(cut -d ',' -f 2 <<< "$ROW")
