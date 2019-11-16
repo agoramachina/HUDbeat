@@ -45,15 +45,20 @@ def main():
       logs = np.log(powers.values[0,:])
       mins = powers.min().values
       maxs = powers.max().values
-      means = np.log(powers.mean().values)
+      means = powers.mean().values
       ranges = (powers.max() - powers.min()).values
       diffs = powers.values[samples-2,:] - powers.values[samples-1,:]
-      
-      print("Power log", logs)
+      pstats = [[logs], [mins], [maxs], [means], [ranges], [diffs]]
+     
+      #stats = pd.DataFrame({[logs],[mins],[maxs],[means],[ranges],[diffs]},
+      #	columns=['delta', 'theta', 'lAlpha', 'hAlpha', 'lBeta', 'hBeta', 'lGamma', 'mGamma'],
+      #	index=['log', 'min', 'max', 'mean','range', 'diff'])
+            
+      print("Log", logs)
       print("Min: ", mins)
       print("Max: ", maxs)
-      print("Mean: ", means)
-      print("Range: ", ranges)
+      print("Mean: ", np.log(means))
+      print("Range: ", np.log(ranges))
       print("Diff: ", diffs)
    
       ax.clear()
