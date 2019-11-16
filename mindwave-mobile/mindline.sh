@@ -30,8 +30,7 @@ while true; do
 	ROW=$(tail $FILE -n1)
 	POWER=$(cut -d ',' -f 5- <<< "$ROW" | tr ',' ' ')
 	#echo "$POWER"
-	#printf '\xE2\x98\xA0'
-
+	
 	normal=$(tput sgr0)
 	bold=$(tput bold)
 	red=$(tput setaf 1)
@@ -51,7 +50,8 @@ while true; do
 #	if [ "$SIGNAL" -eq 200 ]; then
 #		printf "${red}⊗${normal} "; fi
 
-	sparklines $POWER
+	# TODO: add error handler for invalid data format
+	sparklines $POWERS
 sleep 1
 #clear
 done
