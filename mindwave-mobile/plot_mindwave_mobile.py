@@ -9,26 +9,29 @@ from matplotlib import style
 #matplotlib.use('dumb')
 import sparklines
 
-def get_samples(sample_size):
+samples = 60
+
+# get last n samples
+def get_samples(samples):
     with open (file, 'r') as f:
-        q = deque(f,sample_size+1)
+        q = deque(f,samples+1)
         dfq = pd.read_csv(io.StringIO('\n'.join(q)))
         dfq.columns = df.columns
         dfv = dfq.values
         return dfq
 
-def main():
+#def get_stats():
+#    stats = pd.DataFrame(LIST, index=['log', 'min', 'max', 'mean','range', 'diff'], columns = df.columns)
 
-  # get last n samples
-  while (True):
+def main():
+    
+   while (True):
 
       os.system('cls' if os.name == 'nt' else 'clear')
-      #print(dfq)
-
-      data = get_samples(10)
+ 
+      data = get_samples(samples)
       powers = data.iloc[:,4:12]
-      print(powers)
-      #print(powers.values)
+      print(powers.tail(10))
 
       deltas = powers.values[:,0]
       thetas = powers.values[:,1]
@@ -39,29 +42,20 @@ def main():
       gammas = powers.values[:,6]
       Gammas = powers.values[:,7]
 
-      #print("Deltas: ", deltas)
-
-      power_log = np.log(powers.values[0,:])
-      print("Power log:")
-      print(power_log)
-
-
-      #print("Power Mean:")
-      #print(powers.mean().values)
-
-      #print("PowerStats:")
-      #power_stats = pd.DataFrame(list(powers))
-      #print(power_stats)
-
-
-      #print(str(powers.values[:,0].min()) + " / " + str(powers.values[:,0].max()))
-      print(powers.min().values)
-      print(powers.max().values)
-      print(powers.mean().values)
-
-      #print("Power Max:")
-      #print(powers.max())
-
+      logs = np.log(powers.values[0,:])
+      mins = powers.min().values
+      maxs = powers.max().values
+      means = np.log(powers.mean().values)
+      ranges = (powers.max() - powers.min()).values
+      diffs = powers.values[samples-2,:] - powers.values[samples-1,:]
+      
+      print("Power log", logs)
+      print("Min: ", mins)
+      print("Max: ", maxs)
+      print("Mean: ", means)
+      print("Range: ", ranges)
+      print("Diff: ", diffs)
+   
       ax.clear()
       #df.plot(kind='line',x=0,y=4, ax=ax)
       time.sleep(1)
@@ -75,7 +69,7 @@ if __name__ == '__main__':
   df = pd.read_csv(file,header=1)
   header = list(df)
 
-  sample_size = 10;
+  samples = 60;
 
   # Initialize matplotlib graph
   fig = plt.figure()
