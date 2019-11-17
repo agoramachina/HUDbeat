@@ -32,11 +32,36 @@ def play_notes(notes):
           midiout.send_message([0x80, 60, 0])
     del midiout
 
+def play_atn(atn):
+    if (0 <= atn < 20):
+        play_notes([60])
+    if (20 <= atn < 40):
+        play_notes([60,63,67])
+    if (40 <= atn < 60):
+        play_notes([60,63,67,63])
+    if (60 <= atn < 80):
+        play_notes([60,63,67,72])
+    if (atn > 80):
+        play_notes([60,63,67,72,67,63])
+
+def play_med(med):
+    if (0 <= med < 20):
+        play_notes([60])
+    if (20 <= med < 40):
+        play_notes([60,63,67])
+    if (40 <= med < 60):
+        play_notes([60,63,67,63])
+    if (60 <= med < 80):
+        play_notes([60,63,67,72])
+    if (med > 80):
+        play_notes([60,63,67,72,67,63])
+
 def notebuffer():
     tempo = 120
     velocity = 100
     root = 60
     scale = minor
+    
     
 # main      
 def main():
@@ -48,12 +73,11 @@ def main():
     	atn = data.iloc[:,2]
     	med = data.iloc[:,3]
     	powers = data.iloc[:,4:12]
-    	
-    	if (med.item() > 50):
-        	play_notes([60,63,67,72,67,63])        	
-    	
-    	notes = [60,63,67]
-    	play_notes(notes)
+
+    	play_atn(atn.item())
+
+    	#notes = [60,63,67]
+    	#play_notes(notes)
 # init
 if __name__ == '__main__':
 
