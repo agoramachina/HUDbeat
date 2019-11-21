@@ -31,7 +31,7 @@ def main():
  
       data = get_samples(samples)
       powers = data.iloc[:,4:12]
-      print(powers.tail(10))
+      #print(powers.tail(10))
 
       deltas = powers.values[:,0]
       thetas = powers.values[:,1]
@@ -54,26 +54,31 @@ def main():
       #	columns=['delta', 'theta', 'lAlpha', 'hAlpha', 'lBeta', 'hBeta', 'lGamma', 'mGamma'],
       #	index=['log', 'min', 'max', 'mean','range', 'diff'])
 
-      print("\nlog\t ", end = '')      
-      for log in logs: print("%.3f" %(log), end = '\t ')
-          
-      print("\nmin\t ", end = '')
-      for min in mins: print("%.3f" %np.log(min), end = '\t ')
-
-      print("\nmax\t ", end= '')
-      for max in maxs: print("%.3f" %np.log(max), end = '\t ')
- 
-      print("\navg\t ", end = '')
-      for mean in means: print("%.3f" %np.log(mean), end = '\t ')
+      print("      ╒══════════════════════════════════════════════════════════════════╕")
+      print("      │  delta\t  theta\t  alpha\t  Alpha\t   beta\t   Beta\t  gamma\t  Gamma  │")
+      print("┍━━━━━┑", end = '')
+      print("──────────────────────────────────────────────────────────────────┤", end = '')
       
-      print("\nrng\t ", end = '')
-      for range in ranges: print("%.3f" %np.log(range), end = '\t ')
+      print("\n│ log │\t ", end = '')      
+      for log in logs: print("%6.3f" %(log), end = '\t ')
+          
+      print("│\n│ min │\t ", end = '')
+      for min in mins: print("%6.3f" %np.log(min), end = '\t ')
 
-      print("\ndif", end = '')
-      for dif in diffs:
-          if dif >= 0: print('\t %.3f' %dif, end = '')
-          if dif <  0: print('\t%.3f' %dif, end = '')
-      print()
+      print("│\n│ max │\t ", end= '')
+      for max in maxs: print("%6.3f" %np.log(max), end = '\t ')
+ 
+      print("│\n│ avg │\t ", end = '')
+      for mean in means: print("%6.3f" %np.log(mean), end = '\t ')
+      
+      print("│\n│ rng │\t ", end = '')
+      for range in ranges: print("%6.3f" %np.log(range), end = '\t ')
+
+      print("│\n│ dif │", end = '')
+      for dif in diffs: print('\t %6.3f' %dif, end = '')
+      
+      print("  │\n┕━━━━━┙", end = '')
+      print("──────────────────────────────────────────────────────────────────┘")
    
       ax.clear()
       #df.plot(kind='line',x=0,y=4, ax=ax)
