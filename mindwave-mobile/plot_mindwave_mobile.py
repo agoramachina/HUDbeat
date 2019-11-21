@@ -47,19 +47,33 @@ def main():
       maxs = powers.max().values
       means = powers.mean().values
       ranges = (powers.max() - powers.min()).values
-      diffs = powers.values[samples-2,:] - powers.values[samples-1,:]
+      diffs = np.log(powers.values[samples-2,:]) - np.log(powers.values[samples-1,:])
       pstats = [[logs], [mins], [maxs], [means], [ranges], [diffs]]
      
       #stats = pd.DataFrame({[logs],[mins],[maxs],[means],[ranges],[diffs]},
       #	columns=['delta', 'theta', 'lAlpha', 'hAlpha', 'lBeta', 'hBeta', 'lGamma', 'mGamma'],
       #	index=['log', 'min', 'max', 'mean','range', 'diff'])
-            
-      print("Log", logs)
-      print("Min: ", mins)
-      print("Max: ", maxs)
-      print("Mean: ", np.log(means))
-      print("Range: ", np.log(ranges))
-      print("Diff: ", diffs)
+
+      print("\nlog\t ", end = '')      
+      for log in logs: print("%.3f" %(log), end = '\t ')
+          
+      print("\nmin\t ", end = '')
+      for min in mins: print("%.3f" %np.log(min), end = '\t ')
+
+      print("\nmax\t ", end= '')
+      for max in maxs: print("%.3f" %np.log(max), end = '\t ')
+ 
+      print("\navg\t ", end = '')
+      for mean in means: print("%.3f" %np.log(mean), end = '\t ')
+      
+      print("\nrng\t ", end = '')
+      for range in ranges: print("%.3f" %np.log(range), end = '\t ')
+
+      print("\ndif", end = '')
+      for dif in diffs:
+          if dif >= 0: print('\t %.3f' %dif, end = '')
+          if dif <  0: print('\t%.3f' %dif, end = '')
+      print()
    
       ax.clear()
       #df.plot(kind='line',x=0,y=4, ax=ax)
