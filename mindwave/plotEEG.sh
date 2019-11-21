@@ -1,0 +1,1 @@
+/home/agoramachina/HUDbeat/mindwave/EEG_plot/plotEEG.sh

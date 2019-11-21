@@ -3,14 +3,30 @@
 # (c) 2019 agoramachina
 
 # general dependencies
-import bluetooth, csv, time, datetime, os, re, sys, textwrap
+import bluetooth
+import csv
+import datetime
+import os
+import re
+import sys
+import textwrap
+import time
 
 #import gnuplot #set term xterm
-import matplotlib.pyplot as plt, matplotlib.animation as animation
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 import gnuplotlib as gp 
 import numpy as np
 # from collections import deque
+#from termgraph import termgraph as tg
+#import lehar
+#import bashplotlib
 from sparklines import sparklines
+import pygal
+from colors import *
+#import data_hacks
+#import hipsterplot
+#import termplot
 
 #Neurosky dependenies
 from mindwavemobile.MindwaveDataPoints import RawDataPoint
@@ -28,43 +44,17 @@ filename = foldername + "EEGlog_" + time.strftime("%H:%M:%S_%Y-%m-%d") + ".csv"
 if not os.path.exists(foldername):
     os.makedirs(foldername)
 
-class colors:
-
-#    attn = '\033[95m'
-#    med = 
-    delta = '\u001b[31m'
-    theta = '\u001b[33m'
-    lowAlpha = '\u001b[32m'
-    highAlpha = '\u001b[32;1m'
-    lowBeta = '\u001b[36m'
-    highBeta = '\u001b[36;1m'
-    lowGamma = '\u001b[35m'
-    midGamma = '\u001b[35;1m'
-#    rawData = 
-#    signalHi = green
-#    signalMed = yellow
-#    signalLow = red
-    reset = '\u001b[0m'
-
 def open_writer():
     # initialize writer
   with open(filename, "a") as f:
       writer = csv.writer(f)
       writer.writerow([current_datetime])
       writer.writerow(fields)
-  with open(filename+"raw", "a") as fr:
-      writer = csv.writer(fr)
-      writer.writerow([current_datetime])
 
 def write_csv(data_row):
   with open(filename, "a") as f:
-    writer = csv.writer(f)
-    writer.writerow(data_row)
-
-def write_raw(data_row):
-  with open(filename+"raw", "a") as fr:
-    writer = csv.writer(fr)
-    writer.writerow(data_row)
+      writer = csv.writer(f)
+      writer.writerow(data_row)
 
 def pretty_print(data_row):   
   os.system('cls' if os.name == 'nt' else 'clear')
@@ -88,6 +78,7 @@ def sparky(data_row, width, height):
   pretty_line = []
   for line in sparklines(list(map(int,data_row[4:])), num_lines = height):
 <<<<<<< HEAD
+<<<<<<< HEAD
     line = ''.join(colors.delta + width * str(line[0]) + 
       colors.theta + width * str(line[1]) + 
       colors.lowAlpha + width * str(line[2]) +
@@ -99,6 +90,8 @@ def sparky(data_row, width, height):
     print(line)
   print(" " + "  ".join([g for g in greek_head]))
 =======
+=======
+>>>>>>> master
     line = ''.join(width * str(line[0]) + 
       width * str(line[1]) +
       width * str(line[2]) + 
@@ -111,8 +104,15 @@ def sparky(data_row, width, height):
     print(line)
   print(" " + "  ".join([g for g in greek_head]))
 
+<<<<<<< HEAD
 >>>>>>> dd1b851dd44f0d05bde525a7fe2390a475bf13a7
+=======
+>>>>>>> master
 
+def gal_plot(data_row):
+  chart = pygal.Line(interpolate='cubic')
+  chart.add('', list(map(int,data_row[4:])))
+  print(chart.render_sparktext())
 
 # MAIN FUNCTION
 def main():
@@ -123,18 +123,11 @@ def main():
 
       # get next data point
       dataPoint = mindwaveDataPointReader.readNextDataPoint()
-
-      if (dataPoint.__class__ is RawDataPoint):
-          rawData = str(dataPoint)[10:]
-          data_rrow = [datetime.datetime.now(), rawData]
-          write_raw(data_rrow)
-          print(data_rrow)
-
       if (not dataPoint.__class__ is RawDataPoint):
           if (i is 1):
               if (dataPoint.__class__ is PoorSignalLevelDataPoint):
                   data_row = []
-                  data_row.append(str((time.time() - time_init)))
+                  data_row.append("{0:.3f}".format(time.time() - time_init))
               data_cleaner = re.sub(r'[^\d\n]+', "", str(dataPoint))
               data_row.extend(data_cleaner.split())
       
@@ -143,8 +136,12 @@ def main():
           if (i is 1):        
               pretty_print(data_row)             
               write_csv(data_row)
-              sparky(data_row, 3, 5)              
+              sparky(data_row, 3, 5)
+              #gal_plot(data_row)
+              
           i = 1
+
+
 
 # __MAIN__
 # initialize mindwave reader
