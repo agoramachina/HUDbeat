@@ -10,6 +10,8 @@ In its first iteration, HUDbeat used an Adafruit Gemma MO (and eventually a Trin
 
 In its current iteration (03-15-2019), HUDbeat uses a Raspberry Pi Zero W to detect and display live EEG data over Bluetooth from the Mindwave Mobile. It displays this data in realtime to an OLED while recording it as a .csv file to the Pi's SD card. SCAD cases (and corresponding .stl files) for hardware modules have been designed for the Gemma M0, Itsy Bitsy M4, Circuit Playground Express, and Adafruit's .96" color TFT, .96" color OLED, Arduino Spy Camera, SPI Bluetooth module, and 350 mAh lipo battery. 
 
+Current updates are focused on retreiving, manipulating, and displaying EEG data recorded from [Neurosky's Mindwave Mobile 2](https://store.neurosky.com/pages/mindwave).
+
 Future updates will focus on integrating the Pi with the Arduino and other modules.
 
 .scad and .stl files can be found on agoramachina's Thingiverse page in the HUDbeat collection:
