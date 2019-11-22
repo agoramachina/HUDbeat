@@ -1,2 +1,5 @@
-mindwave-mobile/EEG_data/*
+**/EEG_data/*
+!**/EEG_data/sample
 python-mindwave-mobile/
+**/node-neurosky/
+refs/
