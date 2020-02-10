@@ -1,4 +1,4 @@
-set terminal dumb size 120, 10
+set terminal dumb size 100, 10
 
 #set logscale y
 set format x ''; set format y '' 
@@ -9,5 +9,5 @@ unset border
 plot "raw.dat" using 0:1 with lines
 
 pause .01
-#clear
+clear
 reread

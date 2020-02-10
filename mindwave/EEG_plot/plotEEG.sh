@@ -3,7 +3,7 @@
 #
 # a bash script for reading, manipulating, and viewing
 # live EEG data from a csv file.
-# use while python graph_mindwave_mobilei.py is running
+# use while python recordEEG.py is running
 
 # set the sample rate
 SAMPLE=60
@@ -61,7 +61,7 @@ while true; do
 	echo $PHEAD | tr ',' '\t'
 	#echo $POWER | tr ',' '\t'
 	#echo
-	echo "$POWERS"
+	echo "$POWERS" | tail -n3
 	echo
 
 	#for i in {1..8}; do

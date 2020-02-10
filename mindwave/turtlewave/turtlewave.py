@@ -5,6 +5,10 @@ import pandas as pd
 import turtle
 import svgwrite
 
+# define folder and file names
+#foldername = "./" + time.strftime("%Y-%m-%d/")
+filename = "./turtles/turtle_" + time.strftime("%Y-%m-%d_") + time.strftime("%H-%M-%S") + ".ps"
+
 # Get last n samples of csv file
 def get_samples(sample_size):
     with open (file, 'r') as f:
@@ -16,11 +20,14 @@ def get_samples(sample_size):
 
 def draw_turtle(turtle, distance, angle):
     turtle.forward(int(distance*50))
-    turtle.left(int(165))
+    turtle.left(int(120))
     turtle.forward(int(distance*50))
-    turtle.left(int(165))
+    turtle.left(int(120))
+    turtle.forward(int(distance*50))
+    turtle.left(int(120))
+    turtle.left(int(angle))
     #turtle.backward(int(distance*10))
-    ts.getcanvas().postscript(file="turtle.ps")
+    ts.getcanvas().postscript(file=filename)
     
 def main():
 
@@ -46,45 +53,43 @@ def main():
       #print("Deltas: ", deltas)
 
       power_log = np.log(powers.values[0,:])
-      print("log: ", power_log.round(3))
-
-
-      #print("PowerStats:")
-      #power_stats = pd.DataFrame(list(powers))
-      #print(power_stats)
-
-
-      #print(str(powers.values[:,0].min()) + " / " + str(powers.values[:,0].max()))
-      print("min: ", powers.min().values)
-      print("max: ", powers.max().values)
-      print("mean: ", powers.mean().values)
       ldiff = np.subtract(np.log(powers.values[samples-1,:]).round(3), np.log(powers.values[samples-2,:]).round(3))
-      print("ldiff: ", ldiff)
-      print("mdiff: ", np.subtract(powers.max().values.round(3), powers.min().values.round(3)))
 
+
+      print()
+      print(power_log)
+      print(ldiff)
+      
       for t in range(8):
           draw_turtle(turtles[t],power_log[t],ldiff[t])
       #time.sleep(1)
 
 if __name__ == '__main__':
   # Find most recent folder and file
-  dir = max([f.path for f in os.scandir('./EEG_data/') if f.is_dir()])
+  dir = max([f.path for f in os.scandir('../EEG_data/') if f.is_dir()])
   file = max(glob.glob(os.path.join(dir, 'EEGlog_*.csv')),key=os.path.getctime)
 
   # get initial data frame
   df = pd.read_csv(file,header=1)
   header = list(df)
 
-  sample_size = 10;
+  sample_size = 1;
 
   ts = turtle.Screen()
   ts.bgcolor("black")
-  ts.getcanvas().postscript(file="turtle.ps")
+  ts.getcanvas().postscript(file=filename)
+
+  
+#  turtle.color('white')
+#  style = ('Courier', 30, 'italic')
+#  turtle.write('Hello World', font=style, align='left')
+#  turtle.hideturtle()
 
   turtles = []
   for t in range(8):
       turtles.append(turtle.Turtle())
-      turtles[t].speed(5)
+      turtles[t].speed(0)
+      turtles[t].left(45*t)
   turtles[0].color("red")
   turtles[1].color("orange")
   turtles[2].color("yellow")

@@ -154,7 +154,7 @@ def main():
           write_raw(rawData)
 
       if (not dataPoint.__class__ is RawDataPoint):
-          if (i is 1):
+          if (i == 1):
               if (dataPoint.__class__ is PoorSignalLevelDataPoint):
                   data_row = []
                   data_row.append(int((time.time() - time_init)))
@@ -163,23 +163,22 @@ def main():
 
       # special formatting for EEGPowers dataPoint
       if (dataPoint.__class__ is EEGPowersDataPoint):
-          if (i is 1):
+          if (i == 1):
               pretty_print(data_row)
               write_csv(data_row)
               sparky(data_row, 3, 5)
           i = 1
 
-      # graph matplot
-      #ani = animation.FuncAnimation(fig,animate,interval=1000)
-      #plt.show()
 
 # __MAIN__
 # initialize mindwave reader
 if __name__ == '__main__':
 
     # initialize Mindwave
+    print("Searching for Mindwave Mobile...")
     mindwaveDataPointReader = MindwaveDataPointReader()
     mindwaveDataPointReader.start()
+
     if (mindwaveDataPointReader.isConnected()):
 
         # initialize csv rows and header

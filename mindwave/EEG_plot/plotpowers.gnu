@@ -13,7 +13,7 @@ plot "powers.dat" using 0:1 with lines, \
 "powers.dat" using 0:5 with lines, \
 "powers.dat" using 0:6 with lines, \
 "powers.dat" using 0:7 with lines, \
-"powers.dat" using 0:8 with lines, \
+"powers.dat" using 0:8 with lines
 
 pause 1
 clear

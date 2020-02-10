@@ -1,7 +1,9 @@
-import time, glob, os, io, math
+import time, datetime, glob, os, io, math
 from collections import deque
 import numpy as np
 import pandas as pd
+import curses
+import gnuplotlib
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.animation as ani
@@ -11,6 +13,44 @@ import sparklines
 
 samples = 60
 
+class colors():
+      reset = '\u001b[0m'
+      delta = '\u001b[31m'
+      theta = '\u001b[33m'
+      lowAlpha = '\u001b[32m'
+      highAlpha = '\u001b[32;1m'
+      lowBeta = '\u001b[36m'
+      highBeta = '\u001b[36;1m'
+      lowGamma = '\u001b[35m'
+      midGamma = '\u001b[35;1m'
+
+class datapoints():
+    def __init__(self, data):
+    
+      self.times = data.iloc[:,0]
+      self.signals = data.iloc[:,1]
+      
+      self.attns = data.iloc[:,2]
+      self.meds = data.iloc[:,3]
+
+      self.powers = data.iloc[:,4:12]
+
+      self.deltas = self.powers.values[:,0]
+      self.thetas = self.powers.values[:,1]
+      self.l_alphas = self.powers.values[:,2]
+      self.h_alphas = self.powers.values[:,3]
+      self.l_betas = self.powers.values[:,4]
+      self.h_betas = self.powers.values[:,5]
+      self.l_gammas = self.powers.values[:,6]
+      self.m_gammas = self.powers.values[:,7]
+
+      self.logs = np.log(self.powers.values[0,:])
+      self.mins = self.powers.min().values
+      self.maxs = self.powers.max().values
+      self.means = self.powers.mean().values
+      self.ranges = (self.powers.max() - self.powers.min()).values
+      self.diffs = np.log(self.powers.values[samples-2,:]) - np.log(self.powers.values[samples-1,:])
+            
 # get last n samples
 def get_samples(samples):
     with open (file, 'r') as f:
@@ -20,76 +60,65 @@ def get_samples(samples):
         dfv = dfq.values
         return dfq
 
-#def get_stats():
-#    stats = pd.DataFrame(LIST, index=['log', 'min', 'max', 'mean','range', 'diff'], columns = df.columns)
 
-def main():
+def print_data(data):
+    
+#      print("t: " + time.strftime('%H:%M:%S', time.gmtime(data.times[samples-1])))
+#      print("Signal: " + str(data.signals[samples-1]))
 
-   while (True):
+#      print()
+#      print("attention: " + str(data.attns[samples-1]))
+#      print("Meditation: " + str(data.meds[samples-1]))
 
-      os.system('cls' if os.name == 'nt' else 'clear')
-
-      data = get_samples(samples)
-
-      times  = data.iloc[:,0]
-      signals= data.iloc[:,1]
-
-      attns  = data.iloc[:,2]
-      meds   = data.iloc[:,3]
-
-      powers = data.iloc[:,4:12]
-      #print(powers.tail(10))
-
-      deltas = powers.values[:,0]
-      thetas = powers.values[:,1]
-      alphas = powers.values[:,2]
-      Alphas = powers.values[:,3]
-      betas  = powers.values[:,4]
-      Betas  = powers.values[:,5]
-      gammas = powers.values[:,6]
-      Gammas = powers.values[:,7]
-
-      logs = np.log(powers.values[0,:])
-      mins = powers.min().values
-      maxs = powers.max().values
-      means = powers.mean().values
-      ranges = (powers.max() - powers.min()).values
-      diffs = np.log(powers.values[samples-2,:]) - np.log(powers.values[samples-1,:])
-      pstats = [[logs], [mins], [maxs], [means], [ranges], [diffs]]
-
-      #stats = pd.DataFrame({[logs],[mins],[maxs],[means],[ranges],[diffs]},
-      #	columns=['delta', 'theta', 'lAlpha', 'hAlpha', 'lBeta', 'hBeta', 'lGamma', 'mGamma'],
-      #	index=['log', 'min', 'max', 'mean','range', 'diff'])
-
+      print("")
       print("      ╒══════════════════════════════════════════════════════════════════╕")
       print("      │  delta\t  theta\t  alpha\t  Alpha\t   beta\t   Beta\t  gamma\t  Gamma  │")
-      print("┍━━━━━┑", end = '')
-      print("──────────────────────────────────────────────────────────────────┤", end = '')
+# δ θ α Α β Β γ Γ
+      print("       ──────────────────────────────────────────────────────────────────┤", end = '')
 
       print("\n│ log │\t ", end = '')
-      for log in logs: print("%6.3f" %(log), end = '\t ')
+      for log in data.logs: print("%6.3f" %(log), end = '\t ')
 
       print("│\n│ min │\t ", end = '')
-      for min in mins: print("%6.3f" %np.log(min), end = '\t ')
+      for min in data.mins: print("%6.3f" %np.log(min), end = '\t ')
 
       print("│\n│ max │\t ", end= '')
-      for max in maxs: print("%6.3f" %np.log(max), end = '\t ')
+      for max in data.maxs: print("%6.3f" %np.log(max), end = '\t ')
 
       print("│\n│ avg │\t ", end = '')
-      for mean in means: print("%6.3f" %np.log(mean), end = '\t ')
+      for mean in data.means: print("%6.3f" %np.log(mean), end = '\t ')
 
       print("│\n│ rng │\t ", end = '')
-      for range in ranges: print("%6.3f" %np.log(range), end = '\t ')
+      for range in data.ranges: print("%6.3f" %np.log(range), end = '\t ')
+      # range/max
 
       print("│\n│ dif │", end = '')
-      for dif in diffs: print('\t %6.3f' %dif, end = '')
+      for dif in data.diffs: print('\t %6.3f' %dif, end = '')
 
       print("  │\n┕━━━━━┙", end = '')
       print("──────────────────────────────────────────────────────────────────┘")
 
-      ax.clear()
-      #df.plot(kind='line',x=0,y=4, ax=ax)
       time.sleep(1)
+      os.system('cls' if os.name == 'nt' else 'clear')
+
+def main():
+   os.system('cls' if os.name == 'nt' else 'clear')
+
+   while (True):
+     try:
+        data = datapoints(get_samples(samples))
+        print_data(data)
+
+     except ValueError:
+        print("Please wait for data population...")
+        time.sleep(1)
+        os.system('cls' if os.name == 'nt' else 'clear')
+
+
+      #stats = pd.DataFrame({[logs],[mins],[maxs],[means],[ranges],[diffs]},
+      #	columns=['delta', 'theta', 'alpha', 'Alpha', 'beta', 'Beta', 'gamma', 'Gamma'],
+      #	index=['log', 'min', 'max', 'mean','range', 'diff'])
+
 
 if __name__ == '__main__':
   # Find most recent folder and file
@@ -100,13 +129,4 @@ if __name__ == '__main__':
   df = pd.read_csv(file,header=1)
   header = list(df)
 
-  samples = 60;
-
-  # Initialize matplotlib graph
-  fig = plt.figure()
-  ax = fig.gca()
-
   main()
-  #plt.show()
-# get current axis from matplotlib
-
