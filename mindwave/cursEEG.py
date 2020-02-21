@@ -1,4 +1,4 @@
-import time, datetime, glob, os, io, math
+import time, datetime, glob, os, sys, io, math
 from collections import deque
 import numpy as np
 import pandas as pd
@@ -166,6 +166,8 @@ def main():
         #print("Please wait for data population...")
         time.sleep(1)
         #os.system('cls' if os.name == 'nt' else 'clear')
+     except(KeyboardInterrupt):
+         sys.exit()
 
 if __name__ == '__main__':
   # Find most recent folder and file
