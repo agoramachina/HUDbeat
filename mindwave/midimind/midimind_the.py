@@ -50,69 +50,38 @@ def play_arp(midiout,notes):
       time.sleep(.5/len(notes))
       midiout.send_message([0x80, note, 0])
 
-def play_chord(midiout,notes):
-
-    velocity = 80
-    for note in notes:
-      midiout.send_message([0x91, note, velocity])
-      #time.sleep(1)
-      midiout.send_message([0x81, note, 0])
-
-def play_atn(midiout,atn):
-    if (0 <= atn < 20):
+def play(midiout,pow):
+    if (pow < 9):
         play_arp(midiout, [60])
-    if (20 <= atn < 40):
-        play_arp(midiout, [60,63,67])
-    if (40 <= atn < 60):
-        play_arp(midiout, [60,63,67,63])
-    if (60 <= atn < 80):
-        play_arp(midiout, [60,63,67,72])
-    if (atn > 80):
-        play_arp(midiout, [60,63,67,72,67,63])
+    if (9 <= pow < 10):
+        play_arp(midiout, [63])
+    if (10 <= pow < 11):
+        play_arp(midiout, [67])
+    if (11 <= pow):
+        play_arp(midiout, [72])
+    if (pow > 11):
+        play_arp(midiout, [60,72])
 
-def play_med(midiout,med):
-    if (0 <= med < 20):
-        play_chord(midiout, [60])
-    if (20 <= med < 40):
-        play_chord(midiout, [60,63,67])
-    if (40 <= med < 60):
-        play_chord(midiout, [60,63,67,63])
-    if (60 <= med < 80):
-        play_chord(midiout, [60,63,67,72])
-    if (med > 80):
-        play_chord(midiout, [60,63,67,72,67,63])
-
-def notebuffer():
-    tempo = 120
-    velocity = 80
-    root = 60		 # tonic
 
 # main
 def main():
 
-    midiout = rtmidi.MidiOut(b'rtmidi out')
-    available_ports = midiout.ports
 
-    if available_ports:
-        midiout.open_port(0)
-    else:
-        midiout.open_virtual_port(b'rtmidi viritual midi')
-
+    midiout = rtmidi.MidiOut(b'rtmidi theta')
+    midiout.open_port(2)
 
     while(True):
       try:
           data = get_samples()
           signal = data.iloc[:,1]
-          atn = data.iloc[:,2]
-          med = data.iloc[:,3]
           powers = data.iloc[:,4:12]
 
-          print(atn.values[0], med.values[0])
-          play_atn(midiout,atn.values[0])
-          play_med(midiout,med.values[0])
+          print("%2.3f" %np.log(powers.values[0,1]))
+          play(midiout,np.log(powers.values[0,1]))
 
       except (KeyboardInterrupt):
           midiout.send_message([120]) # all sound off
+          del midiout
           sys.exit()
 
     del midiout

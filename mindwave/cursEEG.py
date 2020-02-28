@@ -1,3 +1,6 @@
+
+# -*- coding: utf-8 -*-
+
 import time, datetime, glob, os, sys, io, math
 from collections import deque
 import numpy as np
@@ -12,7 +15,7 @@ from matplotlib import style
 #matplotlib.use('dumb')
 import sparklines
 
-samples = 60
+samples = 8
 
 class colors():
       reset = '\u001b[0m'
