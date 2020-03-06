@@ -50,7 +50,7 @@ def play_arp(midiout,notes):
       time.sleep(.5/len(notes))
       midiout.send_message([0x80, note, 0])
 
-def play_del(midiout,pow):
+def play(midiout,pow):
     if (pow < 9):
         play_arp(midiout, [60])
     if (9 <= pow < 10):
@@ -72,9 +72,6 @@ def main():
         midiout.append(rtmidi.MidiOut(b'rtmidi pow'))
         midiout[i].open_port(i+1)
 
-    midiout_del = rtmidi.MidiOut(b'rtmidi')
-    midiout_del.open_port(1)
-
     while(True):
       try:
           data = get_samples()
@@ -86,16 +83,17 @@ def main():
           
           #midiout[0].send_message([0x90,60,127])
 
-          play_del(midiout_del,np.log(powers.values[0,0]))
-          play_del(midiout[2],np.log(powers.values[0,1]))
-          
+          play(midiout[0],np.log(powers.values[0,0]))
+                    
       except (KeyboardInterrupt):
-          midiout_del.send_message([120]) # all sound off
-          del midiout_del
+          for midi in midiout:
+              midi.send_message([120]) # all sound off
+              del midi
           sys.exit()
 
-    del midiout_del
-
+      for midi in midiout:
+          midi.send_message([120]) # all sound off
+          del midi
 # init
 if __name__ == '__main__':
 

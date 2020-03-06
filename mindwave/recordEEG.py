@@ -6,12 +6,6 @@
 import bluetooth, csv, datetime, os, re, sys, textwrap, time, math
 from collections import deque
 
-#import gnuplot #set term xterm
-import matplotlib.pyplot as plt, matplotlib.animation as animation
-from matplotlib import style
-import gnuplotlib as gp
-import numpy as np
-import pandas as pd
 # from collections import deque
 from sparklines import sparklines
 
@@ -27,10 +21,6 @@ from mindwavemobile.MindwaveDataPointReader import MindwaveDataPointReader
 foldername = "./EEG_data/" + time.strftime("%Y-%m-%d/")
 filename = foldername + "EEGlog_" + time.strftime("%H-%M-%S") + ".csv"
 filename_raw = foldername + "EEGlogRAW_" + time.strftime("%H-%M-%S") + ".csv"
-
-# setup matplot animation
-fig = plt.figure()
-ax1 = fig.add_subplot(1,1,1)
 
 # if the folder doesn't exist, create it
 if not os.path.exists(foldername):
@@ -53,6 +43,12 @@ class colors:
 #    signalMed = yellow
 #    signalLow = red
     reset = '\u001b[0m'
+
+
+def open_fifo():
+    with open("neurofifo", 'w') as fifo:
+        print("test")
+    #fifo_read = open("neurofifo", 'r', 0) ## '0' removes buffering
 
 def open_writer():
     # initialize writer
@@ -109,7 +105,7 @@ def sparky(data_row, width, height):
 # MAIN FUNCTION
 def main():
 
-    i = 0
+    data_row = []
 
     # continue writing as long as there exists data points to be read
     while(True):
@@ -121,24 +117,21 @@ def main():
           if (dataPoint.__class__ is RawDataPoint):
               rawData = str(dataPoint)[11:]
               #data_row=time.strftime("%H:%M:%S", time.localtime()), str(rawData)
-              #print (rawData)
-              write_raw(rawData)
+              #write_raw(rawData)
+              write_raw(str(round(time.time() - time_init, 5)) + " " + str(rawData))
 
           if (not dataPoint.__class__ is RawDataPoint):
-              if (i == 1):
-                  if (dataPoint.__class__ is PoorSignalLevelDataPoint):
-                      data_row = []
-                      data_row.append(int((time.time() - time_init)))
-                  data_cleaner = re.sub(r'[^\d\n]+', "", str(dataPoint))
-                  data_row.extend(data_cleaner.split())
+              if (dataPoint.__class__ is PoorSignalLevelDataPoint):
+                  data_row = []
+                  data_row.append(int((time.time() - time_init)))
+              data_cleaner = re.sub(r'[^\d\n]+', "", str(dataPoint))
+              data_row.extend(data_cleaner.split())
 
           # special formatting for EEGPowers dataPoint
           if (dataPoint.__class__ is EEGPowersDataPoint):
-              if (i == 1):
-                  pretty_print(data_row)
-                  write_csv(data_row)
-                  sparky(data_row, 3, 5)
-              i = 1
+              pretty_print(data_row)
+              write_csv(data_row)
+              sparky(data_row, 3, 5)
 
         except(KeyboardInterrupt):
             sys.exit()
@@ -162,6 +155,8 @@ if __name__ == '__main__':
         fields = ['Time', 'Signal', 'Attention', 'Meditation', 'Delta', 'Theta', 'Low Alpha', 'High Alpha', 'Low Beta', 'High Beta', 'Low Gamma', 'Mid Gamma']
 
         open_writer()
+        #os.mkfifo("neurofifo")
+        #fifo = open("neurofifo", 'a')
 
         # MAIN
         main()

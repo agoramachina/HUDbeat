@@ -14,8 +14,9 @@ import matplotlib.animation as ani
 from matplotlib import style
 #matplotlib.use('dumb')
 import sparklines
+from pyfiglet import Figlet
 
-samples = 8
+samples = 30
 
 class colors():
       reset = '\u001b[0m'
@@ -30,10 +31,10 @@ class colors():
 
 class datapoints():
     def __init__(self, data):
-    
+
       self.times = data.iloc[:,0]
       self.signals = data.iloc[:,1]
-      
+
       self.attns = data.iloc[:,2]
       self.meds = data.iloc[:,3]
 
@@ -47,7 +48,7 @@ class datapoints():
       self.h_betas = self.powers.values[:,5]
       self.l_gammas = self.powers.values[:,6]
       self.m_gammas = self.powers.values[:,7]
-      self.pow = [self.deltas, self.thetas, self.l_alphas, self.h_alphas, self.l_betas, self.h_betas, self.l_gammas, self.m_gammas]
+      #self.pow = [self.deltas, self.thetas, self.l_alphas, self.h_alphas, self.l_betas, self.h_betas, self.l_gammas, self.m_gammas]
 
       self.logs = np.log(self.powers.values[0,:])
       self.mins = np.log(self.powers.min().values)
@@ -57,12 +58,24 @@ class datapoints():
       self.diffs = np.log(self.powers.values[samples-2,:]) - np.log(self.powers.values[samples-1,:])
       self.stats = [self.logs, self.mins, self.maxs, self.means, self.ranges, self.diffs]
 #np.log(min).round(decimals=3))
+
+def printf(txt,win,y=0,x=0):
+    f = Figlet(font='smblock')
+    for line in f.renderText(txt).split("\n"):
+        win.addstr(y,x,line)
+        y+=1
+        
 class wincurses:
-    def __init__(self):
-        self.time = curses.newwin(1, 20, 0, 0)
-        self.time.addstr(0,0,"t: ")
-        self.signal = curses.newwin(1,20,1,0)
-        self.signal.addstr(0,0,"Signal: ")
+    def __init__(self, stdscr):
+
+        ymin,xmin = 0,0
+        ymax,xmax = stdscr.getmaxyx()
+        
+        self.time = curses.newwin(8, 30, 0, xmax-23)
+        #printf("t: ", self.time)
+            
+        self.signal = curses.newwin(8,20,0,1)
+        #self.signal.addstr(0,0,"Signal: ")
 
         self.attn = curses.newwin(14,20,4,0)
         self.attn.addstr(0,2, "Attention: ")
@@ -72,7 +85,7 @@ class wincurses:
         self.powers = curses.newwin(10,26,7,0)
         self.powers.addstr(1,2,"Delta: ")
         self.powers.addstr(2,2,"theta: ")
-        self.powers.addstr(3,2,"Low Alpha: ") 
+        self.powers.addstr(3,2,"Low Alpha: ")
         self.powers.addstr(4,2,"High Alpha: ")
         self.powers.addstr(5,2,"Low Beta: ")
         self.powers.addstr(6,2,"High Beta: ")
@@ -95,9 +108,9 @@ class wincurses:
 
         self.stats = curses.newwin(8, 69, 9, 38)
         self.stats.box()
-        
+
         self.windows = [self.time, self.signal, self.attn, self.med, self.powers, self.stats_label, self.stats]
-        
+
 # get last n samples
 def get_samples(samples):
     with open (file, 'r') as f:
@@ -109,29 +122,40 @@ def get_samples(samples):
 
 def main():
    os.system('cls' if os.name == 'nt' else 'clear')
-   
+
    stdscr = curses.initscr()
    curses.noecho()
    curses.cbreak()
    stdscr.keypad(True)
    #curses.start_color() ## removes bg opacity!
 
+   max_height,max_width = stdscr.getmaxyx()
+
    #curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
    #curses.init_pair(2, curses.COLOR_YELLOW, curses.COLOR_BLACK)
 
-   win = wincurses()
+   win = wincurses(stdscr)
    for w in win.windows:
        w.refresh()
-   
+
+   stdscr.clear()
    while (True):
      try:
+
+        #for w in win.windows:
+        #    w.clear()
+            
         data = datapoints(get_samples(samples))
-                
-        win.time.addstr(0,4, str(time.strftime('%H:%M:%S', time.gmtime(data.times[samples-1]))))
-        win.signal.addstr(0,8, str(data.signals[samples-1]) + "\t")
-        
+
+         
+        printf(str(time.strftime('%H:%M:%S', time.gmtime(data.times[samples-1]))), win.time)
+        printf(str(data.signals[samples-1]), win.signal)
+
+        #win.time.addstr(0,4, str(time.strftime('%H:%M:%S', time.gmtime(data.times[samples-1]))))
+        #win.signal.addstr(0,8, str(data.signals[samples-1]) + "\t")
+
         win.attn.addstr(0,14, str(data.attns[samples-1]) + "\t")
-        
+
         win.med.addstr(0,14,  str(data.meds[samples-1]) + "\t")
 
         #line=0
@@ -139,7 +163,7 @@ def main():
         #    for pow in pows:
         #        win.powers.addstr(line,12, str(pow) + "\t")
         #    line = line+1
-                
+
         win.powers.addstr(1,16,str(data.deltas[samples-1]) + "\t")
         win.powers.addstr(2,16,str(data.thetas[samples-1]) + "\t")
         win.powers.addstr(3,16,str(data.l_alphas[samples-1]) + "\t")
@@ -159,7 +183,7 @@ def main():
 
 #        s = ""
 #        for log in data.logs:
-#            s = s + str(log.round(decimals=3)) + "\t" 
+#            s = s + str(log.round(decimals=3)) + "\t"
 #        win.stats.addstr(1,6, s)
 
         for w in win.windows:
@@ -170,6 +194,10 @@ def main():
         time.sleep(1)
         #os.system('cls' if os.name == 'nt' else 'clear')
      except(KeyboardInterrupt):
+         curses.nocbreak()
+         stdscr.keypad(False)
+         curses.echo()
+         curses.endwin()
          sys.exit()
 
 if __name__ == '__main__':

@@ -32,6 +32,15 @@ def main():
    get_file()
    df = make_dataframe()
 
+   mt = midi.MidiTrack(1)
+   dt = midi.DeltaTime(mt)
+   mel = midi.MidiEvent(mt)
+   mel.type = midi.ChannelVoiceMessages.NOTE_ON
+   mel.channel = 1
+   mel.time = 60
+   mel.pitch = 60
+   mel.velocity = 120
+
    while (True):
 
       os.system('cls' if os.name == 'nt' else 'clear')
@@ -67,14 +76,13 @@ def main():
 
       c1 = chord.Chord('C#4 E4 G#4')
       notes = converter.parse("tinynotation: 3/4 g8# a4 g#8 a4")
-      c1.show('midi')
+      notes.show('midi')
 
 if __name__ == '__main__':
 
   environment.set('midiPath', '/usr/bin/timidity')
+  #environment.set('musicxml', '/usr/bin/musescore')
   main()
-#environment.set('midiPath', '/usr/bin/timidity')
-#environment.set('musicxml', '/usr/bin/musescore')
 
 #c1 = chord.Chord('C#4 E4 G#4')
 #print (c1.commonName)
