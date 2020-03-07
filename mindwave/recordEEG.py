@@ -6,13 +6,10 @@
 import bluetooth, csv, datetime, os, re, sys, textwrap, time, math
 from collections import deque
 
-# from collections import deque
 from sparklines import sparklines
 
 #Neurosky dependenies
-from mindwavemobile.MindwaveDataPoints import RawDataPoint
-from mindwavemobile.MindwaveDataPoints import EEGPowersDataPoint
-from mindwavemobile.MindwaveDataPoints import PoorSignalLevelDataPoint
+from mindwavemobile.MindwaveDataPoints import *
 from mindwavemobile.MindwaveDataPointReader import MindwaveDataPointReader
 
 # define folder and file names
@@ -54,7 +51,7 @@ def open_writer():
     # initialize writer
   with open(filename, "a") as f:
       writer = csv.writer(f)
-      writer.writerow([current_datetime])
+      #writer.writerow([current_datetime])
       writer.writerow(fields)
   with open(filename_raw, "a") as fr:
       writer = csv.writer(fr)
@@ -106,6 +103,7 @@ def sparky(data_row, width, height):
 def main():
 
     data_row = []
+    i = 0 #prevents opcode weirdness
 
     # continue writing as long as there exists data points to be read
     while(True):
@@ -118,20 +116,23 @@ def main():
               rawData = str(dataPoint)[11:]
               #data_row=time.strftime("%H:%M:%S", time.localtime()), str(rawData)
               #write_raw(rawData)
-              write_raw(str(round(time.time() - time_init, 5)) + " " + str(rawData))
+              write_raw(str(round(time.time() - time_init, 5)) + "\t" + str(rawData))
 
           if (not dataPoint.__class__ is RawDataPoint):
-              if (dataPoint.__class__ is PoorSignalLevelDataPoint):
+              if (i==1):
+                if (dataPoint.__class__ is PoorSignalLevelDataPoint):
                   data_row = []
                   data_row.append(int((time.time() - time_init)))
-              data_cleaner = re.sub(r'[^\d\n]+', "", str(dataPoint))
-              data_row.extend(data_cleaner.split())
+                data_cleaner = re.sub(r'[^\d\n]+', "", str(dataPoint))
+                data_row.extend(data_cleaner.split())
 
           # special formatting for EEGPowers dataPoint
           if (dataPoint.__class__ is EEGPowersDataPoint):
-              pretty_print(data_row)
-              write_csv(data_row)
-              sparky(data_row, 3, 5)
+              if (i==1):
+                pretty_print(data_row)
+                write_csv(data_row)
+                sparky(data_row, 3, 5)
+              i=1
 
         except(KeyboardInterrupt):
             sys.exit()
@@ -141,6 +142,7 @@ def main():
 # initialize mindwave reader
 if __name__ == '__main__':
 
+  try:
     # initialize Mindwave
     print("Searching for Mindwave Mobile...")
     mindwaveDataPointReader = MindwaveDataPointReader()
@@ -166,3 +168,5 @@ if __name__ == '__main__':
         print(textwrap.dedent("""\
             Exiting because the program could not connect
             to the Mindwave Mobile device.""").replace("\n", " "))
+  except(KeyboardInterrupt):
+      print("\nExiting program.")

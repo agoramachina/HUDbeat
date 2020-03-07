@@ -10,36 +10,11 @@ dir = max([f.path for f in os.scandir('/home/agoramachina/HUDbeat/mindwave/EEG_d
 file = max(glob.glob(os.path.join(dir, 'EEGlog_*.csv')),key=os.path.getctime)
 
 # get last n samples
-def get_samples(samples=1):
+def get_samples(samples=30):
     with open (file, 'r') as f:
         q = deque(f,samples+1)
         dfq = pd.read_csv(io.StringIO('\n'.join(q)))
-        dfq.columns = df.columns
-        dfv = dfq.values
         return dfq
-
-class MidiOutWrapper:
-    def __init__(self, midi, ch=1):
-        self.channel = ch
-        self._midi = midi
-
-    def channel_message(self, command, *data, ch=None):
-        """Send a MIDI channel mode message."""
-        command = (command & 0xf0) | ((ch if ch else self.channel) - 1 & 0xf)
-        msg = [command] + [value & 0x7f for value in data]
-        self._midi.send_message(msg)
-
-    def note_off(self, note, velocity=0, ch=None):
-      """Send a 'Note Off' message."""
-      self.channel_message(NOTE_OFF, note, velocity, ch=ch)
-
-    def note_on(self, note, velocity=127, ch=None):
-      """Send a 'Note On' message."""
-      self.channel_message(NOTE_ON, note, velocity, ch=ch)
-
-    def program_change(self, program, ch=None):
-      """Send a 'Program Change' message."""
-      self.channel_message(PROGRAM_CHANGE, program, ch=ch)
 
 # play notebuffer
 def play_arp(midiout,notes):
@@ -74,12 +49,25 @@ def main():
 
     while(True):
       try:
-          data = get_samples()
+          samples = 30
+          data = get_samples(samples)
+          rows, cols = data.shape
+          
+                   
           signal = data.iloc[:,1]
           powers = data.iloc[:,4:12]
 
-          print(np.log(powers.values[0]))
+          mins = np.log(powers.min().values)
+          maxs = np.log(powers.max().values)
+          means = np.log(powers.mean().values)
+          ranges = maxs - mins
+          difs = np.log(powers.iloc[[0,-1]].values) - np.log(powers.iloc[[0,-2]].values)
+                    
+          #print(np.log(powers.values[0]).round(decimals=3))
           #print("%2.3f" %np.log(powers.values[0,0]))
+          for pow in powers.values[0]:
+              print("%2.3f" %np.log(pow), end='\t')
+          print()
           
           #midiout[0].send_message([0x90,60,127])
 
@@ -89,6 +77,7 @@ def main():
           for midi in midiout:
               midi.send_message([120]) # all sound off
               del midi
+          print("\n\nGoodbye!")
           sys.exit()
 
       for midi in midiout:
@@ -99,8 +88,8 @@ if __name__ == '__main__':
 
     os.system('cls' if os.name == 'nt' else 'clear')
 
-    df = pd.read_csv(file,header=1)
-    header = list(df)
+    #df = pd.read_csv(file,header=1)
+    #header = list(df)
 
     main()
 
