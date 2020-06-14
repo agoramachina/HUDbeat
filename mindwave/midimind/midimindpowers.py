@@ -14,6 +14,8 @@ def get_samples(samples=30):
     with open (file, 'r') as f:
         q = deque(f,samples+1)
         dfq = pd.read_csv(io.StringIO('\n'.join(q)))
+        #dfq.columns = df.columns
+        dfq.columns = ['time', 'signal', 'atn', 'med', 'delta', 'theta', 'lo alpha', 'hi alpha', 'lo beta', 'hi beta', 'lo gamma', 'mid gamma']
         return dfq
 
 class DataPoints():
@@ -45,6 +47,8 @@ class PowerStats():
         self.means = np.log(powers.mean().values)
         self.ranges = maxs - mins
         self.difs = np.log(powers.iloc[[0,-1]].values) - np.log(powers.iloc[[0,-2]].values)
+        self.norm_mean=(powers-powers.mean())/powers.std()
+        self.norm_minmax=(powers-powers.min())/(powers.max()-powers.min())
 
 # scale power ranges
 def rerange(powers):
@@ -53,6 +57,7 @@ def rerange(powers):
     ranges = maxs - mins
 
     #reranges =
+    
 
 # play notebuffer
 def play_arp(midiout,notes):
@@ -79,6 +84,11 @@ def play(midiout,pow):
     if (pow > 11):
         play_arp(midiout, [60,72])
 
+def printpows(powers):
+    for pow in powers.values[0]:
+        print("%2.3f" %pow, end='\t')  
+    print()
+
 
 # main
 def main():
@@ -99,6 +109,12 @@ def main():
           signal = data.iloc[:,1]
           powers = data.iloc[:,4:12]
 
+          norm_mean=(np.log(powers)-np.log(powers).mean()) / np.log(powers).std()
+          norm_minmax=(np.log(powers)-np.log(powers).min()) / (np.log(powers).max()-np.log(powers).min())
+          
+          #print(norm_mean)
+          #print(norm_minmax)
+
           #mins = np.log(powers.min().values)
           #maxs = np.log(powers.max().values)
           #means = np.log(powers.mean().values)
@@ -107,10 +123,12 @@ def main():
 
           #print(np.log(powers.values[0]).round(decimals=3))
           #print("%2.3f" %np.log(powers.values[0,0]))
-          for pow in powers.values[0]:
-              print("%2.3f" %np.log(pow), end='\t')
+          
+          printpows(np.log(powers))
+          printpows(norm_mean)
+          printpows(norm_minmax)
           print()
-
+          
           #midiout[0].send_message([0x90,60,127])
 
           play(midiout[0],np.log(powers.values[0,0]))

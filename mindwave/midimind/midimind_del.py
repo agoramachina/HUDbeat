@@ -51,15 +51,15 @@ def play_arp(midiout,notes):
       midiout.send_message([0x80, note, 0])
 
 def play(midiout,pow):
-    if (pow < 9):
+    if (pow < 10):
         play_arp(midiout, [60])
-    if (9 <= pow < 10):
+    if (10 <= pow < 10):
         play_arp(midiout, [63])
-    if (10 <= pow < 11):
+    if (11 <= pow < 11):
         play_arp(midiout, [67])
-    if (11 <= pow):
+    if (12 <= pow):
         play_arp(midiout, [72])
-    if (pow > 11):
+    if (pow > 13):
         play_arp(midiout, [60,72])
 
 

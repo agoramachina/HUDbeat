@@ -11,7 +11,7 @@ while true; do
 	FOLDER=$(ls -td ~/HUDbeat/mindwave/EEG_data/*/ | head -1)
 	FILE=$(ls -t $FOLDER/EEGlogRAW_* | head -1)
 	#tail  -n1 $FILE | cut -d' ' -f2 | toilet -f smblock
-	tail -n1 $FILE | cut -d' ' -f2
+	tail -n1 $FILE | cut -d'	' -f2
 #sleep 1
 #clear
 done
