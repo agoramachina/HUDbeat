@@ -39,7 +39,6 @@ class Datapoints():
       self.meds = data.iloc[:,3]
 
       self.powers = data.iloc[:,4:12]
-
       self.deltas = self.powers.values[:,0]
       self.thetas = self.powers.values[:,1]
       self.l_alphas = self.powers.values[:,2]
@@ -48,7 +47,7 @@ class Datapoints():
       self.h_betas = self.powers.values[:,5]
       self.l_gammas = self.powers.values[:,6]
       self.m_gammas = self.powers.values[:,7]
-      #self.pow = [self.deltas, self.thetas, self.l_alphas, self.h_alphas, self.l_betas, self.h_betas, self.l_gammas, self.m_gammas]
+      self.pows = [self.deltas, self.thetas, self.l_alphas, self.h_alphas, self.l_betas, self.h_betas, self.l_gammas, self.m_gammas]
 
       self.logs = np.log(self.powers.values[0,:])
       self.mins = np.log(self.powers.min().values)
@@ -57,6 +56,13 @@ class Datapoints():
       self.ranges = self.maxs - self.mins
       self.diffs = np.log(self.powers.values[samples-2,:]) - np.log(self.powers.values[samples-1,:])
       self.stats = [self.logs, self.mins, self.maxs, self.means, self.ranges, self.diffs]
+
+      powers = data.iloc[:,4:12]
+      self.pp = self.Powers(powers)
+
+    class Powers():
+      def __init__(self,powers):
+        pass
 
 
 #np.log(min).round(decimals=3))
@@ -68,17 +74,14 @@ def printf(txt,win,y=0,x=0):
         win.clrtobot()
         y+=1
 
-class Wincurses:
+class wincurses:
     def __init__(self, stdscr):
 
         ymin,xmin = 0,0
         ymax,xmax = stdscr.getmaxyx()
 
         self.time = curses.newwin(5, 30, 0, xmax-23)
-        #printf("t: ", self.time)
-
-        self.signal = curses.newwin(5,20,0,1)
-        #self.signal.addstr(0,0,"Signal: ")
+        self.signal = curses.newwin(5,xmax-24,0,1)
 
         self.attn = curses.newwin(14,20,5,0)
         self.attn.addstr(0,2, "Attention: ")
@@ -86,28 +89,13 @@ class Wincurses:
         self.med.addstr(0,2, "Meditation: ")
 
         self.powers = curses.newwin(10,26,7,0)
-        self.powers.addstr(1,2,"Delta: ")
-        self.powers.addstr(2,2,"theta: ")
-        self.powers.addstr(3,2,"Low Alpha: ")
-        self.powers.addstr(4,2,"High Alpha: ")
-        self.powers.addstr(5,2,"Low Beta: ")
-        self.powers.addstr(6,2,"High Beta: ")
-        self.powers.addstr(7,2,"Low Gamma: ")
-        self.powers.addstr(8,2,"Mid Gamma: ")
+        self.powers.addstr(1,1," Delta: \n  theta: \n  Low Alpha: \n  High Alpha: \n  Low Beta: \n  High Beta: \n  Low Gamma: \n  Mid Gamma: \n ")
         self.powers.box()
 
         self.stats_label = curses.newwin(11, 76, 7, 32)
         self.stats_label.addstr(0,6, "┌───────────────────────────────────────────────────────────────────┐")
         self.stats_label.addstr(1,6, "│   delta   theta   alpha   Alpha    beta    Beta   gamma   Gamma   │")
-        self.stats_label.addstr(2,0, "┌─────")
-        self.stats_label.addstr(3,0, "│ log ")
-        self.stats_label.addstr(4,0, "│ min ")
-        self.stats_label.addstr(5,0, "│ max ")
-        self.stats_label.addstr(6,0, "│ avg ")
-        self.stats_label.addstr(7,0, "│ rng ")
-        self.stats_label.addstr(8,0, "│ dif ")
-        self.stats_label.addstr(9,0, "└─────")
-        #self.stats_label.box()
+        self.stats_label.addstr(2,0, "┌─────\n│ log \n│ min \n│ max \n│ avg \n│ rng \n│ dif \n└─────  ")
 
         self.stats = curses.newwin(8, 69, 9, 38)
         self.stats.box()
@@ -123,59 +111,31 @@ def get_samples(samples):
         dfv = dfq.values
         return dfq
 
-def main():
-   os.system('cls' if os.name == 'nt' else 'clear')
-
-   stdscr = curses.initscr()
-   curses.noecho()
-   curses.cbreak()
-   stdscr.keypad(True)
-   #curses.start_color() ## removes bg opacity!
+def main(stdscr):
 
    max_height,max_width = stdscr.getmaxyx()
 
-   #curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
-   #curses.init_pair(2, curses.COLOR_YELLOW, curses.COLOR_BLACK)
 
-   win = Wincurses(stdscr)
-   for w in win.windows:
-       w.refresh()
-
-   stdscr.clear()
    while (True):
      try:
-
-        #for w in win.windows:
-        #    w.clear()
-
+        win = wincurses(stdscr)
         data = Datapoints(get_samples(samples))
 
-
+        # Print Time & Signal
         printf(str(time.strftime('%H:%M:%S', time.gmtime(data.times[samples-1]))), win.time)
         printf(str(data.signals[samples-1]), win.signal)
 
-        #win.time.addstr(0,4, str(time.strftime('%H:%M:%S', time.gmtime(data.times[samples-1]))))
-        #win.signal.addstr(0,8, str(data.signals[samples-1]) + "\t")
-
+        # Print Attn/Med
         win.attn.addstr(0,14, str(data.attns[samples-1]) + "\t")
-
         win.med.addstr(0,14,  str(data.meds[samples-1]) + "\t")
 
-        #line=0
-        #for pows in data.powers[samples-1]:
-        #    for pow in pows:
-        #        win.powers.addstr(line,12, str(pow) + "\t")
-        #    line = line+1
+        # Print Powers
+        line = 1
+        for p in data.pows:
+          win.powers.addstr(line,16,str(p[samples-1]) + "\t")
+          line = line+1
 
-        win.powers.addstr(1,16,str(data.deltas[samples-1]) + "\t")
-        win.powers.addstr(2,16,str(data.thetas[samples-1]) + "\t")
-        win.powers.addstr(3,16,str(data.l_alphas[samples-1]) + "\t")
-        win.powers.addstr(4,16,str(data.h_alphas[samples-1]) + "\t")
-        win.powers.addstr(5,16,str(data.l_betas[samples-1]) + "\t")
-        win.powers.addstr(6,16,str(data.h_betas[samples-1]) + "\t")
-        win.powers.addstr(7,16,str(data.l_gammas[samples-1]) + "\t")
-        win.powers.addstr(8,16,str(data.m_gammas[samples-1]) + "\t")
-
+        # Print Stats
         line = 1
         for stats in data.stats:
             s = " "
@@ -184,18 +144,16 @@ def main():
                 win.stats.addstr(line,2,s)
             line = line+1
 
-#        s = ""
-#        for log in data.logs:
-#            s = s + str(log.round(decimals=3)) + "\t"
-#        win.stats.addstr(1,6, s)
-
+        # Refresh all windows
         for w in win.windows:
             w.refresh()
 
-     except ValueError:
-        #print("Please wait for data population...")
+     # Error Handling (update this later to allow for lists < sample size)
+     except(ValueError, IndexError):
         time.sleep(1)
         #os.system('cls' if os.name == 'nt' else 'clear')
+
+     # Exit Program
      except(KeyboardInterrupt):
          curses.nocbreak()
          stdscr.keypad(False)
@@ -203,8 +161,14 @@ def main():
          curses.endwin()
          sys.exit()
 
+
+
 if __name__ == '__main__':
-  # Find most recent folder and file
+
+  # OS friendly formatting
+  os.system('cls' if os.name == 'nt' else 'clear')
+
+  # find most recent folder and file
   dir = max([f.path for f in os.scandir('./EEG_data/') if f.is_dir()])
   file = max(glob.glob(os.path.join(dir, 'EEGlog_*.csv')),key=os.path.getctime)
 
@@ -212,4 +176,11 @@ if __name__ == '__main__':
   df = pd.read_csv(file,header=1)
   header = list(df)
 
-  main()
+  # initialize curses with wrapper
+  stdscr = curses.initscr()
+  curses.noecho()
+  curses.cbreak()
+  stdscr.keypad(True)
+
+  # MAIN
+  wrapper(main(stdscr))
