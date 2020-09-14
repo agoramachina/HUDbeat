@@ -18,7 +18,7 @@ from pyfiglet import Figlet
 
 samples = 30
 
-class colors():
+class Colors():
       reset = '\u001b[0m'
       delta = '\u001b[31m'
       theta = '\u001b[33m'
@@ -29,7 +29,7 @@ class colors():
       lowGamma = '\u001b[35m'
       midGamma = '\u001b[35;1m'
 
-class datapoints():
+class Datapoints():
     def __init__(self, data):
 
       self.times = data.iloc[:,0]
@@ -57,29 +57,32 @@ class datapoints():
       self.ranges = self.maxs - self.mins
       self.diffs = np.log(self.powers.values[samples-2,:]) - np.log(self.powers.values[samples-1,:])
       self.stats = [self.logs, self.mins, self.maxs, self.means, self.ranges, self.diffs]
+
+
 #np.log(min).round(decimals=3))
 
 def printf(txt,win,y=0,x=0):
     f = Figlet(font='smblock')
     for line in f.renderText(txt).split("\n"):
         win.addstr(y,x,line)
+        win.clrtobot()
         y+=1
-        
-class wincurses:
+
+class Wincurses:
     def __init__(self, stdscr):
 
         ymin,xmin = 0,0
         ymax,xmax = stdscr.getmaxyx()
-        
-        self.time = curses.newwin(8, 30, 0, xmax-23)
+
+        self.time = curses.newwin(5, 30, 0, xmax-23)
         #printf("t: ", self.time)
-            
-        self.signal = curses.newwin(8,20,0,1)
+
+        self.signal = curses.newwin(5,20,0,1)
         #self.signal.addstr(0,0,"Signal: ")
 
-        self.attn = curses.newwin(14,20,4,0)
+        self.attn = curses.newwin(14,20,5,0)
         self.attn.addstr(0,2, "Attention: ")
-        self.med = curses.newwin(14,20,5,0)
+        self.med = curses.newwin(14,20,6,0)
         self.med.addstr(0,2, "Meditation: ")
 
         self.powers = curses.newwin(10,26,7,0)
@@ -134,7 +137,7 @@ def main():
    #curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
    #curses.init_pair(2, curses.COLOR_YELLOW, curses.COLOR_BLACK)
 
-   win = wincurses(stdscr)
+   win = Wincurses(stdscr)
    for w in win.windows:
        w.refresh()
 
@@ -144,10 +147,10 @@ def main():
 
         #for w in win.windows:
         #    w.clear()
-            
-        data = datapoints(get_samples(samples))
 
-         
+        data = Datapoints(get_samples(samples))
+
+
         printf(str(time.strftime('%H:%M:%S', time.gmtime(data.times[samples-1]))), win.time)
         printf(str(data.signals[samples-1]), win.signal)
 
