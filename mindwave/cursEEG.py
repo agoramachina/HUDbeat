@@ -38,7 +38,9 @@ class Datapoints():
       self.attns = data.iloc[:,2]
       self.meds = data.iloc[:,3]
 
+      powers = data.iloc[:,4:12]
       self.powers = data.iloc[:,4:12]
+
       self.deltas = self.powers.values[:,0]
       self.thetas = self.powers.values[:,1]
       self.l_alphas = self.powers.values[:,2]
@@ -57,12 +59,27 @@ class Datapoints():
       self.diffs = np.log(self.powers.values[samples-2,:]) - np.log(self.powers.values[samples-1,:])
       self.stats = [self.logs, self.mins, self.maxs, self.means, self.ranges, self.diffs]
 
-      powers = data.iloc[:,4:12]
       self.pp = self.Powers(powers)
 
     class Powers():
       def __init__(self,powers):
-        pass
+        self.deltas = powers.values[:,0]
+        self.thetas = powers.values[:,1]
+        self.l_alphas = powers.values[:,2]
+        self.h_alphas = powers.values[:,3]
+        self.l_betas = powers.values[:,4]
+        self.h_betas = powers.values[:,5]
+        self.l_gammas = powers.values[:,6]
+        self.m_gammas = powers.values[:,7]
+
+    class Stats():
+      def __init__(self,powers):
+        self.logs = np.log(powers.values[0,:])
+        self.mins = np.log(powers.min().values)
+        self.maxs = np.log(powers.max().values)
+        self.means = np.log(powers.mean().values)
+        self.ranges = self.maxs - self.mins
+        self.diffs = np.log(powers.values[samples-2,:]) - np.log(powers.values[samples-1,:])
 
 
 #np.log(min).round(decimals=3))
