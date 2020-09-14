@@ -100,6 +100,7 @@ class wincurses:
 
         self.windows = [self.time, self.signal, self.attn, self.med, self.powers, self.stats_label, self.stats]
 
+
 # get last n samples
 def get_samples(samples):
     with open (file, 'r') as f:
@@ -145,7 +146,8 @@ def main(stdscr):
 
         # Refresh all windows
         for w in win.windows:
-            w.refresh()
+            w.noutrefresh()
+        curses.doupdate()
 
      # Error Handling (update this later to allow for lists < sample size)
      except(ValueError, IndexError):
@@ -181,6 +183,7 @@ if __name__ == '__main__':
   stdscr = curses.initscr()
   curses.noecho()
   curses.cbreak()
+  curses.curs_set(0)
   stdscr.keypad(True)
 
   # MAIN
