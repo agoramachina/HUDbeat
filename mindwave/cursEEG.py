@@ -59,7 +59,9 @@ class Datapoints():
       self.diffs = np.log(self.powers.values[samples-2,:]) - np.log(self.powers.values[samples-1,:])
       self.stats = [self.logs, self.mins, self.maxs, self.means, self.ranges, self.diffs]
 
-      self.pp = self.Powers(powers)
+      stats = self.Stats(powers)
+      self.stats = [stats.logs, stats.mins, stats.maxs, stats.means, stats.ranges, stats.diffs]
+
 
     class Powers():
       def __init__(self,powers):
@@ -135,6 +137,7 @@ def main(stdscr):
 
    while (True):
      try:
+
         win = wincurses(stdscr)
         data = Datapoints(get_samples(samples))
 
@@ -167,6 +170,8 @@ def main(stdscr):
 
      # Error Handling (update this later to allow for lists < sample size)
      except(ValueError, IndexError):
+        stdscr.addstr("wait.")
+        stdscr.refresh()
         time.sleep(1)
         #os.system('cls' if os.name == 'nt' else 'clear')
 
