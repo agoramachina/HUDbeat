@@ -38,30 +38,11 @@ class Datapoints():
       self.attns = data.iloc[:,2]
       self.meds = data.iloc[:,3]
 
-      powers = data.iloc[:,4:12]
-      self.powers = data.iloc[:,4:12]
+      pows = self.Powers(data.iloc[:,4:12])
+      self.powers = [pows.deltas, pows.thetas, pows.l_alphas, pows.h_alphas, pows.l_betas, pows.h_betas, pows.l_gammas, pows.m_gammas]
 
-      self.deltas = self.powers.values[:,0]
-      self.thetas = self.powers.values[:,1]
-      self.l_alphas = self.powers.values[:,2]
-      self.h_alphas = self.powers.values[:,3]
-      self.l_betas = self.powers.values[:,4]
-      self.h_betas = self.powers.values[:,5]
-      self.l_gammas = self.powers.values[:,6]
-      self.m_gammas = self.powers.values[:,7]
-      self.pows = [self.deltas, self.thetas, self.l_alphas, self.h_alphas, self.l_betas, self.h_betas, self.l_gammas, self.m_gammas]
-
-      self.logs = np.log(self.powers.values[0,:])
-      self.mins = np.log(self.powers.min().values)
-      self.maxs = np.log(self.powers.max().values)
-      self.means = np.log(self.powers.mean().values)
-      self.ranges = self.maxs - self.mins
-      self.diffs = np.log(self.powers.values[samples-2,:]) - np.log(self.powers.values[samples-1,:])
-      self.stats = [self.logs, self.mins, self.maxs, self.means, self.ranges, self.diffs]
-
-      stats = self.Stats(powers)
+      stats = self.Stats(data.iloc[:,4:12])
       self.stats = [stats.logs, stats.mins, stats.maxs, stats.means, stats.ranges, stats.diffs]
-
 
     class Powers():
       def __init__(self,powers):
@@ -83,8 +64,6 @@ class Datapoints():
         self.ranges = self.maxs - self.mins
         self.diffs = np.log(powers.values[samples-2,:]) - np.log(powers.values[samples-1,:])
 
-
-#np.log(min).round(decimals=3))
 
 def printf(txt,win,y=0,x=0):
     f = Figlet(font='smblock')
@@ -151,7 +130,7 @@ def main(stdscr):
 
         # Print Powers
         line = 1
-        for p in data.pows:
+        for p in data.powers:
           win.powers.addstr(line,16,str(p[samples-1]) + "\t")
           line = line+1
 
