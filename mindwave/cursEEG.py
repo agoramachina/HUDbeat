@@ -113,11 +113,11 @@ def get_samples(samples):
 def main(stdscr):
 
    max_height,max_width = stdscr.getmaxyx()
-
-
+   
    while (True):
      try:
 
+        stdscr.clear()
         win = wincurses(stdscr)
         data = Datapoints(get_samples(samples))
 
@@ -144,7 +144,7 @@ def main(stdscr):
                 win.stats.addstr(line,2,s)
             line = line+1
 
-        # Refresh all windows
+        # Refresh all windows (use noutrefresh and doupdate to prevent flickering)
         for w in win.windows:
             w.noutrefresh()
         curses.doupdate()
@@ -154,8 +154,7 @@ def main(stdscr):
         stdscr.addstr("wait.")
         stdscr.refresh()
         time.sleep(1)
-        #os.system('cls' if os.name == 'nt' else 'clear')
-
+  
      # Exit Program
      except(KeyboardInterrupt):
          curses.nocbreak()
