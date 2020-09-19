@@ -7,12 +7,7 @@ import numpy as np
 import pandas as pd
 import curses
 from curses import wrapper
-import gnuplotlib
-import matplotlib
-import matplotlib.pyplot as plt
-import matplotlib.animation as ani
-from matplotlib import style
-#matplotlib.use('dumb')
+from blessed import Terminal
 import sparklines
 from pyfiglet import Figlet
 
@@ -153,7 +148,7 @@ def main(stdscr):
         stdscr.addstr("wait.")
         stdscr.refresh()
         time.sleep(1)
-
+  
      # Exit Program
      except(KeyboardInterrupt):
          curses.nocbreak()
