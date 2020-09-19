@@ -1,17 +1,27 @@
-
-# -*- coding: utf-8 -*-
-
 import time, datetime, glob, os, sys, io, math
 from collections import deque
 import numpy as np
 import pandas as pd
-import curses
-from curses import wrapper
 from blessed import Terminal
 import sparklines
 from pyfiglet import Figlet
 
 samples = 30
+
+# OS friendly formatting
+os.system('cls' if os.name == 'nt' else 'clear')
+
+# find most recent folder and file
+dir = max([f.path for f in os.scandir('./EEG_data/') if f.is_dir()])
+file = max(glob.glob(os.path.join(dir, 'EEGlog_*.csv')),key=os.path.getctime)
+
+# get initial data frame
+df = pd.read_csv(file,header=1)
+
+# initialize blessed terminal
+term = Terminal()
+
+
 
 class Colors():
       reset = '\u001b[0m'
@@ -60,13 +70,12 @@ class Datapoints():
         self.diffs = np.log(powers.values[samples-2,:]) - np.log(powers.values[samples-1,:])
 
 
-def printf(txt,win,y=0,x=0):
+def printf(x, y, txt):
     f = Figlet(font='smblock')
+    term.location(x,y)
     for line in f.renderText(txt).split("\n"):
-        win.addstr(y,x,line)
-        win.clrtobot()
-        y+=1
-
+        print(term.move_x(x) + line)
+        
 class wincurses:
     def __init__(self, stdscr):
 
@@ -100,18 +109,14 @@ class wincurses:
 def get_samples(samples):
     with open (file, 'r') as f:
         q = deque(f,samples+1)
-        dfq = pd.read_csv(io.StringIO('\n'.join(q)))
-        dfq.columns = df.columns
-        dfv = dfq.values
-        return dfq
+        data = pd.read_csv(io.StringIO('\n'.join(q)))
+        return data
 
-def main(stdscr):
-
-   max_height,max_width = stdscr.getmaxyx()
+def main():
    
    while (True):
      try:
-
+        '''
         win = wincurses(stdscr)
         data = Datapoints(get_samples(samples))
 
@@ -142,42 +147,28 @@ def main(stdscr):
         for w in win.windows:
             w.noutrefresh()
         curses.doupdate()
+        '''
+
+        data = Datapoints(get_samples(samples))
+        
+        print(term.home)
+        # Print Time & Signal       
+        printf(0,0, str(time.strftime('%H:%M:%S', time.gmtime(data.times[samples-1]))))
+        printf(term.width-10,0, str(data.signals[samples-1]))
+
+       
 
      # Error Handling (update this later to allow for lists < sample size)
      except(ValueError, IndexError):
-        stdscr.addstr("wait.")
-        stdscr.refresh()
+        print(term.home + term.clear + "wait.")
         time.sleep(1)
-  
+        print(term.home + "wait..")
+        time.sleep(1)
+        print(term.home + "wait...")
+        time.sleep(1)
      # Exit Program
      except(KeyboardInterrupt):
-         curses.nocbreak()
-         stdscr.keypad(False)
-         curses.echo()
-         curses.endwin()
          sys.exit()
 
+main()
 
-
-if __name__ == '__main__':
-
-  # OS friendly formatting
-  os.system('cls' if os.name == 'nt' else 'clear')
-
-  # find most recent folder and file
-  dir = max([f.path for f in os.scandir('./EEG_data/') if f.is_dir()])
-  file = max(glob.glob(os.path.join(dir, 'EEGlog_*.csv')),key=os.path.getctime)
-
-  # get initial data frame
-  df = pd.read_csv(file,header=1)
-  header = list(df)
-
-  # initialize curses with wrapper
-  stdscr = curses.initscr()
-  curses.noecho()
-  curses.cbreak()
-  curses.curs_set(0)
-  stdscr.keypad(True)
-
-  # MAIN
-  wrapper(main(stdscr))
