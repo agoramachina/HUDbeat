@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as ani
 from matplotlib import style
 #matplotlib.use('dumb')
-import sparklines
+from sparklines import sparklines
 from pyfiglet import Figlet
 
 samples = 30
@@ -72,6 +72,27 @@ def printf(txt,win,y=0,x=0):
         win.clrtobot()
         y+=1
 
+def powerbars(data, win, width, height):
+  header = ['δ', 'θ', 'α', 'Α', 'β', 'Β', 'γ', 'Γ']
+  data = np.array(data)[:,samples-1].tolist()
+  #win.addstr(str(data))
+  #for line in sparklines(data, num_lines = height):
+  #  win.addstr(str(line))
+    
+  for line in sparklines(data, num_lines = height):
+    line = ''.join(Colors.delta + width * str(line[0]) +
+      Colors.theta + width * str(line[1]) +
+      Colors.lowAlpha + width * str(line[2]) +
+      Colors.highAlpha + width * str(line[3]) +
+      Colors.lowBeta + width * str(line[4]) +
+      Colors.highBeta + width * str(line[5]) +
+      Colors.lowGamma + width * str(line[6]) +
+      Colors.midGamma + width * str(line[7])+ Colors.reset)
+    #print(line)
+    #win.addstr(str(line))
+  #print(" " + "  ".join([g for g in header]))
+  
+
 class wincurses:
     def __init__(self, stdscr):
 
@@ -98,7 +119,10 @@ class wincurses:
         self.stats = curses.newwin(8, 69, 9, 38)
         self.stats.box()
 
-        self.windows = [self.time, self.signal, self.attn, self.med, self.powers, self.stats_label, self.stats]
+        self.powerbars = curses.newwin(10,26,17,0)
+        #self.powerbars.box()
+
+        self.windows = [self.time, self.signal, self.attn, self.med, self.powers, self.stats_label, self.stats, self.powerbars]
 
 
 # get last n samples
@@ -134,6 +158,9 @@ def main(stdscr):
           win.powers.addstr(line,16,str(p[samples-1]) + "\t")
           line = line+1
 
+        # Print powerbars
+        #powerbars(data.powers, win.powerbars, 3, 5)
+        
         # Print Stats
         line = 1
         for stats in data.stats:
@@ -182,6 +209,7 @@ if __name__ == '__main__':
   curses.noecho()
   curses.cbreak()
   curses.curs_set(0)
+  curses.start_color()
   stdscr.keypad(True)
 
   # MAIN
