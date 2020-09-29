@@ -209,7 +209,7 @@ if __name__ == '__main__':
   curses.noecho()
   curses.cbreak()
   curses.curs_set(0)
-  curses.start_color()
+  #curses.start_color()
   stdscr.keypad(True)
 
   # MAIN
