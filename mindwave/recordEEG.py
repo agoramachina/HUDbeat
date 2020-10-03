@@ -3,8 +3,11 @@
 # (c) 2019 agoramachina
 
 # general dependencies
-import bluetooth, csv, datetime, os, re, sys, textwrap, time, math
+import time, datetime, os, sys, io, re, glob, math, csv, textwrap, bluetooth
 from collections import deque
+
+import numpy as np
+import pandas as pd
 
 from sparklines import sparklines
 
@@ -19,14 +22,9 @@ foldername = "./EEG_data/" + time.strftime("%Y-%m-%d/")
 filename = foldername + "EEGlog_" + time.strftime("%H-%M-%S") + ".csv"
 filename_raw = foldername + "EEGlogRAW_" + time.strftime("%H-%M-%S") + ".csv"
 
-# if the folder doesn't exist, create it
-if not os.path.exists(foldername):
-    os.makedirs(foldername)
+samples = 30
 
-class colors:
-
-#    attn = '\033[95m'
-#    med =
+class Colors:
     delta = '\u001b[31m'
     theta = '\u001b[33m'
     lowAlpha = '\u001b[32m'
@@ -35,12 +33,74 @@ class colors:
     highBeta = '\u001b[36;1m'
     lowGamma = '\u001b[35m'
     midGamma = '\u001b[35;1m'
-#    rawData =
-#    signalHi = green
-#    signalMed = yellow
-#    signalLow = red
     reset = '\u001b[0m'
 
+
+class Datapoints():
+    def __init__(self, data):
+
+      self.times = data.iloc[:,0]
+
+      self.attns = data.iloc[:,2]
+      self.meds = data.iloc[:,3]
+
+      pows = self.Powers(data.iloc[:,4:12])
+      self.powers = [pows.deltas, pows.thetas, pows.l_alphas, pows.h_alphas, pows.l_betas, pows.h_betas, pows.l_gammas, pows.m_gammas]
+
+      stats = self.Stats(data.iloc[:,4:12])
+      self.stats = [stats.logs, stats.mins, stats.maxs, stats.means, stats.ranges, stats.diffs]
+
+      self.samples = get_samples(samples)
+
+    class Powers():
+      def __init__(self,powers):
+        self.deltas = powers.values[:,0]
+        self.thetas = powers.values[:,1]
+        self.l_alphas = powers.values[:,2]
+        self.h_alphas = powers.values[:,3]
+        self.l_betas = powers.values[:,4]
+        self.h_betas = powers.values[:,5]
+        self.l_gammas = powers.values[:,6]
+        self.m_gammas = powers.values[:,7]
+
+    class Stats():
+      def __init__(self,powers):
+        self.logs = np.log(powers.values[0,:])
+        self.mins = np.log(powers.min().values)
+        self.maxs = np.log(powers.max().values)
+        self.means = np.log(powers.mean().values)
+        self.ranges = self.maxs - self.mins
+        self.diffs = np.log(powers.values[samples-2,:]) - np.log(powers.values[samples-1,:])
+
+# get last n samples
+def get_samples(samples):
+
+    # find most recent folder and file
+    dir = max([f.path for f in os.scandir('./EEG_data/') if f.is_dir()])
+    file = max(glob.glob(os.path.join(dir, 'EEGlog_*.csv')),key=os.path.getctime)
+
+    df = pd.read_csv(file,header=1)
+
+    with open (file, 'r') as f:
+        q = deque(f,samples+1)
+        dfq = pd.read_csv(io.StringIO('\n'.join(q)))
+        dfq.columns = df.columns
+        return dfq
+
+# get last n samples
+def get_raw(samples=100):
+
+    # find most recent folder and file
+    dir = max([f.path for f in os.scandir('./EEG_data/') if f.is_dir()])
+    file = max(glob.glob(os.path.join(dir, 'EEGlogRAW_*.csv')),key=os.path.getctime)
+
+    df = pd.read_csv(file,header=1)
+
+    with open (file, 'r') as f:
+        q = deque(f,samples+1)
+        dfq = pd.read_csv(io.StringIO('\n'.join(q)))
+        print (dfq.values)
+        return dfq.values
 
 def open_fifo():
     with open("neurofifo", 'w') as fifo:
@@ -87,14 +147,14 @@ def pretty_print(data_row):
 def sparky(data_row, width, height):
   greek_head = ['δ', 'θ', 'α', 'Α', 'β', 'Β', 'γ', 'Γ']
   for line in sparklines(list(map(int,data_row[4:])), num_lines = height):
-    line = ''.join(colors.delta + width * str(line[0]) +
-      colors.theta + width * str(line[1]) +
-      colors.lowAlpha + width * str(line[2]) +
-      colors.highAlpha + width * str(line[3]) +
-      colors.lowBeta + width * str(line[4]) +
-      colors.highBeta + width * str(line[5]) +
-      colors.lowGamma + width * str(line[6]) +
-      colors.midGamma + width * str(line[7])+ colors.reset)
+    line = ''.join(Colors.delta + width * str(line[0]) +
+      Colors.theta + width * str(line[1]) +
+      Colors.lowAlpha + width * str(line[2]) +
+      Colors.highAlpha + width * str(line[3]) +
+      Colors.lowBeta + width * str(line[4]) +
+      Colors.highBeta + width * str(line[5]) +
+      Colors.lowGamma + width * str(line[6]) +
+      Colors.midGamma + width * str(line[7])+ Colors.reset)
     print(line)
   print(" " + "  ".join([g for g in greek_head]))
 
@@ -149,6 +209,11 @@ if __name__ == '__main__':
     mindwaveDataPointReader.start()
 
     if (mindwaveDataPointReader.isConnected()):
+
+
+        # if the folder doesn't exist, create it
+        if not os.path.exists(foldername):
+            os.makedirs(foldername)
 
         # initialize csv rows and header
         current_datetime = datetime.datetime.now().__str__()
