@@ -40,6 +40,7 @@ class Datapoints():
     def __init__(self, data):
 
       self.times = data.iloc[:,0]
+      self.signals = data.iloc[:,1]
 
       self.attns = data.iloc[:,2]
       self.meds = data.iloc[:,3]
