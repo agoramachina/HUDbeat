@@ -88,19 +88,17 @@ def get_samples(samples):
         return dfq
 
 # get last n samples
-def get_raw(samples=100):
+def get_raw(samples=120):
 
     # find most recent folder and file
     dir = max([f.path for f in os.scandir('./EEG_data/') if f.is_dir()])
     file = max(glob.glob(os.path.join(dir, 'EEGlogRAW_*.csv')),key=os.path.getctime)
 
-    df = pd.read_csv(file,header=1)
 
     with open (file, 'r') as f:
         q = deque(f,samples+1)
-        dfq = pd.read_csv(io.StringIO('\n'.join(q)))
-        print (dfq.values)
-        return dfq.values
+        dfq = pd.read_csv(io.StringIO('\n'.join(q)), delimiter='\t')
+        return (dfq.iloc[:,1].values)
 
 def open_fifo():
     with open("neurofifo", 'w') as fifo:
