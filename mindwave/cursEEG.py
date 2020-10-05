@@ -122,7 +122,7 @@ def main(stdscr):
 
      # Error Handling (update this later to allow for lists < sample size)
      except(ValueError, IndexError):
-        stdscr.addstr("wait.")
+        stdscr.addstr(" wait.")
         stdscr.refresh()
         time.sleep(1)
 
