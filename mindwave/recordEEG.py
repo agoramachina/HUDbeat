@@ -164,6 +164,9 @@ def main():
     data_row = []
     i = 0 #prevents opcode weirdness
 
+    # open pipe
+    r, w = os.pipe()
+
     # continue writing as long as there exists data points to be read
     while(True):
 
@@ -191,6 +194,10 @@ def main():
                 pretty_print(data_row)
                 write_csv(data_row)
                 sparky(data_row, 3, 5)
+                print()			#debug
+                for data in data_row:	#debug
+                  print(data, end=' ') 	#debug
+                print()			#debug
               i=1
 
         except(KeyboardInterrupt):

@@ -16,6 +16,17 @@ import recordEEG as eeg
 samples = 30
 
 
+class Colors:
+    delta     =   '\u001b[31m'
+    theta     =   '\u001b[33m'
+    lowAlpha  =   '\u001b[32m'
+    highAlpha =   '\u001b[32;1m'
+    lowBeta   =   '\u001b[36m'
+    highBeta  =   '\u001b[36;1m'
+    lowGamma  =   '\u001b[35m'
+    midGamma  =   '\u001b[35;1m'
+    reset     =   '\u001b[0m'    
+
 def printf(txt,win,y=0,x=0):
     f = Figlet(font='smblock')
     for line in f.renderText(txt).split("\n"):
@@ -104,7 +115,7 @@ def main(stdscr):
           line = line+1
 
         # Print powerbars
-        #powerbars(data.powers, win.powerbars, 3, 5)
+        powerbars(data.powers, win.powerbars, 3, 5)
 
         # Print Stats
         line = 1
