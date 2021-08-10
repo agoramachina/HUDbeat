@@ -37,6 +37,8 @@ def printf(txt,win,y=0,x=0):
 def powerbars(data, win, width, height):
   header = ['δ', 'θ', 'α', 'Α', 'β', 'Β', 'γ', 'Γ']
   data = np.array(data)[:,samples-1].tolist()
+  #print(data)
+
   #win.addstr(str(data))
   #for line in sparklines(data, num_lines = height):
   #  win.addstr(str(line))
@@ -96,8 +98,9 @@ def main(stdscr):
      try:
 
         win = wincurses(stdscr)
-        data = eeg.Datapoints(eeg.get_samples(samples))
-
+        data = eeg.Datapoints(eeg.get_samples())
+        
+	
 
 
         # Print Time & Signal
@@ -132,10 +135,10 @@ def main(stdscr):
         curses.doupdate()
 
      # Error Handling (update this later to allow for lists < sample size)
-     except(ValueError, IndexError):
-        stdscr.addstr(" wait.")
-        stdscr.refresh()
-        time.sleep(1)
+     #except(ValueError, IndexError):
+     #   stdscr.addstr(" wait.")
+     #   stdscr.refresh()
+     #   time.sleep(1)
 
      # Exit Program
      except(KeyboardInterrupt):

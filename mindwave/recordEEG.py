@@ -74,7 +74,7 @@ class Datapoints():
         self.diffs = np.log(powers.values[samples-2,:]) - np.log(powers.values[samples-1,:])
 
 # get last n samples
-def get_samples(samples):
+def get_samples(samples=30):
 
     # find most recent folder and file
     dir = max([f.path for f in os.scandir('./EEG_data/') if f.is_dir()])
