@@ -10,5 +10,5 @@ python-mindwave-mobile/
 **/neurofifo
 **/rawfifo
 __pycache__/
-EEG_data
+EEG_data/
 refs/
