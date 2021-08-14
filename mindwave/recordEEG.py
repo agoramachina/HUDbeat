@@ -50,7 +50,7 @@ class Datapoints():
       #stats = self.Stats(data.iloc[:,4:12])
       #self.stats = [stats.logs, stats.mins, stats.maxs, stats.means, stats.ranges, stats.diffs]
 
-      self.samples = get_samples(samples)
+      self.samples = get_samples()
 
     class Powers():
       def __init__(self,powers):

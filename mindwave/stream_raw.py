@@ -8,14 +8,16 @@ while True:
   data = eeg.get_raw(samples = 240)
   plx.clear_plot()
   plx.clear_terminal()
-  #print(plx.terminal_size())
-  y=(data)
 
-  ymax = 1600
+  y=(data)
+  ymax = 1800
 
   plx.ticks(0,0)
   plx.xaxes(False)
-  plx.yticks([-1600,-800,0,800,1600])
+  yticks = [-ymax, -ymax/2, 0, ymax/2, ymax]
+  ylabels = [-ymax, int(-ymax/2), "0 µV ", int(ymax/2), ymax]
+  
+  plx.yticks(yticks, ylabels)
   plx.ylim(-ymax,ymax)
   plx.plot(y)
   plx.colorless()
