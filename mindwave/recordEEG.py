@@ -19,8 +19,9 @@ from mindwavemobile.MindwaveDataPointReader import MindwaveDataPointReader
 ## default folder name is:      /home/$user/data/EEG_data/yyyy-mm-dd
 ## defualt file name is:        EEGlog_hh:mm:ss_ yyyy-mm-dd.csv
 foldername = "./EEG_data/" + time.strftime("%Y-%m-%d/")
-filename = foldername + "EEGlog_" + time.strftime("%H-%M-%S") + ".csv"
-filename_raw = foldername + "EEGlogRAW_" + time.strftime("%H-%M-%S") + ".csv"
+timestamp = time.strftime("%H-%M-%S")
+filename = foldername + "EEGlog_" + timestamp + ".csv" #time.strftime("%H-%M-%S") + ".csv"
+filename_raw = foldername + "EEGlogRAW_" + timestamp + ".csv" #+ time.strftime("%H-%M-%S") + ".csv"
 
 samples = 30
 
@@ -73,13 +74,28 @@ class Datapoints():
         self.ranges = self.maxs - self.mins
         self.diffs = np.log(powers.values[samples-2,:]) - np.log(powers.values[samples-1,:])
 
+
+# find most recent folder and file
+def get_recent(raw = False):
+    
+    dir = foldername #max([f.path for f in os.scandir('./EEG_data/') if f.is_dir()])
+
+    if (raw == True):
+      file = max(glob.glob(os.path.join(dir, 'EEGlogRAW_*.csv')),key=os.path.getctime)
+    else:
+      file = max(glob.glob(os.path.join(dir, 'EEGlog_*.csv')),key=os.path.getctime)
+    
+    return(dir, file)
+
 # get last n samples
 def get_samples(samples=30):
 
     # find most recent folder and file
-    dir = max([f.path for f in os.scandir('./EEG_data/') if f.is_dir()])
-    file = max(glob.glob(os.path.join(dir, 'EEGlog_*.csv')),key=os.path.getctime)
+    #dir = max([f.path for f in os.scandir('./EEG_data/') if f.is_dir()])
+    #file = max(glob.glob(os.path.join(dir, 'EEGlog_*.csv')),key=os.path.getctime)
 
+    # find most recent folder and file
+    [dir,file] = get_recent()
     df = pd.read_csv(file,header=1)
 
     with open (file, 'r') as f:
@@ -89,12 +105,10 @@ def get_samples(samples=30):
         return dfq
 
 # get last n samples
-def get_raw(samples=120):
+def get_raw(samples=120, dir, file):
 
     # find most recent folder and file
-    dir = max([f.path for f in os.scandir('./EEG_data/') if f.is_dir()])
-    file = max(glob.glob(os.path.join(dir, 'EEGlogRAW_*.csv')),key=os.path.getctime)
-
+    #[dir,file] = get_recent(raw=True)
 
     with open (file, 'r') as f:
         q = deque(f,samples+1)

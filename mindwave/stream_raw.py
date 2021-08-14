@@ -3,9 +3,12 @@ import numpy as np
 import plotext as plx
 import recordEEG as eeg
 
+
 while True:
 
   data = eeg.get_raw()
+  [dir,file] = get_recent(raw=True)
+  
   plx.clear_plot()
   plx.clear_terminal()
 
