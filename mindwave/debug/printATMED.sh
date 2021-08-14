@@ -12,6 +12,6 @@ FOLDER=$(ls -td ~/HUDbeat/mindwave/EEG_data/*/ | head -1)
 FILE=$(ls -t $FOLDER/EEGlog_* | head -1)
 
 # print the last line forever
-tail -n1 -f $FILE
+tail -n1 -f $FILE | cut -d, -f3,4
 done
 
