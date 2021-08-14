@@ -1,0 +1,29 @@
+{
+	/*"folders":
+	[
+		{
+			"path": "mindwave",
+		}
+	],*/
+	"folders":
+	[
+		{
+			"path": ".",
+		},
+		{
+			"path": "/home/agoramachina/.conky",
+		},
+		{
+			"path": "/home/agoramachina/.config/polybar",
+		},
+		{
+			"path": "/home/agoramachina/.config/tint2",
+		},
+		{
+			"path": "/home/agoramachina/.config/rofi",
+		},
+		{
+			"path": "/home/agoramachina/.config/dunst"
+		},
+	],
+}

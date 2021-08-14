@@ -1,0 +1,14 @@
+**/EEG_data/*
+!**/EEG_data/sample
+**/*.dat
+!**/*.dat.sample
+
+**/.sublime/
+
+python-mindwave-mobile/
+**/node-neurosky/
+**/neurofifo
+**/rawfifo
+__pycache__/
+EEG_data
+refs/

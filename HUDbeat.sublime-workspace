@@ -1,0 +1,1397 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "#!/usr/bin/env python\n# -*- coding: utf-8 -*-\n# (c) 2019 agoramachina\n\n# general dependencies\nimport time, datetime, os, sys, io, re, glob, math, csv, textwrap, bluetooth\nfrom collections import deque\n\nimport numpy as np\nimport pandas as pd\n\nfrom sparklines import sparklines\n\n#Neurosky dependenies\nfrom mindwavemobile.MindwaveDataPoints import *\nfrom mindwavemobile.MindwaveDataPointReader import MindwaveDataPointReader\n\n# define folder and file names\n## default folder name is:      /home/$user/data/EEG_data/yyyy-mm-dd\n## defualt file name is:        EEGlog_hh:mm:ss_ yyyy-mm-dd.csv\nfoldername = \"./EEG_data/\" + time.strftime(\"%Y-%m-%d/\")\nfilename = foldername + \"EEGlog_\" + time.strftime(\"%H-%M-%S\") + \".csv\"\nfilename_raw = foldername + \"EEGlogRAW_\" + time.strftime(\"%H-%M-%S\") + \".csv\"\n\nsamples = 30\n\nclass Colors:\n    delta = '\\u001b[31m'\n    theta = '\\u001b[33m'\n    lowAlpha = '\\u001b[32m'\n    highAlpha = '\\u001b[32;1m'\n    lowBeta = '\\u001b[36m'\n    highBeta = '\\u001b[36;1m'\n    lowGamma = '\\u001b[35m'\n    midGamma = '\\u001b[35;1m'\n    reset = '\\u001b[0m'\n~\n\nclass Datapoints():\n    def __init__(self, data):\n\n      self.times = data.iloc[:,0]\n      self.signals = data.iloc[:,1]\n\n      self.attns = data.iloc[:,2]\n      self.meds = data.iloc[:,3]\n\n      pows = self.Powers(data.iloc[:,4:12])\n      self.powers = [pows.deltas, pows.thetas, pows.l_alphas, pows.h_alphas, pows.l_betas, pows.h_betas, pows.l_gammas, pows.m_gammas]\n\n      stats = self.Stats(data.iloc[:,4:12])\n      self.stats = [stats.logs, stats.mins, stats.maxs, stats.means, stats.ranges, stats.diffs]\n\n      self.samples = get_samples(samples)\n\n    class Powers():\n      def __init__(self,powers):\n        self.deltas = powers.values[:,0]\n        self.thetas = powers.values[:,1]\n        self.l_alphas = powers.values[:,2]\n        self.h_alphas = powers.values[:,3]\n        self.l_betas = powers.values[:,4]\n        self.h_betas = powers.values[:,5]\n        self.l_gammas = powers.values[:,6]\n        self.m_gammas = powers.values[:,7]\n\n    class Stats():\n      def __init__(self,powers):\n        self.logs = np.log(powers.values[0,:])\n        self.mins = np.log(powers.min().values)\n        self.maxs = np.log(powers.max().values)\n        self.means = np.log(powers.mean().values)\n        self.ranges = self.maxs - self.mins\n        self.diffs = np.log(powers.values[samples-2,:]) - np.log(powers.values[samples-1,:])\n\n# get last n samples\ndef get_samples(samples=30):\n\n    # find most recent folder and file\n    dir = max([f.path for f in os.scandir('./EEG_data/') if f.is_dir()])\n    file = max(glob.glob(os.path.join(dir, 'EEGlog_*.csv')),key=os.path.getctime)\n\n    df = pd.read_csv(file,header=1)\n\n    with open (file, 'r') as f:\n        q = deque(f,samples+1)\n        dfq = pd.read_csv(io.StringIO('\\n'.join(q)))\n        dfq.columns = df.columns\n        return dfq\n\n# get last n samples\ndef get_raw(samples=120):\n\n    # find most recent folder and file\n    dir = max([f.path for f in os.scandir('./EEG_data/') if f.is_dir()])\n    file = max(glob.glob(os.path.join(dir, 'EEGlogRAW_*.csv')),key=os.path.getctime)\n\n\n    with open (file, 'r') as f:\n        q = deque(f,samples+1)\n        dfq = pd.read_csv(io.StringIO('\\n'.join(q)), delimiter='\\t')\n        return (dfq.iloc[:,1].values)\n\ndef open_fifo():\n    with open(\"neurofifo\", 'w') as fifo:\n        print(\"test\")\n    #fifo_read = open(\"neurofifo\", 'r', 0) ## '0' removes buffering\n\ndef open_writer():\n    # initialize writer\n  with open(filename, \"a\") as f:\n      writer = csv.writer(f)\n      #writer.writerow([current_datetime])\n      writer.writerow(fields)\n  with open(filename_raw, \"a\") as fr:\n      writer = csv.writer(fr)\n      writer.writerow([current_datetime])\n\ndef write_csv(data_row):\n  with open(filename, \"a\") as f:\n    writer = csv.writer(f)\n    writer.writerow(data_row)\n\ndef write_raw(data_row):\n  with open(filename_raw, \"a\") as f:\n    writer = csv.writer(f)\n    writer.writerow([data_row])\n\ndef pretty_print(data_row):\n  os.system('cls' if os.name == 'nt' else 'clear')\n  print(\"t: \" + str(datetime.timedelta(seconds=float(data_row[0])))[:])\n  print(\"Signal: \" + data_row[1] + \"\\n\")\n\n  print(\"Attention: \" + data_row[2])\n  print(\"Meditation: \" + data_row[3] + \"\\n\")\n\n  print(\"Delta: \" + data_row[4])\n  print(\"Theta: \" + data_row[5])\n  print(\"Low Alpha: \" + data_row[6])\n  print(\"High Alpha: \" + data_row[7])\n  print(\"Low Beta: \" + data_row[8])\n  print(\"High Beta: \" + data_row[9])\n  print(\"Low Gamma: \" + data_row[10])\n  print(\"Mid Gamma: \" + data_row[11] + \"\\n\")\n\ndef sparky(data_row, width, height):\n  greek_head = ['δ', 'θ', 'α', 'Α', 'β', 'Β', 'γ', 'Γ']\n  for line in sparklines(list(map(int,data_row[4:])), num_lines = height):\n    line = ''.join(Colors.delta + width * str(line[0]) +\n      Colors.theta + width * str(line[1]) +\n      Colors.lowAlpha + width * str(line[2]) +\n      Colors.highAlpha + width * str(line[3]) +\n      Colors.lowBeta + width * str(line[4]) +\n      Colors.highBeta + width * str(line[5]) +\n      Colors.lowGamma + width * str(line[6]) +\n      Colors.midGamma + width * str(line[7])+ Colors.reset)\n    print(line)\n  print(\" \" + \"  \".join([g for g in greek_head]))\n\n\n# MAIN FUNCTION\ndef main():\n\n    data_row = []\n    i = 0 #prevents opcode weirdness\n\n    # open pipe\n    r, w = os.pipe()\n\n    # continue writing as long as there exists data points to be read\n    while(True):\n\n        try:\n          # get next data point\n          dataPoint = mindwaveDataPointReader.readNextDataPoint()\n\n          if (dataPoint.__class__ is RawDataPoint):\n              rawData = str(dataPoint)[11:]\n              #data_row=time.strftime(\"%H:%M:%S\", time.localtime()), str(rawData)\n              #write_raw(rawData)\n              write_raw(str(round(time.time() - time_init, 5)) + \"\\t\" + str(rawData))\n\n          if (not dataPoint.__class__ is RawDataPoint):\n              if (i==1):\n                if (dataPoint.__class__ is PoorSignalLevelDataPoint):\n                  data_row = []\n                  data_row.append(int((time.time() - time_init)))\n                data_cleaner = re.sub(r'[^\\d\\n]+', \"\", str(dataPoint))\n                data_row.extend(data_cleaner.split())\n\n          # special formatting for EEGPowers dataPoint\n          if (dataPoint.__class__ is EEGPowersDataPoint):\n              if (i==1):\n                pretty_print(data_row)\n                write_csv(data_row)\n                sparky(data_row, 3, 5)\n                print()\t\t\t#debug\n                for data in data_row:\t#debug\n                  print(data, end=' ') \t#debug\n                print()\t\t\t#debug\n              i=1\n\n        except(KeyboardInterrupt):\n            sys.exit()\n\n\n# __MAIN__\n# initialize mindwave reader\nif __name__ == '__main__':\n\n  try:\n    # initialize Mindwave\n    print(\"Searching for Mindwave Mobile...\")\n    mindwaveDataPointReader = MindwaveDataPointReader()\n    mindwaveDataPointReader.start()\n\n    if (mindwaveDataPointReader.isConnected()):\n\n\n        # if the folder doesn't exist, create it\n        if not os.path.exists(foldername):\n            os.makedirs(foldername)\n\n        # initialize csv rows and header\n        current_datetime = datetime.datetime.now().__str__()\n        time_init = time.time()\n        data_row = []\n        fields = ['Time', 'Signal', 'Attention', 'Meditation', 'Delta', 'Theta', 'Low Alpha', 'High Alpha', 'Low Beta', 'High Beta', 'Low Gamma', 'Mid Gamma']\n\n        open_writer()\n        #os.mkfifo(\"neurofifo\")\n        #fifo = open(\"neurofifo\", 'a')\n\n        # MAIN\n        main()\n\n    # ERROR: cannot connect to Mindwave Mobile\n    else:\n        print(textwrap.dedent(\"\"\"\\\n            Exiting because the program could not connect\n            to the Mindwave Mobile device.\"\"\").replace(\"\\n\", \" \"))\n  except(KeyboardInterrupt):\n      print(\"\\nExiting program.\")\n",
+			"file": "mindwave/recordEEG.py",
+			"file_size": 7786,
+			"file_write_time": 132731004988076705,
+			"redo_stack":
+			[
+				[
+					77,
+					1,
+					"insert",
+					{
+						"characters": "K"
+					},
+					"AQAAAGIEAAAAAAAAYgQAAAAAAAABAAAASw",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABjBAAAAAAAAGMEAAAAAAAAAAAAAAAA8L8"
+				]
+			],
+			"settings":
+			{
+				"buffer_size": 7779,
+				"line_ending": "Unix"
+			},
+			"undo_stack":
+			[
+				[
+					48,
+					1,
+					"insert",
+					{
+						"characters": "s"
+					},
+					"AQAAAIIDAAAAAAAAgwMAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAACCAwAAAAAAAIIDAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					49,
+					1,
+					"left_delete",
+					null,
+					"AQAAAIIDAAAAAAAAggMAAAAAAAABAAAAcw",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAACDAwAAAAAAAIMDAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					74,
+					1,
+					"insert",
+					{
+						"characters": "~"
+					},
+					"AQAAAC0EAAAAAAAALgQAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAtBAAAAAAAAC0EAAAAAAAAAAAAAAAA8L8"
+				]
+			]
+		},
+		{
+			"file": "mindwave/printRAW.sh",
+			"settings":
+			{
+				"buffer_size": 517,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			},
+			"undo_stack":
+			[
+				[
+					18,
+					1,
+					"right_delete",
+					null,
+					"AQAAAPEAAAAAAAAA8QAAAAAAAAA7AAAACUZPTERFUj0kKGxzIC10ZCB+L0hVRGJlYXQvbWluZHdhdmUvRUVHX2RhdGEvKi8gfCBoZWFkIC0xKQo",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADxAAAAAAAAACwBAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					21,
+					1,
+					"insert",
+					{
+						"characters": "\n\n"
+					},
+					"AgAAAJ8AAAAAAAAAoAAAAAAAAAAAAAAAoAAAAAAAAAChAAAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAACfAAAAAAAAAJ8AAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					22,
+					1,
+					"paste",
+					null,
+					"AQAAAKEAAAAAAAAA3AAAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAChAAAAAAAAAKEAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					37,
+					1,
+					"right_delete",
+					null,
+					"AQAAAKEAAAAAAAAAoQAAAAAAAAABAAAACQ",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAChAAAAAAAAAKEAAAAAAAAAAAAAAAAAAAA"
+				],
+				[
+					53,
+					1,
+					"cut",
+					null,
+					"AQAAAOwAAAAAAAAA7AAAAAAAAABtAAAACSMgZ2V0IHRoZSBtb3N0IHJlY2VudGx5IG1vZGlmaWVkIGZpbGUgaW4gdGhlIEVFR19kYXRhIGRpcmVjdG9yeQoJRklMRT0kKGxzIC10ICRGT0xERVIvRUVHbG9nUkFXXyogfCBoZWFkIC0xKQ",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABZAQAAAAAAAOwAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					58,
+					1,
+					"insert",
+					{
+						"characters": "\n"
+					},
+					"AQAAANoAAAAAAAAA2wAAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADaAAAAAAAAANoAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					59,
+					1,
+					"paste",
+					null,
+					"AQAAANsAAAAAAAAASAEAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADbAAAAAAAAANsAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					64,
+					1,
+					"left_delete",
+					null,
+					"AQAAABwBAAAAAAAAHAEAAAAAAAACAAAACUY",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAeAQAAAAAAABwBAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					66,
+					1,
+					"insert",
+					{
+						"characters": "f\\"
+					},
+					"AgAAANsAAAAAAAAA3AAAAAAAAAAAAAAA3AAAAAAAAADdAAAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADbAAAAAAAAANsAAAAAAAAAAAAAAAAAAAA"
+				],
+				[
+					67,
+					1,
+					"left_delete",
+					null,
+					"AQAAANwAAAAAAAAA3AAAAAAAAAABAAAAXA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADdAAAAAAAAAN0AAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					68,
+					1,
+					"insert",
+					{
+						"characters": "\\"
+					},
+					"AQAAANwAAAAAAAAA3QAAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADcAAAAAAAAANwAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					69,
+					2,
+					"left_delete",
+					null,
+					"AgAAANwAAAAAAAAA3AAAAAAAAAABAAAAXNsAAAAAAAAA2wAAAAAAAAABAAAAZg",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADdAAAAAAAAAN0AAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					71,
+					1,
+					"insert",
+					{
+						"characters": "F"
+					},
+					"AQAAABwBAAAAAAAAHQEAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAcAQAAAAAAABwBAAAAAAAAAAAAAAAAAAA"
+				],
+				[
+					73,
+					1,
+					"right_delete",
+					null,
+					"AQAAANsAAAAAAAAA2wAAAAAAAAABAAAACQ",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADbAAAAAAAAANsAAAAAAAAAAAAAAAAAIEA"
+				],
+				[
+					74,
+					1,
+					"insert",
+					{
+						"characters": "\n"
+					},
+					"AQAAANsAAAAAAAAA3AAAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADbAAAAAAAAANsAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					83,
+					1,
+					"paste",
+					null,
+					"AQAAAKAAAAAAAAAA4AAAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAACgAAAAAAAAAKAAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					87,
+					1,
+					"insert",
+					{
+						"characters": "folder"
+					},
+					"BwAAAMEAAAAAAAAAwgAAAAAAAAAAAAAAwgAAAAAAAADCAAAAAAAAAAQAAABmaWxlwgAAAAAAAADDAAAAAAAAAAAAAADDAAAAAAAAAMQAAAAAAAAAAAAAAMQAAAAAAAAAxQAAAAAAAAAAAAAAxQAAAAAAAADGAAAAAAAAAAAAAADGAAAAAAAAAMcAAAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADFAAAAAAAAAMEAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					92,
+					1,
+					"right_delete",
+					null,
+					"AQAAAOEAAAAAAAAA4QAAAAAAAAABAAAACg",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADhAAAAAAAAAOEAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					97,
+					2,
+					"right_delete",
+					null,
+					"AgAAAJgBAAAAAAAAmAEAAAAAAAABAAAACpgBAAAAAAAAmAEAAAAAAAABAAAACg",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAACYAQAAAAAAAJgBAAAAAAAAAAAAAAAA8L8"
+				]
+			]
+		},
+		{
+			"file": "mindwave/midimind/midimind.py",
+			"settings":
+			{
+				"buffer_size": 3454,
+				"line_ending": "Unix"
+			},
+			"undo_stack":
+			[
+			]
+		},
+		{
+			"file": "mindwave/cursEEG.py",
+			"settings":
+			{
+				"buffer_size": 5025,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "#!/bin/sh\n\n #~~~~~~~~~~~~~~~~~~~~~~~~~~#\n##   ▖  ▌                   ##\n##  ▚▙▘ ▛▀▖▞▀▘▛▀▖▌  ▌▛▚▀▖   ##\n##  ▘▌▘ ▌ ▌▝▀▖▙▄▘▐▐▐ ▌▐ ▌   ##\n##      ▀▀ ▀▀ ▌   ▘▘ ▘▝ ▘   ##\n #~~~~~~~~~~~~~~~~~~~~~~~~~~#\n\n###########\n#INIT\n###########\nsxhkd &\n#numlockx on &\n#.xrandr &\n#export DISPLAY:0.0 &\n#autorandr --load dualmon &\nxrdb -load ~/.Xresources &\n/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &\n#compton -b --config ~/.config/compton.conf &\npicom &\nxsetroot -cursor_name left_ptr &\n~/.fehbg &\ndunst &\n#wal -R &\n#xset s off &\n#xautolock -locker xscreensaver, mode \"default\" &\n\n#pacmd load-module module-remap-sink sink_name=mono master=alsa_output.pci-0000_00_14.2.analog-stereo channels=2 channel_map=mono,mono &\npulseaudio-dlna &\nsystemctl start fluidsynth --user &\nmpd &\nmpDris2 &\n#mpdscribble\n\n##################\n#BSPWM CONFIG\n##################\n\nbspc monitor eDP1\t-n THINK\t-d\tHome mus cal void Void VOID\nbspc monitor DP2\t-n EXT\t\t-d\thome void0 void1 void2\n\nbspc config border_width         3\nbspc config window_gap           10\n\nbspc config split_ratio          0.50\nbspc config borderless_monocle   true\nbspc config gapless_monocle      true\nbspc config click_to_focus\t button1\n\nbspc config normal_border_color '#800080'\nbspc config active_border_color '#FFFFFF'\nbspc config focused_border_color '#FFFFFF'\nbspc config presel_feedback_color '#800080'\n\n##############\n#RULES\n##############\n\nbspc rule -a Gcolor3 state=floating\nbspc rule -a Lxappearance state=floating\nbspc rule -a tint2conf state=floating\nbspc rule -a Tint2conf state=floating\nbspc rule -a tint2 state=floating\nbspc rule -a oomox-gui state=floating\nbspc rule -a GParted state=floating\nbspc rule -a Blueberry state=floating\nbspc rule -a blueberry state=floating\nbspc rule -a blueman-manager state=floating\nbspc rule -a Blueman-manager state=floating\nbspc rule -a Pavucontrol state=floating\nbspc rule -a glava border=off\nbspc rule -a conky border=off state=floating\nbspc rule -a cairo-dock border=off state=floating\nbspc rule -a Orage state=floating\nbspc rule -a urxvt border=off state=fullscreen\nbspc rule -a projectM border=off state=fullscreen\nbspc rule -a tilda border=off state=fullscreen\nbspc rule -a Tilda border=off state=fullscreen\nbspc rule -a termite border=off\nbspc rule -a Termite border=off\n#bspc rule -a tilda state=floating\nbspc rule -a vkeybd state=floating\nbspc rule -a zathura state=tiled\nbspc rule -a Zathura state=tiled\n\n#############\n#AUTOSTART\n#############\nstartup_lock_file=/tmp/bspwm-startup.lock\nif [ ! -f $startup_lock_file ]; then\n    echo \"dummy\" > $startup_lock_file\n\n## Panels and Bars\n#tint2\t-c .config/tint2/tuxtint/tuxtint_top.rc &\n#tint2\t-c .config/tint2/tuxtint/tuxtint_bot.rc &\n#polybar -c .config/polybar/tuxbar/config-bottom.ini bottom &\n#polybar -c .config/polybar/tuxbar/config-top.ini top &\n\n## Terminals\n#tilda -g .config/tilda/wd-term-1 &\n#tilda -g .config/tilda/wd-term-2 &\n#tilda -g .config/tilda/wd-term-3 &\n#tilda -g .config/tilda/home-term &\n#tilda -g .config/tilda/termux &\n\n\n#########################\n## System Tray Applets ##\n#########################\n# Network\nnm-applet &\nblueman-applet &\n#avahi &\nexec /usr/lib/kdeconnectd &\n#exec kdeconnect-indicator &\n\n# Audio\npasystray &\n#mictray &\n\n# Clipboard\n#clipit &\n#clipster -d &\n#greenclip daemon &\n\n\n# Initialize and Populate Desktop\n#~/.baaa.sh &\n#~/.sheepwrap.sh start &\n#calcurse &\n#redshift &\n\n\n\n#==========================================================================================================================\nfi\n",
+			"file": "/home/agoramachina/.config/bspwm/bspwmrc",
+			"file_size": 3592,
+			"file_write_time": 132731130541421105,
+			"settings":
+			{
+				"buffer_size": 3498,
+				"line_ending": "Unix"
+			},
+			"undo_stack":
+			[
+				[
+					7,
+					1,
+					"insert",
+					{
+						"characters": "i"
+					},
+					"AQAAALkBAAAAAAAAugEAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAC5AQAAAAAAALkBAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					8,
+					1,
+					"left_delete",
+					null,
+					"AQAAALkBAAAAAAAAuQEAAAAAAAABAAAAaQ",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAC6AQAAAAAAALoBAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					9,
+					1,
+					"insert",
+					{
+						"characters": "\npico"
+					},
+					"BQAAALkBAAAAAAAAugEAAAAAAAAAAAAAugEAAAAAAAC7AQAAAAAAAAAAAAC7AQAAAAAAALwBAAAAAAAAAAAAALwBAAAAAAAAvQEAAAAAAAAAAAAAvQEAAAAAAAC+AQAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAC5AQAAAAAAALkBAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					10,
+					1,
+					"insert",
+					{
+						"characters": "m"
+					},
+					"AQAAAL4BAAAAAAAAvwEAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAC+AQAAAAAAAL4BAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					11,
+					1,
+					"insert",
+					{
+						"characters": " -b"
+					},
+					"AwAAAL8BAAAAAAAAwAEAAAAAAAAAAAAAwAEAAAAAAADBAQAAAAAAAAAAAADBAQAAAAAAAMIBAAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAC/AQAAAAAAAL8BAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					12,
+					1,
+					"insert",
+					{
+						"characters": " co"
+					},
+					"AwAAAMIBAAAAAAAAwwEAAAAAAAAAAAAAwwEAAAAAAADEAQAAAAAAAAAAAADEAQAAAAAAAMUBAAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADCAQAAAAAAAMIBAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					13,
+					2,
+					"left_delete",
+					null,
+					"AgAAAMQBAAAAAAAAxAEAAAAAAAABAAAAb8MBAAAAAAAAwwEAAAAAAAABAAAAYw",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADFAQAAAAAAAMUBAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					14,
+					1,
+					"insert",
+					{
+						"characters": "--config"
+					},
+					"CAAAAMMBAAAAAAAAxAEAAAAAAAAAAAAAxAEAAAAAAADFAQAAAAAAAAAAAADFAQAAAAAAAMYBAAAAAAAAAAAAAMYBAAAAAAAAxwEAAAAAAAAAAAAAxwEAAAAAAADIAQAAAAAAAAAAAADIAQAAAAAAAMkBAAAAAAAAAAAAAMkBAAAAAAAAygEAAAAAAAAAAAAAygEAAAAAAADLAQAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADDAQAAAAAAAMMBAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					15,
+					1,
+					"insert",
+					{
+						"characters": " "
+					},
+					"AQAAAMsBAAAAAAAAzAEAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADLAQAAAAAAAMsBAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					16,
+					12,
+					"left_delete",
+					null,
+					"DAAAAMsBAAAAAAAAywEAAAAAAAABAAAAIMoBAAAAAAAAygEAAAAAAAABAAAAZ8kBAAAAAAAAyQEAAAAAAAABAAAAacgBAAAAAAAAyAEAAAAAAAABAAAAZscBAAAAAAAAxwEAAAAAAAABAAAAbsYBAAAAAAAAxgEAAAAAAAABAAAAb8UBAAAAAAAAxQEAAAAAAAABAAAAY8QBAAAAAAAAxAEAAAAAAAABAAAALcMBAAAAAAAAwwEAAAAAAAABAAAALcIBAAAAAAAAwgEAAAAAAAABAAAAIMEBAAAAAAAAwQEAAAAAAAABAAAAYsABAAAAAAAAwAEAAAAAAAABAAAALQ",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADMAQAAAAAAAMwBAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					17,
+					1,
+					"insert",
+					{
+						"characters": "&"
+					},
+					"AQAAAMABAAAAAAAAwQEAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADAAQAAAAAAAMABAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					20,
+					1,
+					"insert",
+					{
+						"characters": "#"
+					},
+					"AQAAAI0BAAAAAAAAjgEAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAACNAQAAAAAAAI0BAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					23,
+					1,
+					"run_macro_file",
+					{
+						"file": "res://Packages/Default/Add Line.sublime-macro"
+					},
+					"AQAAAHsEAAAAAAAAfAQAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAB7BAAAAAAAAHsEAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					24,
+					1,
+					"left_delete",
+					null,
+					"AQAAAHsEAAAAAAAAewQAAAAAAAABAAAACg",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAB8BAAAAAAAAHwEAAAAAAAAAAAAAAAA8L8"
+				]
+			]
+		},
+		{
+			"contents": "#!/bin/sh\n\n #~~~~~~~~~~~~~~~~~~~~~~~~#\n##   ▖        ▌  ▌    ▌   ##\n##  ▚▙▘ ▞▀▘▚▗▘▛▀▖▌▗▘▞▀▌   ##\n##  ▘▌▘ ▝▀▖▗▚ ▌ ▌▛▚ ▌ ▌   ##\n##      ▀▀ ▘ ▘▘ ▘▘ ▘▝▀▘   ##\n #~~~~~~~~~~~~~~~~~~~~~~~~#\n\n\n#####################\n# Keyboard Bindings #\n#####################\n\n#alt + bracket{left,right}\n#      xdotool key {Page_Up,Page_Down}\n\n#shift + Home\n#      xdotool key End\n\n########################\n# Applications\n########################\n\n# Terminal\nsuper + @Return\n\ttilda -f \"8-bit Operator+ SC 10\"\nsuper + shift + Return\n\turxvt\n\n# Rofi\nsuper + @space\n      rofi -modi \"run\" -show run -lines 0 -position 0 -yoffset -29 -font \"Wingdings 12\" -theme wd-yet-darker\nctrl + alt + space\n      jgmenu_run\nsuper + Tab\n      rofi -modi \"window,run,drun\" -show window -lines 5 -theme yet-darker -show-icons -icon-theme Flat-remix Dark -font \"Wingdings 12\"\n\nsuper + e\n     rofi -modi 'run,drun,emoji:~/.local/src/rofiemoji/rofiemoji.sh' -show emoji -theme yet-darker\n\n# Browser\nctrl + alt  + f\n      firefox\nctrl + alt + c\n      google-chrome-stable\n\n# File Manager\nctrl + alt + t\n      thunar\n\n#################\n## Screenshots ##\n#################\n\n# screenshot all\nPrint\n    maim -u -B ~/Pictures/.screenshots/screenshot_(date +%y-%m-%d)_(date +%T).png\n    #dunstify \"Screenshot saved to ~/Pictures/.screenshots/screenshot_\" (date +%m-%d-%Y)_(date +%T)\".png\"\n\n# screenshot window\nctrl + Print\n    maim -u -B -i (xdotool getactivewindow) -B ~/Pictures/.screenshots/screenshot_(date +%y-%m-%d)_(date +%T).png\n    \n# screenshot monitor\nalt + Print\n    sh ~/.scripts/maim_mon.sh\n\n# screenshot select\nsuper + Print\n    maim -s -u -B ~/Pictures/.screenshots/screenshot_(date +%y-%m-%d)_(date +%T).png\n\n#######################\n# Audio\n#######################\nXF86AudioMute\n\tpamixer -t\nXF86AudioRaiseVolume\n\tpamixer -i 2\nXF86AudioLowerVolume\n\tpamixer -d 2\nXF86MonBrightnessUp\n\txbacklight +10\nXF86MonBrightnessDown\n\txbacklight -10\nXF86AudioPlay\n\tplayerctl play-pause\nXF86AudioNext\n\tplayerctl next\nXF86AudioPrev\n\tplayerctl previous\nXF86AudioStop\n\tplayerctl stop\n\nalt + shift + {Left,Right,Down}\n\tmpc {prev,next,toggle}\nalt + shift + button{4,5}\n\tpamixer -{i,d} 2\nalt + shift + button2\n\tpamixer -t\n\n#######################\n# Reload Settings\n#######################\n\n# Kill panels & bars\nctrl + alt + p\n     killall -9 tint2 & killall -9 polybar\n\n# Kill compton\nctrl + alt + shift + o\n     pkill compton\n\n# Reload compton\nctrl + alt + o\n     compton -b --config ~/.config/compton.conf\n\n# Reload sxhdk\nctrl + alt + s\n     pkill -USR1 -x sxhkd\n\n# Reload bspwm\nctrl + alt + b\n     bspc wm -r\n\n########################\n## Desktop Management ##\n########################\n\n# Switch Desktop\nctrl + alt + {Left,Right}\n    bspc desktop -f {prev,next}.local\n\n# Move node to Desktop\nsuper + alt + {Left,Right}\n    bspc node -d {prev,next}.local -f\n\n# Focus or send to the given desktop\nsuper + {_,shift + }{1-9,0}\n    bspc {desktop -f,node -d} '^{1-9,10}'\n\n\n##########################\n# Window Management\n##########################\n\n# Window opacity\nsuper + button{4,5}\n    transset-df -p --{inc,dec} .05\n#    picom-trans -o {+5,-5}\n\n## window gap\n#ctrl + alt + button{4,5}\n#    bspc config window_gap $((bspc config window_gap` {-,+} 2 ))`\n\n## Close/kill windows ##\nsuper + {q,shift + q}\n    bspc node -{c,k}\nctrl + alt + x\n    xkill\n\n##################\n## Window Focus ##\n##################\n\n## Focus next/previous node ##\nalt + {Tab,shift + Tab}\n      bspc node -f {next,prev}.local\n\n# Focus the last node/desktop\nsuper + {grave,Tab}\n  bspc {node,desktop} -f last\n\n# Focus the older or newer node in the focus history\nsuper + {o,i}\n\tbspc wm -h off; \\\n\tbspc node {older,newer} -f; \\\n\tbspc wm -h on\n\n## Select/move node\nsuper + {_,ctrl + }{Left,Down,Up,Right}\n      bspc node -{f,s} {west,south,north,east}\n\n# Focus the node for the given path jump\nsuper + {p,b,comma,period}\n\tbspc node -f @{parent,brother,first,second}\n\n####################\n## Window Balance ##\n####################\n\n# Switch current node with largest/smallest node\nsuper + {g,shift+g}\n      bspc node -s {biggest,smallest}.local\n\n## Window Balance ##\nsuper + {equal,minus}\n    bspc node @/ --{equalize,balance}\n\n# Circulate the leaves of the tree\nsuper + bracket{left,right}\n    bspc node @/ --circulate {backward,forward}\n\n# Rotate interface\nctrl + super + alt + {Left,Right}\n   bspc node @/ -R {-90,90}\n\n########################\n## Window State/Flags ##\n########################\n\n# Toggle monocle mode\nsuper + m\n      bspc desktop -l next\n\n# Change window state\nsuper + {t,shift + t,f,shift + f}\n      bspc node -t {tiled,pseudo_tiled,floating,fullscreen}\n\n# Set node flags\nsuper  + {shift+x,m,x,y,z}\n      bspc node -g {hidden,marked,locked,sticky,private}\n\n\n###############\n## Preselect ##\n###############\n\n# preselect the direction\nsuper + shift + {Left,Down,Up,Right}\n\tbspc node -p {west,south,north,east}\n\n# preselect the ratio\nsuper + ctrl + {1-9}\n\tbspc node -o 0.{1-9}\n\n# cancel the preselection for the focused node\nsuper + shift + space\n\tbspc node -p cancel\n\n# cancel the preselection for the focused desktop\nsuper + ctrl + space\n\tbspc query -N -d | xargs -I id -n 1 bspc node id -p cancel\n\n###################\n# Receptacles\n###################\n\n# insert receptacle, or clear receptacles on current desktop\nsuper + r\n        bspc node -i\nsuper + shift + r\n\twhile bspc node 'any.leaf.!window' -k; do :; done\n#super + {_,shift} + r\n#    insert={true,false}; \\\n#    $insert && bspc node -i || \\\n#    for win in `bspc query -N -n .leaf.!window`; do bspc node $win -k ; done;\n\n\n#########################\n# Scripts\n#########################\n",
+			"file": "/home/agoramachina/.config/sxhkd/sxhkdrc",
+			"file_size": 5662,
+			"file_write_time": 132731166791292151,
+			"settings":
+			{
+				"buffer_size": 5568,
+				"line_ending": "Unix"
+			},
+			"undo_stack":
+			[
+				[
+					7,
+					7,
+					"right_delete",
+					null,
+					"BwAAACsCAAAAAAAAKwIAAAAAAAABAAAAdysCAAAAAAAAKwIAAAAAAAABAAAAaSsCAAAAAAAAKwIAAAAAAAABAAAAbisCAAAAAAAAKwIAAAAAAAABAAAAZCsCAAAAAAAAKwIAAAAAAAABAAAAbysCAAAAAAAAKwIAAAAAAAABAAAAdysCAAAAAAAAKwIAAAAAAAABAAAALA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAArAgAAAAAAACsCAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					20,
+					1,
+					"insert",
+					{
+						"characters": "i"
+					},
+					"AQAAAIoGAAAAAAAAiwYAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAACKBgAAAAAAAIoGAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					21,
+					1,
+					"left_delete",
+					null,
+					"AQAAAIoGAAAAAAAAigYAAAAAAAABAAAAaQ",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAACLBgAAAAAAAIsGAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					35,
+					5,
+					"left_delete",
+					null,
+					"BQAAADICAAAAAAAAMgIAAAAAAAABAAAAbjECAAAAAAAAMQIAAAAAAAABAAAAdTACAAAAAAAAMAIAAAAAAAABAAAAci8CAAAAAAAALwIAAAAAAAABAAAAZC4CAAAAAAAALgIAAAAAAAABAAAALA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAzAgAAAAAAADMCAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					44,
+					1,
+					"insert",
+					{
+						"characters": "i"
+					},
+					"AQAAAIUCAAAAAAAAhgIAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAACFAgAAAAAAAIUCAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					45,
+					1,
+					"left_delete",
+					null,
+					"AQAAAIUCAAAAAAAAhQIAAAAAAAABAAAAaQ",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAACGAgAAAAAAAIYCAAAAAAAAAAAAAAAA8L8"
+				]
+			]
+		},
+		{
+			"file": "/home/agoramachina/.config/rofi/applets/applets/backlight.sh",
+			"settings":
+			{
+				"buffer_size": 1985,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/agoramachina/.config/rofi/applets/applets/apps.sh",
+			"settings":
+			{
+				"buffer_size": 2023,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/agoramachina/.local/scripts/screenshot.sh",
+			"settings":
+			{
+				"buffer_size": 2837,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/agoramachina/.config/dunst/variables.sh",
+			"settings":
+			{
+				"buffer_size": 937,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			},
+			"undo_stack":
+			[
+				[
+					7,
+					1,
+					"insert",
+					{
+						"characters": ".sc"
+					},
+					"AwAAANsAAAAAAAAA3AAAAAAAAAAAAAAA3AAAAAAAAADdAAAAAAAAAAAAAADdAAAAAAAAAN4AAAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADbAAAAAAAAANsAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					8,
+					1,
+					"insert",
+					{
+						"characters": "reenshots/"
+					},
+					"CgAAAN4AAAAAAAAA3wAAAAAAAAAAAAAA3wAAAAAAAADgAAAAAAAAAAAAAADgAAAAAAAAAOEAAAAAAAAAAAAAAOEAAAAAAAAA4gAAAAAAAAAAAAAA4gAAAAAAAADjAAAAAAAAAAAAAADjAAAAAAAAAOQAAAAAAAAAAAAAAOQAAAAAAAAA5QAAAAAAAAAAAAAA5QAAAAAAAADmAAAAAAAAAAAAAADmAAAAAAAAAOcAAAAAAAAAAAAAAOcAAAAAAAAA6AAAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADeAAAAAAAAAN4AAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					25,
+					1,
+					"insert",
+					{
+						"characters": "i"
+					},
+					"AQAAANEAAAAAAAAA0gAAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADRAAAAAAAAANEAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					26,
+					6,
+					"left_delete",
+					null,
+					"BgAAANEAAAAAAAAA0QAAAAAAAAABAAAAadAAAAAAAAAA0AAAAAAAAAABAAAARc8AAAAAAAAAzwAAAAAAAAABAAAATc4AAAAAAAAAzgAAAAAAAAABAAAAT80AAAAAAAAAzQAAAAAAAAABAAAASMwAAAAAAAAAzAAAAAAAAAABAAAAJA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADSAAAAAAAAANIAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					27,
+					1,
+					"insert",
+					{
+						"characters": "!"
+					},
+					"AQAAAMwAAAAAAAAAzQAAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADMAAAAAAAAAMwAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					28,
+					1,
+					"left_delete",
+					null,
+					"AQAAAMwAAAAAAAAAzAAAAAAAAAABAAAAIQ",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADNAAAAAAAAAM0AAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					29,
+					1,
+					"insert",
+					{
+						"characters": "~"
+					},
+					"AQAAAMwAAAAAAAAAzQAAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADMAAAAAAAAAMwAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					35,
+					4,
+					"left_delete",
+					null,
+					"BAAAAPYAAAAAAAAA9gAAAAAAAAABAAAARfUAAAAAAAAA9QAAAAAAAAABAAAATfQAAAAAAAAA9AAAAAAAAAABAAAAT/MAAAAAAAAA8wAAAAAAAAABAAAASA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAD3AAAAAAAAAPcAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					36,
+					1,
+					"left_delete",
+					null,
+					"AQAAAPIAAAAAAAAA8gAAAAAAAAABAAAAJA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADzAAAAAAAAAPMAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					37,
+					1,
+					"insert",
+					{
+						"characters": "~"
+					},
+					"AQAAAPIAAAAAAAAA8wAAAAAAAAAAAAAA",
+					"BQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADyAAAAAAAAAPIAAAAAAAAAAAAAAAAA8L8"
+				]
+			]
+		},
+		{
+			"file": "/home/agoramachina/.config/dunst/screenshot_actions.sh",
+			"settings":
+			{
+				"buffer_size": 2489,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/agoramachina/.config/polybar/config-bottom.ini",
+			"settings":
+			{
+				"buffer_size": 9163,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/agoramachina/.config/compton.conf",
+			"settings":
+			{
+				"buffer_size": 1347,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/agoramachina/.config/picom.conf",
+			"settings":
+			{
+				"buffer_size": 13878,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"Package Control: insta",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: install",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: inst",
+				"Package Control: Install Package"
+			],
+			[
+				"git",
+				"Set Syntax: Git Commit"
+			],
+			[
+				"Package Control: git",
+				"Package Control: Add Repository"
+			],
+			[
+				"Package Control: ins",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: in",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 112.0,
+		"history":
+		[
+			"cp ~/.config/compton.conf ~/.config/compton.conf.bak"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/home/agoramachina/.config/dunst"
+	],
+	"file_history":
+	[
+		"/home/agoramachina/.conky/_config.yml",
+		"/home/agoramachina/HUDbeat/.gitignore",
+		"/home/agoramachina/Documents/DnD/Foundry/FoundryVTT/Data/modules/midi-qol/src/midi-qol.ts",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/tool-proficiencies-5e/scripts/utils.js",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/tool-proficiencies-5e/scripts/data.js",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/tool-proficiencies-5e/scripts/favourite.js",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/tool-proficiencies-5e/scripts/init.js",
+		"/home/agoramachina/Documents/DnD/Foundry/FoundryVTT/Data/modules/midi-qol/src/module/setupModules.ts",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/modules/test-module/dist/module/preloadTemplates.js",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/modules/test-module/dist/module/settings.js",
+		"/home/agoramachina/Documents/DnD/Foundry/TWCN.sublime-project",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/worlds/test-world/scripts/hooks.js",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/modules/TWCN/scripts/flags.js",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/modules/TWCN/lang/en.json",
+		"/home/agoramachina/Documents/DnD/Foundry/FoundryVTT/Data/modules/midi-qol/src/module/Hooks.ts",
+		"/home/agoramachina/Documents/DnD/Foundry/FoundryVTT/Data/modules/midi-qol/src/module/workflow.ts",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/modules/TWCN/module.json",
+		"/home/agoramachina/Documents/DnD/Foundry/FoundryVTT/Data/modules/dae/module.json",
+		"/home/agoramachina/workspace/agoramachina.github.io/education.html",
+		"/home/agoramachina/workspace/agoramachina.github.io/footer..html",
+		"/home/agoramachina/workspace/agoramachina.github.io/header.html",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/modules/TWCN/scripts/module.js",
+		"/home/agoramachina/workspace/agoramachina.github.io/index.markdown",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/modules/tool-proficiencies-5e/lang/en.json",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/worlds/test-world/scripts/damagetypes.js",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/dnd5e/module/config.js",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/dnd5e/template.json",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/worlds/test-world/world.json",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/dnd5e/system.json",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/dnd5e/dnd5e.js",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/modules/TWCN/scripts/lib/debug.ts",
+		"/home/agoramachina/ukagaka/ghost/z_gaster/ghost/master/g_aitalk.dic",
+		"/home/agoramachina/Documents/DnD/Foundry/TheGiddyLimit.github.io-master/homebrew/index.json",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/modules/TWCN/lib/debug.ts",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/modules/TWCN/scripts/lib/setupModules.ts",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/modules/TWCN/lib/setupModules.ts",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/modules/TWCN/lib/actor.js",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/modules/TWCN/lib/sidekick.js",
+		"/home/agoramachina/Documents/DnD/Foundry/FoundryVTT/Data/modules/combat-utility-belt/module.json",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/dnd5e/lang/en.json",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/dnd5e/module/actor/entity.js",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/dnd5e/module/templates.js",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/modules/FVTT-DND5e-Extender/scripts/settings.mjs",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/modules/tidy5e-sheet/scripts/tidy5e-sheet.js",
+		"/home/agoramachina/Documents/DnD/Foundry/FoundryVTT/Data/modules/midi-qol/src/module/patching.ts",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/dnd5e/less/actors.less",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/modules/tidy5e-sheet/css/tidy5e.css",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/modules/tidy5e-sheet/css/tidy5e-dark.css",
+		"/home/agoramachina/Documents/DnD/Foundry/FoundryVTT/Data/modules/midi-qol/src/module/sheetQOL.ts",
+		"/home/agoramachina/Documents/DnD/Foundry/FoundryVTT/Data/modules/midi-qol/src/module/sheetQOL.ts.save",
+		"/home/agoramachina/Documents/DnD/Foundry/FoundryVTT/Data/modules/midi-qol/src/module/utils.ts",
+		"/home/agoramachina/Documents/dark-knight/dark-knight.css",
+		"/home/agoramachina/Documents/dark-knight/dark-knight.css.bak",
+		"/home/agoramachina/Documents/DnD/Foundry/TWCN/scripts/module.js",
+		"/home/agoramachina/Documents/DnD/Foundry/TWCN/src/module/TWCN.ts",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/dnd5e/module/apps/actor-type.js",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/systest/module/systest.mjs",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/dnd5e/templates/actors/character-sheet.html",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/systest/system.json",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/systest-bp/package.json",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/systest/lang/en.json",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/systest/templates/actor/actor-npc-sheet.html",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/systest/templates/actor/actor-character-sheet.html",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/systest/README.md",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/systest/package.json",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/systest/css/boilerplate.css",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/systest/module/boilerplate.mjs",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/systest/module/helpers/config.mjs",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/systest/module/documents/actor.mjs",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/systest/module/documents/item.mjs",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/systest/module/helpers/templates.mjs",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/systest/module/sheets/actor-sheet.mjs",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/systest/scss/boilerplate.scss",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/systest/package-lock.json",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/systest/templates/actor/parts/actor-effects.html",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/systest/module/sheets/item-sheet.mjs",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/systest/scss/components/_items.scss",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/systest/css/systest.css",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/modules/actor-attribute-lists/scripts/attribute-display.js",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/systest/template.json",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/dnd5e/module/item/entity.js",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/dnd5e/module/item/sheet.js",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/dnd5e/less/variables.less",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/dnd5e/module/actor/sheets/character.js",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/dnd5e/module/token.js",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/dnd5e/module/macros.js",
+		"/home/agoramachina/.local/share/FoundryVTT/Data/systems/dnd5e/module/settings.js",
+		"/home/agoramachina/Documents/DnD/Foundry/FoundryVTT/Data/systems/dnd5e-gam/module/token.js",
+		"/home/agoramachina/Documents/DnD/Foundry/FoundryVTT/Data/systems/dnd5e-gam/module/actor/entity.js",
+		"/home/agoramachina/Documents/DnD/Foundry/FoundryVTT/Data/systems/dnd5e-gam/module/config.js",
+		"/home/agoramachina/Documents/DnD/Foundry/FoundryVTT/Data/systems/dnd5e-gam/template.json",
+		"/home/agoramachina/Documents/DnD/Foundry/FoundryVTT/Data/systems/dnd5e-gam/module/templates.js",
+		"/home/agoramachina/Documents/DnD/Foundry/FoundryVTT/Data/modules/tidy5e-sheet/src/templates/actors/tidy5e-sheet.html",
+		"/home/agoramachina/Documents/DnD/Foundry/FoundryVTT/Data/modules/combat-utility-belt/combat-utility-belt.js",
+		"/home/agoramachina/Documents/DnD/Foundry/TWCN/module.json",
+		"/home/agoramachina/Documents/DnD/Foundry/TWCN-rollup/src/module/TWCN.js",
+		"/home/agoramachina/Documents/DnD/Foundry/TWCN-rollup/package.json",
+		"/home/agoramachina/Documents/DnD/Foundry/TWCN-rollup/src/module.json",
+		"/home/agoramachina/Documents/DnD/Foundry/TWCN/package.json",
+		"/home/agoramachina/Documents/DnD/Foundry/TWCN/.eslintrc.js",
+		"/home/agoramachina/Documents/DnD/Foundry/TWCN/src/module.json",
+		"/home/agoramachina/Documents/DnD/Foundry/TWCN/README.md",
+		"/home/agoramachina/Documents/DnD/Foundry/TWCN/package-lock.json",
+		"/home/agoramachina/Documents/DnD/Foundry/FoundryVTT/Data/modules/dae/module/dae.js",
+		"/home/agoramachina/Documents/DnD/Foundry/FoundryVTT/Data/modules/dae/dae.js",
+		"/home/agoramachina/Documents/DnD/Foundry/TWCN/src/lang/en.json",
+		"/home/agoramachina/Documents/DnD/Foundry/FoundryVTT/Data/modules/token-health/token-health.js",
+		"/home/agoramachina/Documents/DnD/Foundry/TWCN/src/module/settings.js",
+		"/home/agoramachina/Documents/DnD/Foundry/demo-rollup-module/package.json",
+		"/home/agoramachina/Documents/DnD/Foundry/TWCN/.gitignore",
+		"/home/agoramachina/Documents/DnD/Foundry/demo-rollup-module/package-lock.json",
+		"/home/agoramachina/Documents/DnD/Foundry/FoundryVTT/Data/modules/midi-qol/tsconfig.json",
+		"/home/agoramachina/Documents/DnD/Foundry/TWCN/condition-maps/dnd5e.json",
+		"/home/agoramachina/Documents/DnD/Foundry/FoundryVTT/Data/modules/token-health/token-health.css",
+		"/home/agoramachina/Documents/DnD/Foundry/FoundryVTT/Data/modules/token-health/module.json",
+		"/home/agoramachina/Documents/DnD/Foundry/FoundryVTT/Data/modules/combat-utility-belt/condition-maps/dnd5e.json",
+		"/home/agoramachina/Documents/DnD/Foundry/FoundryVTT/Data/modules/combat-utility-belt/condition-maps/example.json",
+		"/home/agoramachina/Documents/DnD/Foundry/TWCN/scripts/lib/lib.js",
+		"/home/agoramachina/Documents/topics in cogsci/paper/beingmanybeingnone/beingmany.tex",
+		"/home/agoramachina/Documents/topics in cogsci/paper/gamma/ironicpapercurly.bib",
+		"/home/agoramachina/Documents/topics in cogsci/paper/beingmanybeingnone/beingmanysort.bib",
+		"/home/agoramachina/Documents/topics in cogsci/paper/beingmanybeingnone/beingmanyclean.bib",
+		"/home/agoramachina/Documents/topics in cogsci/paper/gamma/ironicpaper.tex",
+		"/home/agoramachina/Documents/topics in cogsci/paper/gamma/ironicpaper.bib",
+		"/home/agoramachina/Documents/topics in cogsci/paper/gamma/ironiclean.bib"
+	],
+	"find":
+	{
+		"height": 24.0
+	},
+	"find_in_files":
+	{
+		"height": 157.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"module"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"scrollbar_highlights": true,
+		"show_context": true,
+		"use_buffer2": true,
+		"use_gitignore": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "mindwave/recordEEG.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7779,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6927,
+								6927
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2955.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "mindwave/printRAW.sh",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 517,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								517,
+								517
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ShellScript/Bash.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 13,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "mindwave/midimind/midimind.py",
+					"selected": true,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3454,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2742,
+								2742
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1149.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "mindwave/cursEEG.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5025,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								141,
+								141
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/home/agoramachina/.config/bspwm/bspwmrc",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3498,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1033,
+								1033
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ShellScript/Bash.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "/home/agoramachina/.config/sxhkd/sxhkdrc",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5568,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1278,
+								1278
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ShellScript/Bash.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 278.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "/home/agoramachina/.config/rofi/applets/applets/backlight.sh",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1985,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								478,
+								478
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ShellScript/Bash.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "/home/agoramachina/.config/rofi/applets/applets/apps.sh",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2023,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ShellScript/Bash.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "/home/agoramachina/.local/scripts/screenshot.sh",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2837,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								191,
+								191
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ShellScript/Bash.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "/home/agoramachina/.config/dunst/variables.sh",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 937,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								839,
+								839
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ShellScript/Bash.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "/home/agoramachina/.config/dunst/screenshot_actions.sh",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2489,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ShellScript/Bash.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "/home/agoramachina/.config/polybar/config-bottom.ini",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 9163,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4209,
+								4209
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/zzz A File Icon zzz/aliases/Plain Text (INI).sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1815.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "/home/agoramachina/.config/compton.conf",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1347,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1280,
+								1280
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/zzz A File Icon zzz/aliases/Plain Text (INI).sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "/home/agoramachina/.config/picom.conf",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 13878,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								324,
+								324
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/zzz A File Icon zzz/aliases/Plain Text (INI).sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"stack_multiselect": false,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 24.0
+	},
+	"input":
+	{
+		"height": 55.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.SublimeLinter":
+	{
+		"height": 0.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "HUDbeat.sublime-project",
+	"replace":
+	{
+		"height": 44.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"~/workspace/agoramachina.github.io/eportfolio-site.sublime-project"
+			]
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": false,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 204.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
