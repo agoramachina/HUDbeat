@@ -11,6 +11,7 @@ FOLDER=$(ls -td ~/HUDbeat/mindwave/EEG_data/*/ | head -1)
 # get the most recently modified file in the EEG_data directory
 FILE=$(ls -t $FOLDER/EEGlog_* | head -1)
 
+# print the last line forever
 tail -n1 -f $FILE
 done
 
