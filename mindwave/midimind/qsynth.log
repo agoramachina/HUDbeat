@@ -1,0 +1,433 @@
+05:52:07.885 Logging started --- Sat Aug 14 05:52:07 2021 ---
+05:52:08.685 qsynth: Creating synthesizer engine...
+05:52:08.689 qsynth: Loading soundfont: "/usr/share/soundfonts/FluidR3_GM.sf2" (bank offset 0)...
+05:52:08.803 qsynth: Creating audio driver (pulseaudio)...
+05:52:08.806 qsynth: Creating MIDI router (alsa_seq)...
+05:52:08.806 qsynth: Creating MIDI driver (alsa_seq)...
+05:52:08.808 qsynth: fluid_synth_set_reverb_on(0)
+05:52:08.808 qsynth: fluid_synth_set_chorus_on(0)
+05:52:08.809 qsynth: Synthesizer engine started.
+05:52:08.809 qsynth: fluid_synth_set_gain(1)
+05:52:08.810 qsynth: fluid_synth_set_reverb(0.2,0,1,0.9)
+05:52:08.810 qsynth: fluid_synth_set_chorus(3,1,0.3,8,0)
+ALSA lib pcm_dsnoop.c:600:(snd_pcm_dsnoop_open) unable to open slave
+ALSA lib pcm_dmix.c:1035:(snd_pcm_dmix_open) unable to open slave
+ALSA lib pcm.c:2660:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.rear
+ALSA lib pcm.c:2660:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.center_lfe
+ALSA lib pcm.c:2660:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.side
+ALSA lib pcm_oss.c:397:(_snd_pcm_oss_open) Cannot open device /dev/dsp
+ALSA lib pcm_oss.c:397:(_snd_pcm_oss_open) Cannot open device /dev/dsp
+ALSA lib confmisc.c:160:(snd_config_get_card) Invalid field card
+ALSA lib pcm_usb_stream.c:482:(_snd_pcm_usb_stream_open) Invalid card 'card'
+ALSA lib confmisc.c:160:(snd_config_get_card) Invalid field card
+ALSA lib pcm_usb_stream.c:482:(_snd_pcm_usb_stream_open) Invalid card 'card'
+ALSA lib pcm_dmix.c:1035:(snd_pcm_dmix_open) unable to open slave
+Expression '!jack_activate( jackHostApi->jack_client )' failed in 'src/hostapi/jack/pa_jack.c', line: 835
+fluidsynth: error: Error initializing PortAudio driver: Unanticipated host error
+fluidsynth: prog	0	0	0
+fluidsynth: prog	1	0	0
+fluidsynth: prog	2	0	0
+fluidsynth: prog	3	0	0
+fluidsynth: prog	4	0	0
+fluidsynth: prog	5	0	0
+fluidsynth: prog	6	0	0
+fluidsynth: prog	7	0	0
+fluidsynth: prog	8	0	0
+fluidsynth: prog	9	128	0
+fluidsynth: prog	10	0	0
+fluidsynth: prog	11	0	0
+fluidsynth: prog	12	0	0
+fluidsynth: prog	13	0	0
+fluidsynth: prog	14	0	0
+fluidsynth: prog	15	0	0
+fluidsynth: Using PulseAudio driver
+fluidsynth: Connection of Midi Through Port-0 succeeded
+fluidsynth: Connection of Midi Through Port-1 succeeded
+fluidsynth: Connection of Midi Through Port-2 succeeded
+fluidsynth: Connection of Midi Through Port-3 succeeded
+fluidsynth: Connection of Midi Through Port-4 succeeded
+fluidsynth: Connection of Midi Through Port-5 succeeded
+fluidsynth: Connection of Midi Through Port-6 succeeded
+fluidsynth: Connection of Midi Through Port-7 succeeded
+fluidsynth: Connection of Midi Through Port-8 succeeded
+fluidsynth: Connection of Midi Through Port-9 succeeded
+fluidsynth: Connection of Midi Through Port-10 succeeded
+fluidsynth: Connection of Midi Through Port-11 succeeded
+fluidsynth: Connection of Midi Through Port-12 succeeded
+fluidsynth: Connection of Midi Through Port-13 succeeded
+fluidsynth: Connection of Midi Through Port-14 succeeded
+fluidsynth: Connection of Midi Through Port-15 succeeded
+fluidsynth: prog	0	8	115
+fluidsynth: prog	1	0	90
+fluidsynth: prog	2	0	4
+fluidsynth: prog	3	8	107
+fluidsynth: prog	4	0	4
+fluidsynth: prog	5	8	115
+fluidsynth: prog	6	0	108
+fluidsynth: prog	7	0	113
+fluidsynth: prog	8	0	8
+fluidsynth: prog	9	128	0
+fluidsynth: prog	10	0	10
+fluidsynth: prog	11	0	11
+fluidsynth: prog	12	0	12
+fluidsynth: prog	13	0	13
+fluidsynth: prog	14	0	14
+fluidsynth: prog	15	0	15
+fluidsynth: prog	0	8	115
+fluidsynth: prog	1	0	90
+fluidsynth: prog	2	0	4
+fluidsynth: prog	3	8	107
+fluidsynth: prog	4	0	4
+fluidsynth: prog	5	8	115
+fluidsynth: prog	6	0	108
+fluidsynth: prog	7	0	113
+fluidsynth: prog	8	0	8
+fluidsynth: prog	9	128	0
+fluidsynth: prog	10	0	10
+fluidsynth: prog	11	0	11
+fluidsynth: prog	12	0	12
+fluidsynth: prog	13	0	13
+fluidsynth: prog	14	0	14
+fluidsynth: prog	15	0	15
+fluidsynth: prog	0	8	115
+fluidsynth: prog	1	0	90
+fluidsynth: prog	2	0	4
+fluidsynth: prog	3	8	107
+fluidsynth: prog	4	0	4
+fluidsynth: prog	5	8	115
+fluidsynth: prog	6	0	108
+fluidsynth: prog	7	0	113
+fluidsynth: prog	8	0	8
+fluidsynth: prog	9	128	0
+fluidsynth: prog	10	0	10
+fluidsynth: prog	11	0	11
+fluidsynth: prog	12	0	12
+fluidsynth: prog	13	0	13
+fluidsynth: prog	14	0	14
+fluidsynth: prog	15	0	15
+fluidsynth: prog	0	8	115
+fluidsynth: prog	1	0	90
+fluidsynth: prog	2	0	4
+fluidsynth: prog	3	8	107
+fluidsynth: prog	4	0	4
+fluidsynth: prog	5	8	115
+fluidsynth: prog	6	0	108
+fluidsynth: prog	7	0	113
+fluidsynth: prog	8	0	8
+fluidsynth: prog	9	128	0
+fluidsynth: prog	10	0	10
+fluidsynth: prog	11	0	11
+fluidsynth: prog	12	0	12
+fluidsynth: prog	13	0	13
+fluidsynth: prog	14	0	14
+fluidsynth: prog	15	0	15
+fluidsynth: prog	4	0	7
+fluidsynth: prog	0	8	115
+fluidsynth: prog	1	0	90
+fluidsynth: prog	2	0	4
+fluidsynth: prog	3	8	107
+fluidsynth: prog	4	0	7
+fluidsynth: prog	5	8	115
+fluidsynth: prog	6	0	108
+fluidsynth: prog	7	0	113
+fluidsynth: prog	8	0	8
+fluidsynth: prog	9	128	0
+fluidsynth: prog	10	0	10
+fluidsynth: prog	11	0	11
+fluidsynth: prog	12	0	12
+fluidsynth: prog	13	0	13
+fluidsynth: prog	14	0	14
+fluidsynth: prog	15	0	15
+fluidsynth: prog	4	0	4
+fluidsynth: prog	0	8	115
+fluidsynth: prog	1	0	90
+fluidsynth: prog	2	0	4
+fluidsynth: prog	3	8	107
+fluidsynth: prog	4	0	4
+fluidsynth: prog	5	8	115
+fluidsynth: prog	6	0	108
+fluidsynth: prog	7	0	113
+fluidsynth: prog	8	0	8
+fluidsynth: prog	9	128	0
+fluidsynth: prog	10	0	10
+fluidsynth: prog	11	0	11
+fluidsynth: prog	12	0	12
+fluidsynth: prog	13	0	13
+fluidsynth: prog	14	0	14
+fluidsynth: prog	15	0	15
+fluidsynth: prog	4	0	8
+fluidsynth: prog	0	8	115
+fluidsynth: prog	1	0	90
+fluidsynth: prog	2	0	4
+fluidsynth: prog	3	8	107
+fluidsynth: prog	4	0	8
+fluidsynth: prog	5	8	115
+fluidsynth: prog	6	0	108
+fluidsynth: prog	7	0	113
+fluidsynth: prog	8	0	8
+fluidsynth: prog	9	128	0
+fluidsynth: prog	10	0	10
+fluidsynth: prog	11	0	11
+fluidsynth: prog	12	0	12
+fluidsynth: prog	13	0	13
+fluidsynth: prog	14	0	14
+fluidsynth: prog	15	0	15
+fluidsynth: prog	4	0	4
+fluidsynth: prog	0	8	115
+fluidsynth: prog	1	0	90
+fluidsynth: prog	2	0	4
+fluidsynth: prog	3	8	107
+fluidsynth: prog	4	0	4
+fluidsynth: prog	5	8	115
+fluidsynth: prog	6	0	108
+fluidsynth: prog	7	0	113
+fluidsynth: prog	8	0	8
+fluidsynth: prog	9	128	0
+fluidsynth: prog	10	0	10
+fluidsynth: prog	11	0	11
+fluidsynth: prog	12	0	12
+fluidsynth: prog	13	0	13
+fluidsynth: prog	14	0	14
+fluidsynth: prog	15	0	15
+05:53:05.421 qsynth: fluid_synth_system_reset()
+fluidsynth: prog	0	8	115
+fluidsynth: prog	1	0	90
+fluidsynth: prog	2	0	4
+fluidsynth: prog	3	8	107
+fluidsynth: prog	4	0	4
+fluidsynth: prog	5	8	115
+fluidsynth: prog	6	0	108
+fluidsynth: prog	7	0	113
+fluidsynth: prog	8	0	8
+fluidsynth: prog	9	128	0
+fluidsynth: prog	10	0	10
+fluidsynth: prog	11	0	11
+fluidsynth: prog	12	0	12
+fluidsynth: prog	13	0	13
+fluidsynth: prog	14	0	14
+fluidsynth: prog	15	0	15
+fluidsynth: prog	0	8	115
+fluidsynth: prog	1	0	90
+fluidsynth: prog	2	0	4
+fluidsynth: prog	3	8	107
+fluidsynth: prog	4	0	4
+fluidsynth: prog	5	8	115
+fluidsynth: prog	6	0	108
+fluidsynth: prog	7	0	113
+fluidsynth: prog	8	0	8
+fluidsynth: prog	9	128	0
+fluidsynth: prog	10	0	10
+fluidsynth: prog	11	0	11
+fluidsynth: prog	12	0	12
+fluidsynth: prog	13	0	13
+fluidsynth: prog	14	0	14
+fluidsynth: prog	15	0	15
+05:53:06.311 qsynth: fluid_synth_set_gain(1)
+05:53:06.311 qsynth: fluid_synth_set_reverb(0.2,0,0.5,0.9)
+05:53:06.311 qsynth: fluid_synth_set_chorus(3,2,0.3,8,0)
+05:53:06.311 qsynth: fluid_synth_program_reset()
+fluidsynth: prog	0	8	115
+fluidsynth: prog	1	0	90
+fluidsynth: prog	2	0	4
+fluidsynth: prog	3	8	107
+fluidsynth: prog	4	0	4
+fluidsynth: prog	5	8	115
+fluidsynth: prog	6	0	108
+fluidsynth: prog	7	0	113
+fluidsynth: prog	8	0	8
+fluidsynth: prog	9	128	0
+fluidsynth: prog	10	0	10
+fluidsynth: prog	11	0	11
+fluidsynth: prog	12	0	12
+fluidsynth: prog	13	0	13
+fluidsynth: prog	14	0	14
+fluidsynth: prog	15	0	15
+fluidsynth: prog	0	8	115
+fluidsynth: prog	1	0	90
+fluidsynth: prog	2	0	4
+fluidsynth: prog	3	8	107
+fluidsynth: prog	4	0	4
+fluidsynth: prog	5	8	115
+fluidsynth: prog	6	0	108
+fluidsynth: prog	7	0	113
+fluidsynth: prog	8	0	8
+fluidsynth: prog	9	128	0
+fluidsynth: prog	10	0	10
+fluidsynth: prog	11	0	11
+fluidsynth: prog	12	0	12
+fluidsynth: prog	13	0	13
+fluidsynth: prog	14	0	14
+fluidsynth: prog	15	0	15
+fluidsynth: prog	0	8	115
+fluidsynth: prog	1	0	90
+fluidsynth: prog	2	0	4
+fluidsynth: prog	3	8	107
+fluidsynth: prog	4	0	4
+fluidsynth: prog	5	8	115
+fluidsynth: prog	6	0	108
+fluidsynth: prog	7	0	113
+fluidsynth: prog	8	0	8
+fluidsynth: prog	9	128	0
+fluidsynth: prog	10	0	10
+fluidsynth: prog	11	0	11
+fluidsynth: prog	12	0	12
+fluidsynth: prog	13	0	13
+fluidsynth: prog	14	0	14
+fluidsynth: prog	15	0	15
+qt.core.qobject.connect: QObject::connect: No such signal QComboBox::activated(const QString&)
+qt.core.qobject.connect: QObject::connect:  (sender name:   'MidiDriverComboBox')
+qt.core.qobject.connect: QObject::connect:  (receiver name: 'qsynthSetupForm')
+qt.core.qobject.connect: QObject::connect: No such signal QComboBox::activated(const QString&)
+qt.core.qobject.connect: QObject::connect:  (sender name:   'MidiBankSelectComboBox')
+qt.core.qobject.connect: QObject::connect:  (receiver name: 'qsynthSetupForm')
+qt.core.qobject.connect: QObject::connect: No such signal QComboBox::activated(const QString&)
+qt.core.qobject.connect: QObject::connect:  (sender name:   'AudioDriverComboBox')
+qt.core.qobject.connect: QObject::connect:  (receiver name: 'qsynthSetupForm')
+qt.core.qobject.connect: QObject::connect: No such signal QComboBox::activated(const QString&)
+qt.core.qobject.connect: QObject::connect:  (sender name:   'MidiDriverComboBox')
+qt.core.qobject.connect: QObject::connect:  (receiver name: 'qsynthSetupForm')
+qt.core.qobject.connect: QObject::connect: No such signal QComboBox::activated(const QString&)
+qt.core.qobject.connect: QObject::connect:  (sender name:   'MidiBankSelectComboBox')
+qt.core.qobject.connect: QObject::connect:  (receiver name: 'qsynthSetupForm')
+qt.core.qobject.connect: QObject::connect: No such signal QComboBox::activated(const QString&)
+qt.core.qobject.connect: QObject::connect:  (sender name:   'AudioDriverComboBox')
+qt.core.qobject.connect: QObject::connect:  (receiver name: 'qsynthSetupForm')
+ALSA lib pcm_dsnoop.c:600:(snd_pcm_dsnoop_open) unable to open slave
+ALSA lib pcm_dmix.c:1035:(snd_pcm_dmix_open) unable to open slave
+ALSA lib pcm.c:2660:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.rear
+ALSA lib pcm.c:2660:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.center_lfe
+ALSA lib pcm.c:2660:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.side
+ALSA lib pcm_oss.c:397:(_snd_pcm_oss_open) Cannot open device /dev/dsp
+ALSA lib pcm_oss.c:397:(_snd_pcm_oss_open) Cannot open device /dev/dsp
+ALSA lib confmisc.c:160:(snd_config_get_card) Invalid field card
+ALSA lib pcm_usb_stream.c:482:(_snd_pcm_usb_stream_open) Invalid card 'card'
+ALSA lib confmisc.c:160:(snd_config_get_card) Invalid field card
+ALSA lib pcm_usb_stream.c:482:(_snd_pcm_usb_stream_open) Invalid card 'card'
+ALSA lib pcm_dmix.c:1035:(snd_pcm_dmix_open) unable to open slave
+Expression '!jack_activate( jackHostApi->jack_client )' failed in 'src/hostapi/jack/pa_jack.c', line: 835
+fluidsynth: error: Error initializing PortAudio driver: Unanticipated host error
+05:53:59.469 qsynth: Destroying MIDI driver...
+05:53:59.535 qsynth: Destroying MIDI router...
+05:53:59.535 qsynth: Destroying audio driver...
+05:53:59.650 qsynth: Unloading soundfont: "/usr/share/soundfonts/FluidR3_GM.sf2" (SFID=1)...
+05:53:59.690 qsynth: Destroying synthesizer engine...
+05:53:59.694 qsynth: Synthesizer engine terminated.
+05:53:59.996 Logging stopped --- Sat Aug 14 05:53:59 2021 ---
+06:27:14.537 Logging started --- Sat Aug 14 06:27:14 2021 ---
+06:27:15.051 qsynth: Creating synthesizer engine...
+06:27:15.057 qsynth: Loading soundfont: "/usr/share/soundfonts/FluidR3_GM.sf2" (bank offset 0)...
+06:27:15.226 qsynth: Creating audio driver (pulseaudio)...
+06:27:15.227 qsynth: Failed to create the audio driver (pulseaudio). Cannot continue without it.
+ALSA lib pcm_dsnoop.c:600:(snd_pcm_dsnoop_open) unable to open slave
+ALSA lib pcm_dmix.c:1035:(snd_pcm_dmix_open) unable to open slave
+ALSA lib pcm.c:2660:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.rear
+ALSA lib pcm.c:2660:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.center_lfe
+ALSA lib pcm.c:2660:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.side
+ALSA lib pcm_oss.c:397:(_snd_pcm_oss_open) Cannot open device /dev/dsp
+ALSA lib pcm_oss.c:397:(_snd_pcm_oss_open) Cannot open device /dev/dsp
+ALSA lib pulse.c:242:(pulse_connect) PulseAudio: Unable to connect: Connection refused
+ALSA lib pulse.c:242:(pulse_connect) PulseAudio: Unable to connect: Connection refused
+ALSA lib confmisc.c:160:(snd_config_get_card) Invalid field card
+ALSA lib pcm_usb_stream.c:482:(_snd_pcm_usb_stream_open) Invalid card 'card'
+ALSA lib confmisc.c:160:(snd_config_get_card) Invalid field card
+ALSA lib pcm_usb_stream.c:482:(_snd_pcm_usb_stream_open) Invalid card 'card'
+ALSA lib pcm_dmix.c:1035:(snd_pcm_dmix_open) unable to open slave
+ALSA lib pcm_dsnoop.c:600:(snd_pcm_dsnoop_open) unable to open slave
+ALSA lib pcm_dmix.c:1035:(snd_pcm_dmix_open) unable to open slave
+fluidsynth: prog	0	0	0
+fluidsynth: prog	1	0	0
+fluidsynth: prog	2	0	0
+fluidsynth: prog	3	0	0
+fluidsynth: prog	4	0	0
+fluidsynth: prog	5	0	0
+fluidsynth: prog	6	0	0
+fluidsynth: prog	7	0	0
+fluidsynth: prog	8	0	0
+fluidsynth: prog	9	128	0
+fluidsynth: prog	10	0	0
+fluidsynth: prog	11	0	0
+fluidsynth: prog	12	0	0
+fluidsynth: prog	13	0	0
+fluidsynth: prog	14	0	0
+fluidsynth: prog	15	0	0
+fluidsynth: error: Failed to create PulseAudio connection
+06:27:18.458 qsynth: Unloading soundfont: "/usr/share/soundfonts/FluidR3_GM.sf2" (SFID=1)...
+06:27:18.476 qsynth: Destroying synthesizer engine...
+06:27:18.479 qsynth: Synthesizer engine terminated.
+qt.core.qobject.connect: QObject::connect: No such signal QComboBox::activated(const QString&)
+qt.core.qobject.connect: QObject::connect:  (sender name:   'MidiDriverComboBox')
+qt.core.qobject.connect: QObject::connect:  (receiver name: 'qsynthSetupForm')
+qt.core.qobject.connect: QObject::connect: No such signal QComboBox::activated(const QString&)
+qt.core.qobject.connect: QObject::connect:  (sender name:   'MidiBankSelectComboBox')
+qt.core.qobject.connect: QObject::connect:  (receiver name: 'qsynthSetupForm')
+qt.core.qobject.connect: QObject::connect: No such signal QComboBox::activated(const QString&)
+qt.core.qobject.connect: QObject::connect:  (sender name:   'AudioDriverComboBox')
+qt.core.qobject.connect: QObject::connect:  (receiver name: 'qsynthSetupForm')
+qt.core.qobject.connect: QObject::connect: No such signal QComboBox::activated(const QString&)
+qt.core.qobject.connect: QObject::connect:  (sender name:   'MidiDriverComboBox')
+qt.core.qobject.connect: QObject::connect:  (receiver name: 'qsynthSetupForm')
+qt.core.qobject.connect: QObject::connect: No such signal QComboBox::activated(const QString&)
+qt.core.qobject.connect: QObject::connect:  (sender name:   'MidiBankSelectComboBox')
+qt.core.qobject.connect: QObject::connect:  (receiver name: 'qsynthSetupForm')
+qt.core.qobject.connect: QObject::connect: No such signal QComboBox::activated(const QString&)
+qt.core.qobject.connect: QObject::connect:  (sender name:   'AudioDriverComboBox')
+qt.core.qobject.connect: QObject::connect:  (receiver name: 'qsynthSetupForm')
+ALSA lib pcm_dsnoop.c:600:(snd_pcm_dsnoop_open) unable to open slave
+ALSA lib pcm_dmix.c:1035:(snd_pcm_dmix_open) unable to open slave
+ALSA lib pcm.c:2660:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.rear
+ALSA lib pcm.c:2660:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.center_lfe
+ALSA lib pcm.c:2660:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.side
+ALSA lib pcm_oss.c:397:(_snd_pcm_oss_open) Cannot open device /dev/dsp
+ALSA lib pcm_oss.c:397:(_snd_pcm_oss_open) Cannot open device /dev/dsp
+ALSA lib pulse.c:242:(pulse_connect) PulseAudio: Unable to connect: Connection refused
+ALSA lib pulse.c:242:(pulse_connect) PulseAudio: Unable to connect: Connection refused
+ALSA lib confmisc.c:160:(snd_config_get_card) Invalid field card
+ALSA lib pcm_usb_stream.c:482:(_snd_pcm_usb_stream_open) Invalid card 'card'
+ALSA lib confmisc.c:160:(snd_config_get_card) Invalid field card
+ALSA lib pcm_usb_stream.c:482:(_snd_pcm_usb_stream_open) Invalid card 'card'
+ALSA lib pcm_dmix.c:1035:(snd_pcm_dmix_open) unable to open slave
+ALSA lib pcm_dsnoop.c:600:(snd_pcm_dsnoop_open) unable to open slave
+ALSA lib pcm_dmix.c:1035:(snd_pcm_dmix_open) unable to open slave
+Expression '!jack_activate( jackHostApi->jack_client )' failed in 'src/hostapi/jack/pa_jack.c', line: 835
+fluidsynth: error: Error initializing PortAudio driver: Unanticipated host error
+06:28:08.621 qsynth: Creating synthesizer engine...
+06:28:08.623 qsynth: Loading soundfont: "/usr/share/soundfonts/FluidR3_GM.sf2" (bank offset 0)...
+06:28:08.763 qsynth: Creating audio driver (pulseaudio)...
+06:28:08.765 qsynth: Failed to create the audio driver (pulseaudio). Cannot continue without it.
+ALSA lib pcm_dsnoop.c:600:(snd_pcm_dsnoop_open) unable to open slave
+ALSA lib pcm_dmix.c:1035:(snd_pcm_dmix_open) unable to open slave
+ALSA lib pcm.c:2660:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.rear
+ALSA lib pcm.c:2660:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.center_lfe
+ALSA lib pcm.c:2660:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.side
+ALSA lib pcm_oss.c:397:(_snd_pcm_oss_open) Cannot open device /dev/dsp
+ALSA lib pcm_oss.c:397:(_snd_pcm_oss_open) Cannot open device /dev/dsp
+ALSA lib pulse.c:242:(pulse_connect) PulseAudio: Unable to connect: Connection refused
+ALSA lib pulse.c:242:(pulse_connect) PulseAudio: Unable to connect: Connection refused
+ALSA lib confmisc.c:160:(snd_config_get_card) Invalid field card
+ALSA lib pcm_usb_stream.c:482:(_snd_pcm_usb_stream_open) Invalid card 'card'
+ALSA lib confmisc.c:160:(snd_config_get_card) Invalid field card
+ALSA lib pcm_usb_stream.c:482:(_snd_pcm_usb_stream_open) Invalid card 'card'
+ALSA lib pcm_dmix.c:1035:(snd_pcm_dmix_open) unable to open slave
+ALSA lib pcm_dsnoop.c:600:(snd_pcm_dsnoop_open) unable to open slave
+ALSA lib pcm_dmix.c:1035:(snd_pcm_dmix_open) unable to open slave
+fluidsynth: prog	0	0	0
+fluidsynth: prog	1	0	0
+fluidsynth: prog	2	0	0
+fluidsynth: prog	3	0	0
+fluidsynth: prog	4	0	0
+fluidsynth: prog	5	0	0
+fluidsynth: prog	6	0	0
+fluidsynth: prog	7	0	0
+fluidsynth: prog	8	0	0
+fluidsynth: prog	9	128	0
+fluidsynth: prog	10	0	0
+fluidsynth: prog	11	0	0
+fluidsynth: prog	12	0	0
+fluidsynth: prog	13	0	0
+fluidsynth: prog	14	0	0
+fluidsynth: prog	15	0	0
+fluidsynth: error: Failed to create PulseAudio connection
+06:28:11.901 qsynth: Unloading soundfont: "/usr/share/soundfonts/FluidR3_GM.sf2" (SFID=1)...
+06:28:11.916 qsynth: Destroying synthesizer engine...
+06:28:11.918 qsynth: Synthesizer engine terminated.
+06:28:14.962 Logging started --- Sat Aug 14 06:28:14 2021 ---
