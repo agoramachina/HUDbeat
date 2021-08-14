@@ -96,7 +96,12 @@ def get_samples(samples=30):
     df = pd.read_csv(file,header=1)
 
     with open (file, 'r') as f:
-        q = deque(f,samples+1)
+
+        try: 
+          q = deque(f,samples+1)
+        except(ValueError):
+          q = deque(f, len(df))
+
         dfq = pd.read_csv(io.StringIO('\n'.join(q)))
         dfq.columns = df.columns
         return dfq
