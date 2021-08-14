@@ -14,7 +14,9 @@ FILE=$(ls -t $FOLDER/EEGlogRAW_* | head -1)
 while true; do
 	#tail  -n1 $FILE | cut -d' ' -f2 | toilet -f smblock
 	#tail -n1 $FILE | cut -d'	' -f2
+	#tail -n1 $FILE | grep -o '^[0-9]*\.[0-9][0-9][0-9]'
 	tail -n1 $FILE
+	#tail -n1 $FILE
 #sleep 1
 #clear
 done

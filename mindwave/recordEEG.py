@@ -23,6 +23,32 @@ timestamp = time.strftime("%H-%M-%S")
 filename = foldername + "EEGlog_" + timestamp + ".csv" #time.strftime("%H-%M-%S") + ".csv"
 filename_raw = foldername + "EEGlogRAW_" + timestamp + ".csv" #+ time.strftime("%H-%M-%S") + ".csv"
 
+#try:
+#    os.mkfifo('rawfifo')
+#except (OSError):
+#    pass
+
+#fifo = open('rawfifo', 'w')
+
+#try:
+#    os.mkfifo('neurofifo')
+#except (OSError):
+#    pass
+#fifo = open('neurofifo', 'w')
+#
+
+# Create Named Pipe
+try:
+  if os.path.exists('neurofifo'):
+      os.unlink('neurofifo')
+  os.mkfifo('neurofifo')
+  if os.path.exists('rawfifo'):
+      os.unlink('rawfifo')
+  os.mkfifo('rawfifo')
+except (OSError):
+    print("Cannot establish FIFO")
+    
+
 samples = 30
 
 class Colors:
@@ -72,6 +98,7 @@ class Datapoints():
         self.maxs = np.log(powers.max().values)
         self.means = np.log(powers.mean().values)
         self.ranges = self.maxs - self.mins
+        ## CHANGE THIS! samples out of range
         self.diffs = np.log(powers.values[samples-2,:]) - np.log(powers.values[samples-1,:])
 
 
@@ -105,10 +132,10 @@ def get_samples(samples=30):
         return dfq
 
 # get last n samples
-def get_raw(samples=120, dir, file):
+def get_raw(samples=120):
 
     # find most recent folder and file
-    #[dir,file] = get_recent(raw=True)
+    [dir,file] = get_recent(raw=True)
 
     with open (file, 'r') as f:
         q = deque(f,samples+1)
@@ -116,7 +143,7 @@ def get_raw(samples=120, dir, file):
         return (dfq.iloc[:,1].values)
 
 def open_fifo():
-    with open("neurofifo", 'w') as fifo:
+    with open('neurofifo', 'w') as fifo:
         print("test")
     #fifo_read = open("neurofifo", 'r', 0) ## '0' removes buffering
 
@@ -179,7 +206,7 @@ def main():
     i = 0 #prevents opcode weirdness
 
     # open pipe
-    r, w = os.pipe()
+    #r, w = os.pipe()
 
     # continue writing as long as there exists data points to be read
     while(True):

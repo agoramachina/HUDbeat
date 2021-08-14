@@ -3,15 +3,12 @@ import numpy as np
 import plotext as plx
 import recordEEG as eeg
 
-
 while True:
 
-  data = eeg.get_raw()
-  [dir,file] = get_recent(raw=True)
-  
+  data = eeg.get_raw(samples = 240)
   plx.clear_plot()
   plx.clear_terminal()
-
+  print(plx.terminal_size())
   y=(data)
 
   plx.ticks(0,0)
