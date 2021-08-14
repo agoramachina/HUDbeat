@@ -1,6 +1,6 @@
 import time
 import numpy as np
-import plotext.plot as plx
+import plotext as plx
 import recordEEG as eeg
 
 while True:
@@ -11,6 +11,10 @@ while True:
 
   y=(data)
 
-  plx.plot(y, line_color='white', axes=[False,False], rows=30, ticks=False)
-
+  plx.ticks(0,0)
+  plx.xaxes(False)
+  plx.yticks([-1600,-800,0,800,1600])
+  plx.ylim(-1600,1600)
+  plx.plot(y)
+  plx.colorless()
   plx.show()
