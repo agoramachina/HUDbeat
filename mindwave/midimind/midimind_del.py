@@ -2,8 +2,9 @@ import time, glob, os, sys, io, math
 from collections import deque
 import numpy as np
 import pandas as pd
-import rtmidi_python as rtmidi
-from rtmidi_python import MidiOut
+#import rtmidi_python as rtmidi
+#from rtmidi_python import MidiOut
+import rtmidi
 
 # Find most recent file and folder
 dir = max([f.path for f in os.scandir('/home/agoramachina/HUDbeat/mindwave/EEG_data/') if f.is_dir()])
@@ -67,7 +68,8 @@ def play(midiout,pow):
 def main():
 
 
-    midiout = rtmidi.MidiOut(b'rtmidi delta')
+    #midiout = rtmidi.MidiOut(b'rtmidi delta')
+    midiout = rtmidi.MidiOut()
     midiout.open_port(1)
 
     while(True):
