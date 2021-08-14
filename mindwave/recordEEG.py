@@ -23,34 +23,6 @@ timestamp = time.strftime("%H-%M-%S")
 filename = foldername + "EEGlog_" + timestamp + ".csv" #time.strftime("%H-%M-%S") + ".csv"
 filename_raw = foldername + "EEGlogRAW_" + timestamp + ".csv" #+ time.strftime("%H-%M-%S") + ".csv"
 
-#try:
-#    os.mkfifo('rawfifo')
-#except (OSError):
-#    pass
-
-#fifo = open('rawfifo', 'w')
-
-#try:
-#    os.mkfifo('neurofifo')
-#except (OSError):
-#    pass
-#fifo = open('neurofifo', 'w')
-#
-
-# Create Named Pipe
-try:
-  if os.path.exists('neurofifo'):
-      os.unlink('neurofifo')
-  os.mkfifo('neurofifo')
-  if os.path.exists('rawfifo'):
-      os.unlink('rawfifo')
-  os.mkfifo('rawfifo')
-except (OSError):
-    print("Cannot establish FIFO")
-    
-
-samples = 30
-
 class Colors:
     delta = '\u001b[31m'
     theta = '\u001b[33m'
@@ -75,8 +47,8 @@ class Datapoints():
       pows = self.Powers(data.iloc[:,4:12])
       self.powers = [pows.deltas, pows.thetas, pows.l_alphas, pows.h_alphas, pows.l_betas, pows.h_betas, pows.l_gammas, pows.m_gammas]
 
-      stats = self.Stats(data.iloc[:,4:12])
-      self.stats = [stats.logs, stats.mins, stats.maxs, stats.means, stats.ranges, stats.diffs]
+      #stats = self.Stats(data.iloc[:,4:12])
+      #self.stats = [stats.logs, stats.mins, stats.maxs, stats.means, stats.ranges, stats.diffs]
 
       self.samples = get_samples(samples)
 
@@ -91,27 +63,25 @@ class Datapoints():
         self.l_gammas = powers.values[:,6]
         self.m_gammas = powers.values[:,7]
 
-    class Stats():
-      def __init__(self,powers):
-        self.logs = np.log(powers.values[0,:])
-        self.mins = np.log(powers.min().values)
-        self.maxs = np.log(powers.max().values)
-        self.means = np.log(powers.mean().values)
-        self.ranges = self.maxs - self.mins
-        ## CHANGE THIS! samples out of range
-        self.diffs = np.log(powers.values[samples-2,:]) - np.log(powers.values[samples-1,:])
+    #class Stats():
+    #  def __init__(self,powers):
+    #    self.logs = np.log(powers.values[0,:])
+    #    self.mins = np.log(powers.min().values)
+    #    self.maxs = np.log(powers.max().values)
+    #    self.means = np.log(powers.mean().values)
+    #    self.ranges = self.maxs - self.mins
+    #    ## CHANGE THIS! samples out of range
+    #    self.diffs = np.log(powers.values[samples-2,:]) - np.log(powers.values[samples-1,:])
 
 
 # find most recent folder and file
 def get_recent(raw = False):
     
     dir = foldername #max([f.path for f in os.scandir('./EEG_data/') if f.is_dir()])
-
     if (raw == True):
       file = max(glob.glob(os.path.join(dir, 'EEGlogRAW_*.csv')),key=os.path.getctime)
     else:
-      file = max(glob.glob(os.path.join(dir, 'EEGlog_*.csv')),key=os.path.getctime)
-    
+      file = max(glob.glob(os.path.join(dir, 'EEGlog_*.csv')),key=os.path.getctime)    
     return(dir, file)
 
 # get last n samples
@@ -135,16 +105,33 @@ def get_samples(samples=30):
 def get_raw(samples=120):
 
     # find most recent folder and file
-    [dir,file] = get_recent(raw=True)
+    [dir,file] = get_recent(raw=True) # Optimize this later!!!
 
     with open (file, 'r') as f:
         q = deque(f,samples+1)
         dfq = pd.read_csv(io.StringIO('\n'.join(q)), delimiter='\t')
         return (dfq.iloc[:,1].values)
 
-def open_fifo():
-    with open('neurofifo', 'w') as fifo:
-        print("test")
+# Create Named Pipe
+def mkfifo():
+  try:
+    if os.path.exists('neurofifo'):
+        os.unlink('neurofifo')
+    os.mkfifo('neurofifo')
+    if os.path.exists('rawfifo'):
+        os.unlink('rawfifo')
+    os.mkfifo('rawfifo')
+  except (OSError):
+      print("Cannot establish FIFO")
+
+def write_fifo(raw = False):
+    if (raw == True):
+        fifo = 'rawfifo'
+    else:
+        fifo = 'neurofifo'
+    with open(fifo, 'w') as f:
+        print( "test")
+        f.write("test")
     #fifo_read = open("neurofifo", 'r', 0) ## '0' removes buffering
 
 def open_writer():
@@ -202,6 +189,7 @@ def sparky(data_row, width, height):
 # MAIN FUNCTION
 def main():
 
+    mkfifo()
     data_row = []
     i = 0 #prevents opcode weirdness
 

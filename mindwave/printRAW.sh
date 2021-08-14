@@ -11,13 +11,13 @@ FOLDER=$(ls -td ~/HUDbeat/mindwave/EEG_data/*/ | head -1)
 # get the most recently modified file in the EEG_data directory
 FILE=$(ls -t $FOLDER/EEGlogRAW_* | head -1)
 
-while true; do
+#while true; do
 	#tail  -n1 $FILE | cut -d' ' -f2 | toilet -f smblock
 	#tail -n1 $FILE | cut -d'	' -f2
 	#tail -n1 $FILE | grep -o '^[0-9]*\.[0-9][0-9][0-9]'
-	tail -n1 $FILE
-	#tail -n1 $FILE
-#sleep 1
-#clear
+#	tail -n1 $FILE
+#tail -n1 $FILE
+#
+tail -n1 -f $FILE
 done
 
