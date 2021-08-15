@@ -53,7 +53,8 @@ Uses live EEG data and the turtle python package to draw neat turtle graphics! U
 
     python turtlewave.py
 
-Instructions updated 08-14-2021.
+## CHANGELOG
+08-14-2021: added live terminal graphs and updated instructions
 
 ## TODO 
 * midi
