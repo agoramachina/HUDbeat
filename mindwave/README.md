@@ -13,7 +13,7 @@ By default, EEG logs are saved to `./EEG_data/` relative to the folder the progr
 recordEEG.py can be edited to exclude raw EEG writes if a smaller memory footprint is desired.
 
 
-**To live plot EEG data in the terminal, use one of the programs below::
+**To live plot EEG data in the terminal, use one of the programs below:
 
     python stream_raw.py
     python stream_pow.py
