@@ -2,7 +2,7 @@
 
 To be used with the Mindwave Mobile.
 
-Instructions updated 02-10-2020.
+Instructions updated 08-14-2021.
 
 **First**, run the recordEEG program to generate data used by other programs:
 
@@ -12,7 +12,12 @@ By default, EEG logs are saved to `./EEG_data/` relative to the folder the progr
 
 recordEEG.py can be edited to exclude raw EEG writes if a smaller memory footprint is desired.
 
-**To plot EEG data**, first run the plotEEG script:
+**To live plot EEG data in the terminal, use one of the programs below::
+
+    python stream_raw.py
+    python stream_pow.py
+
+**To plot EEG data with gnuplot**, first run the plotEEG script:
 
     sh plotEEG.sh
 
