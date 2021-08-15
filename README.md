@@ -12,11 +12,8 @@ In its current iteration (03-15-2019), HUDbeat uses a Raspberry Pi Zero W to det
 
 Current updates (as of 11-21-2019) are focused on retreiving, manipulating, and displaying EEG data recorded from [Neurosky's Mindwave Mobile 2](https://store.neurosky.com/pages/mindwave).
 
-As of 02-10-2020, live EEG data can be sent to turtles, midi, or smart lights.
-
-As of 08-14-2021, data can now be live streamed and plotted on the terminal. Currently working on midi/osc/sound.
-
-
+As of 02-10-2020, live EEG data can be sent to turtles, midi, or smart lights.  
+As of 08-14-2021, data can now be live streamed and plotted on the terminal. Currently working on midi/osc/sound.  
 Future updates will focus on integrating the Pi with the Arduino and other modules.
 
 .scad and .stl files can be found on agoramachina's Thingiverse page in the HUDbeat collection:
