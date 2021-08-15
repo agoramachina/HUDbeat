@@ -54,11 +54,15 @@ Uses live EEG data and the turtle python package to draw neat turtle graphics! U
 
     python turtlewave.py
 
-## TODO: 
+## TODO 
 * midi
-  * finally moving away from direct midi writes. let's pipe that through something fun instead, yeah? 
-  * considering: pure data, supercollider, sonic-pi. probably going to go with sonic-pi.
-  * listen for an updated file (or pipe), then pass that through osc. let the other programs handle the fancy stuff.
-  * (plus, has the advantage of portability)
-* todo and changelog
+  - finally moving away from direct midi writes. let's pipe that through something fun instead, yeah? 
+  - considering: `pure data`, `supercollider`, `sonic-pi`. probably going to go with `sonic-pi`.
+  - listen for an updated file (or pipe), then pass that through osc. let the other programs handle the fancy stuff.
+  - (plus, has the advantage of portability)
+* more general optimization
+* changelog?
+
+## BUGS
+* `curseEEG.py` doesn't play nicely if there are fewer samples than it expects. fix that.
 
