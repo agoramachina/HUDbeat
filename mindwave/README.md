@@ -18,6 +18,7 @@ recordEEG.py can be edited to exclude raw EEG writes if a smaller memory footpri
     python stream_raw.py
     python stream_pow.py
 
+
 **To plot EEG data with gnuplot**, first run the plotEEG script:
 
     sh plotEEG.sh
