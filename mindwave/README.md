@@ -53,9 +53,6 @@ Uses live EEG data and the turtle python package to draw neat turtle graphics! U
 
     python turtlewave.py
 
-## CHANGELOG
-08-14-2021: added live terminal graphs and updated instructions
-
 ## TODO 
 * midi
   - finally moving away from direct midi writes. let's pipe that through something fun instead, yeah? 
@@ -63,7 +60,9 @@ Uses live EEG data and the turtle python package to draw neat turtle graphics! U
   - listen for an updated file (or pipe), then pass that through osc. let the other programs handle the fancy stuff.
   - (plus, has the advantage of portability)
 * more general optimization
-* changelog?
+
+## CHANGELOG
+* 08-14-2021: added live terminal graphs and updated instructions
 
 ## BUGS
 * `curseEEG.py` doesn't play nicely if there are fewer samples than it expects. fix that.
