@@ -23,6 +23,8 @@ timestamp = time.strftime("%H-%M-%S")
 filename = foldername + "EEGlog_" + timestamp + ".csv" #time.strftime("%H-%M-%S") + ".csv"
 filename_raw = foldername + "EEGlogRAW_" + timestamp + ".csv" #+ time.strftime("%H-%M-%S") + ".csv"
 
+samples = 30
+
 class Colors:
     delta = '\u001b[31m'
     theta = '\u001b[33m'
@@ -47,8 +49,8 @@ class Datapoints():
       pows = self.Powers(data.iloc[:,4:12])
       self.powers = [pows.deltas, pows.thetas, pows.l_alphas, pows.h_alphas, pows.l_betas, pows.h_betas, pows.l_gammas, pows.m_gammas]
 
-      #stats = self.Stats(data.iloc[:,4:12])
-      #self.stats = [stats.logs, stats.mins, stats.maxs, stats.means, stats.ranges, stats.diffs]
+      stats = self.Stats(data.iloc[:,4:12])
+      self.stats = [stats.logs, stats.mins, stats.maxs, stats.means, stats.ranges, stats.diffs]
 
       self.samples = get_samples()
 
@@ -63,15 +65,15 @@ class Datapoints():
         self.l_gammas = powers.values[:,6]
         self.m_gammas = powers.values[:,7]
 
-    #class Stats():
-    #  def __init__(self,powers):
-    #    self.logs = np.log(powers.values[0,:])
-    #    self.mins = np.log(powers.min().values)
-    #    self.maxs = np.log(powers.max().values)
-    #    self.means = np.log(powers.mean().values)
-    #    self.ranges = self.maxs - self.mins
+    class Stats():
+      def __init__(self,powers):
+        self.logs = np.log(powers.values[0,:])
+        self.mins = np.log(powers.min().values)
+        self.maxs = np.log(powers.max().values)
+        self.means = np.log(powers.mean().values)
+        self.ranges = self.maxs - self.mins
     #    ## CHANGE THIS! samples out of range
-    #    self.diffs = np.log(powers.values[samples-2,:]) - np.log(powers.values[samples-1,:])
+        self.diffs = np.log(powers.values[samples-2,:]) - np.log(powers.values[samples-1,:])
 
 
 # find most recent folder and file
