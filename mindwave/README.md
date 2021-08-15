@@ -2,7 +2,6 @@
 
 To be used with the Mindwave Mobile.
 
-Instructions updated 08-14-2021.
 
 **First, run the recordEEG program** to generate data used by other programs:
 
@@ -53,6 +52,8 @@ Uses live EEG data to create music by generating MIDI signals from EEG signals! 
 Uses live EEG data and the turtle python package to draw neat turtle graphics! Use while `recordEEG.py` is running.
 
     python turtlewave.py
+
+Instructions updated 08-14-2021.
 
 ## TODO 
 * midi
