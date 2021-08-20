@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [ "" = "`grep IOx /proc/asound/cards`" ]; then
+  AUTODETECT=PCH
+else
+  AUTODETECT=IOx
+fi
+
+ARGS=$@
+
+ARGS=${ARGS/AUTODETECT/$AUTODETECT}
+
+/usr/bin/pasuspender -- /usr/bin/jackd $ARGS

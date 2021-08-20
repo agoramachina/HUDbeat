@@ -1,0 +1,3 @@
+# https://capocasa.net/supercollider-jack-the-easy-way
+
+/usr/local/bin/jackd -R -P 95 -d alsa -d hw:PCH -n 2 -r 48000 -p 256

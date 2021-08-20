@@ -1,0 +1,11 @@
+#!/bin/bash
+
+. ~/.jackdrc &
+JACKPID=$!
+/usr/bin/supernova $@ &
+SUPERNOVAPID=$!
+
+trap 'kill $SUPERNOVAPID ; kill $JACKPID ' INT
+
+wait $JACKPID 2> /dev/null
+wait $SUPERNOVAPID 2> /dev/null
