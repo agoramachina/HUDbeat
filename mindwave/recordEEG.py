@@ -49,8 +49,8 @@ class Datapoints():
       pows = self.Powers(data.iloc[:,4:12])
       self.powers = [pows.deltas, pows.thetas, pows.l_alphas, pows.h_alphas, pows.l_betas, pows.h_betas, pows.l_gammas, pows.m_gammas]
 
-      stats = self.Stats(data.iloc[:,4:12])
-      self.stats = [stats.logs, stats.mins, stats.maxs, stats.means, stats.ranges, stats.diffs]
+      #stats = self.Stats(data.iloc[:,4:12])
+      #self.stats = [stats.logs, stats.mins, stats.maxs, stats.means, stats.ranges, stats.diffs]
 
       self.samples = get_samples()
 
