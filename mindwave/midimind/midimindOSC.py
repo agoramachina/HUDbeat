@@ -1,4 +1,4 @@
-import time, datetime, glob, os, sys, io
+import time, datetime, glob, os, sys, io, csv
 from optparse import OptionParser
 from collections import deque
 import numpy as np
@@ -24,8 +24,18 @@ sender = udp_client.SimpleUDPClient(ip, port)
 #    sender.send_message('/pow', [70, 100, 8, 100])
 
 
-data = np.genfromtxt(file, dtype=int, delimiter=',', names=True)
-print(data)
+data = np.genfromtxt(file, dtype=float, delimiter=',', names=True)
+line = data[-1]
+for i in range(4, 12):
+  line[i] = np.log(line[i])
+print (line)
+
+#print(line)
+
+def reverse_csv():
+  with open(file, 'r') as f:
+    for row in reversed(list(csv.reader(f))):
+      print(', '.join(row))
  
 def tail(f):
     while True:
