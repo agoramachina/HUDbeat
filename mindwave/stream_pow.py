@@ -18,7 +18,7 @@ while True:
 
   try:
     data = eeg.Datapoints(eeg.get_samples(samples = 30))
-  except(ValueError):
+  except(ValueError, IndexError):
     data = eeg.Datapoints(eeg.get_samples())
     
   plx.clear_plot()

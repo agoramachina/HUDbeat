@@ -2,7 +2,8 @@ numpy
 pandas
 matplotlib
 #curses-util
-#blessed
+blessed
+dashing
 plotext
 sparklines
 pyfiglet
