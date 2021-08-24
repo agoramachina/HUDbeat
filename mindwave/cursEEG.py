@@ -122,12 +122,12 @@ def main(stdscr):
 
         # Print Stats
         line = 1
-        for stats in data.stats:
-            s = " "
-            for stat in stats:
-                s = s + str("%6.3f" %stat.round(decimals=3) + "  ")
-                win.stats.addstr(line,2,s)
-            line = line+1
+        #for stats in data.stats:
+        #    s = " "
+        #    for stat in stats:
+        #        s = s + str("%6.3f" %stat.round(decimals=3) + "  ")
+        #        win.stats.addstr(line,2,s)
+        #    line = line+1
 
         # Refresh all windows (use noutrefresh and doupdate to prevent flickering)
         for w in win.windows:

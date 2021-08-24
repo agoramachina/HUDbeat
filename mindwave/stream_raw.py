@@ -19,6 +19,6 @@ while True:
   
   plx.yticks(yticks, ylabels)
   plx.ylim(-ymax,ymax)
-  plx.plot(y)
+  plx.plot(y)	# marker = "•"
   plx.colorless()
   plx.show()
