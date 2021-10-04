@@ -16,8 +16,9 @@ file = max(glob.glob(os.path.join(dir, 'EEGlog_*.csv')),key=os.path.getctime)
 #ip = '127.0.0.1'
 ##port 57121		# sonic-pi
 ##port = 4560		# supercollider
-ip = '192.168.56.1'	# external
-port = 4561
+ip = '192.168.1.26'	# external
+#ip = '192.168.56.1'
+port = 4560
 
 # setup OSC server
 sender = udp_client.SimpleUDPClient(ip, port)

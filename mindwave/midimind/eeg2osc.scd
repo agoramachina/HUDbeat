@@ -36,7 +36,7 @@ n.free;
 o.free;
 
 
-"attention: " + ~atn.postln
+"attention: " + ~atn.postlnw
 "meditation: " + ~med.postln;
 
 Ndef( \sines, { SinOsc.ar( \freq.kr( 300, 0.1 ), 0, \amp.kr(0.1, 0.1) ) } );
