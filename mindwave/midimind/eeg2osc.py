@@ -9,7 +9,7 @@ from pythonosc import osc_bundle_builder
 os.system('cls' if os.name == 'nt' else 'clear')
 
 # find most recent folder and file
-dir = max([f.path for f in os.scandir('./EEG_data/') if f.is_dir()])
+dir = max([f.path for f in os.scandir('../EEG_data/') if f.is_dir()])
 file = max(glob.glob(os.path.join(dir, 'EEGlog_*.csv')),key=os.path.getctime)
 
 # define ip and port

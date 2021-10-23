@@ -72,7 +72,7 @@ class wincurses:
         self.med.addstr(0,2, "Meditation: ")
 
         self.powers = curses.newwin(10,26,7,0)
-        self.powers.addstr(1,1," Delta: \n  theta: \n  Low Alpha: \n  High Alpha: \n  Low Beta: \n  High Beta: \n  Low Gamma: \n  Mid Gamma: \n ")
+        self.powers.addstr(1,1," Delta: \n  Theta: \n  Low Alpha: \n  High Alpha: \n  Low Beta: \n  High Beta: \n  Low Gamma: \n  Mid Gamma: \n ")
         self.powers.box()
 
         self.stats_label = curses.newwin(11, 76, 7, 32)
@@ -122,12 +122,12 @@ def main(stdscr):
 
         # Print Stats
         line = 1
-        #for stats in data.stats:
-        #    s = " "
-        #    for stat in stats:
-        #        s = s + str("%6.3f" %stat.round(decimals=3) + "  ")
-        #        win.stats.addstr(line,2,s)
-        #    line = line+1
+        for stats in data.stats:
+            s = " "
+            for stat in stats:
+                s = s + str("%6.3f" %stat.round(decimals=3) + "  ")
+                win.stats.addstr(line,2,s)
+            line = line+1
 
         # Refresh all windows (use noutrefresh and doupdate to prevent flickering)
         for w in win.windows:

@@ -49,8 +49,8 @@ class Datapoints():
       pows = self.Powers(data.iloc[:,4:12])
       self.powers = [pows.deltas, pows.thetas, pows.l_alphas, pows.h_alphas, pows.l_betas, pows.h_betas, pows.l_gammas, pows.m_gammas]
 
-      #stats = self.Stats(data.iloc[:,4:12])
-      #self.stats = [stats.logs, stats.mins, stats.maxs, stats.means, stats.ranges, stats.diffs]
+      stats = self.Stats(data.iloc[:,4:12])
+      self.stats = [stats.logs, stats.mins, stats.maxs, stats.means, stats.ranges, stats.diffs]
 
     class Powers():
       def __init__(self,powers):
@@ -72,7 +72,7 @@ class Datapoints():
         self.ranges = self.maxs - self.mins
 
         ## CHANGE THIS! samples out of range
-        #self.diffs =  np.log(powers.values[-1,:]) - np.log(powers.values[samples-2,:])
+        self.diffs =  np.log(powers.values[-1,:]) - np.log(powers.values[samples-2,:])
 
 
 # find most recent folder and file
