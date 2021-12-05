@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# (c) 2021 agoramachina
+
+# general dependencies
 import time, glob, os, sys, io, math
 from collections import deque
 import numpy as np
