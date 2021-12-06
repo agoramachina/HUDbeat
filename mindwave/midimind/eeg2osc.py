@@ -18,7 +18,7 @@ file = max(glob.glob(os.path.join(dir, 'EEGlog_*.csv')),key=os.path.getctime)
 #ip = '192.168.1.26'	# external
 #ip = '192.168.56.1'
 ip = '192.168.1.26'
-port = 4561        # sonic-pi
+port = 4560        # sonic-pi
 
 # setup OSC server
 sender = udp_client.SimpleUDPClient(ip, port)
@@ -33,7 +33,9 @@ while True:
   line = data[-1]
   for i in range(4, 12):
     line[i] = np.round(np.log(line[i]), decimals = 3)
+    # (value-min)/(max-min)
   print (line)
+  print (np.amax(line))
 
   # Build and send OSC message
   msg = osc_message_builder.OscMessageBuilder(address = "/eeg")
