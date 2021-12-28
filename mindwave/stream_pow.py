@@ -24,11 +24,16 @@ while True:
   plx.clear_plot()
   plx.clear_terminal()
 
-  plx.colorless()
+  #plx.colorless()
+  plx.axes_color('black')
+  plx.ticks_color('white')
+  plx.canvas_color('black')
+
 
   plx.yscale('log')
 
-  #plx.xticks(0,0)
+  plx.xticks(None)
+  plx.yticks(None)
   plx.xaxis(False)
   plx.yaxis(False)
 

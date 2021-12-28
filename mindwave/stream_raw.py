@@ -15,12 +15,12 @@ while True:
   #plx.ticks(0,0)
   plx.xaxis(False)
   yticks = [-ymax, -ymax/2, 0, ymax/2, ymax]
-  xticks = []
+  plx.xticks = []
   ylabels = [-ymax, int(-ymax/2), "0 µV ", int(ymax/2), ymax]
-  
+
+  #plx.xticks(None) 
   plx.yticks(yticks, ylabels)
   plx.ylim(-ymax,ymax)
-  #plx.plot(y)	# marker = "•"
   plx.scatter(y, marker = "dot")
   plx.colorless()
   plx.show()
