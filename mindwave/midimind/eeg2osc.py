@@ -13,7 +13,8 @@ dir = max([f.path for f in os.scandir('../EEG_data/') if f.is_dir()])
 file = max(glob.glob(os.path.join(dir, 'EEGlog_*.csv')),key=os.path.getctime)
 
 # define ip and port
-port =  57120		# sc
+#port =  57120		# sc
+port = 4560	#sp
 ip = '192.168.1.26'	# sc
 
 # setup OSC server

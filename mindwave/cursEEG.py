@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import curses
 from curses import wrapper
-import plotext.plot as plx
+import plotext as plx
 from sparklines import sparklines
 from pyfiglet import Figlet
 

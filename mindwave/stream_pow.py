@@ -28,9 +28,9 @@ while True:
 
   plx.yscale('log')
 
-  plx.ticks(0,0)
-  plx.xaxes(False)
-  plx.yaxes(False)
+  #plx.xticks(0,0)
+  plx.xaxis(False)
+  plx.yaxis(False)
 
   for i in range(8):
       plx.plot(data.times, data.powers[i], color=colors[i], marker = "•")
