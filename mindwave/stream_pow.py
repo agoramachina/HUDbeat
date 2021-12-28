@@ -25,10 +25,10 @@ while True:
   plx.clear_terminal()
 
   #plx.colorless()
+  plx.canvas_color('black')
   plx.axes_color('black')
   plx.ticks_color('white')
-  plx.canvas_color('black')
-
+  
 
   plx.yscale('log')
 
