@@ -13,11 +13,11 @@ dir = max([f.path for f in os.scandir('../EEG_data/') if f.is_dir()])
 file = max(glob.glob(os.path.join(dir, 'EEGlog_*.csv')),key=os.path.getctime)
 
 # define ip and port
-ip = '127.0.0.1'
+#ip = '127.0.0.1'
 port =  57120		# sonic-pi
 #ip = '192.168.1.26'	# external
-#ip = '192.168.56.1'
-
+ip = '192.168.1.88'
+#port = 4560
 #ip = '192.168.1.1'
 #port = 7771        # sonic-pi
 

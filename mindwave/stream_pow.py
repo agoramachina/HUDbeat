@@ -27,7 +27,7 @@ while True:
   #plx.colorless()
   plx.canvas_color('black')
   plx.axes_color('black')
-  plx.ticks_color('white')
+  plx.ticks_color('black')
   
 
   plx.yscale('log')
