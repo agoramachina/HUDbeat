@@ -8,6 +8,7 @@ from collections import deque
 import numpy as np
 import pandas as pd
 import rtmidi
+import OSC
 
 # Find most recent file and folder
 dir = max([f.path for f in os.scandir('/home/agoramachina/HUDbeat/mindwave/EEG_data/') if f.is_dir()])

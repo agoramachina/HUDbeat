@@ -14,6 +14,7 @@ from pyfiglet import Figlet
 import recordEEG as eeg
 
 samples = 30
+np.seterr(divide='ignore')
 
 
 class Colors:
@@ -36,7 +37,8 @@ def printf(txt,win,y=0,x=0):
 
 def powerbars(data, win, width, height):
   header = ['δ', 'θ', 'α', 'Α', 'β', 'Β', 'γ', 'Γ']
-  data = np.array(data)[:,samples-1].tolist()
+  size = len(data.times)
+  data = np.array(data)[:,size-1].tolist()
   #print(data)
 
   #win.addstr(str(data))
@@ -98,27 +100,28 @@ def main(stdscr):
      try:
 
         win = wincurses(stdscr)
-        data = eeg.Datapoints(eeg.get_samples())
+        data = eeg.Datapoints(eeg.get_samples(samples))
+        size = len(data.times)
         
 	
 
 
         # Print Time & Signal
-        printf(str(time.strftime('%H:%M:%S', time.gmtime(data.times[samples-1]))), win.time)
-        printf(str(data.signals[samples-1]), win.signal)
+        printf(str(time.strftime('%H:%M:%S', time.gmtime(data.times[size-1]))), win.time)
+        printf(str(data.signals[size-1]), win.signal)
 
         # Print Attn/Med
-        win.attn.addstr(0,14, str(data.attns[samples-1]) + "\t")
-        win.med.addstr(0,14,  str(data.meds[samples-1]) + "\t")
+        win.attn.addstr(0,14, str(data.attns[size-1]) + "\t")
+        win.med.addstr(0,14,  str(data.meds[size-1]) + "\t")
 
         # Print Powers
         line = 1
         for p in data.powers:
-          win.powers.addstr(line,16,str(p[samples-1]) + "\t")
+          win.powers.addstr(line,16,str(p[size-1]) + "\t")
           line = line+1
 
         # Print powerbars
-        powerbars(data.powers, win.powerbars, 3, 5)
+        #powerbars(data.powers, win.powerbars, 3, 5)
 
         # Print Stats
         line = 1

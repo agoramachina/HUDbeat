@@ -23,7 +23,6 @@ timestamp = time.strftime("%H-%M-%S")
 filename = foldername + "EEGlog_" + timestamp + ".csv" #time.strftime("%H-%M-%S") + ".csv"
 filename_raw = foldername + "EEGlogRAW_" + timestamp + ".csv" #+ time.strftime("%H-%M-%S") + ".csv"
 
-samples = 30
 
 class Colors:
     delta = '\u001b[31m'
@@ -86,6 +85,8 @@ def get_recent(raw = False):
     return(dir, file)
 
 # get last n samples
+## todo: rename to get_pow
+## todo: if data length < samples, samples = data length
 def get_samples(samples=30):
 
     # find most recent folder and file

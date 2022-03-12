@@ -12,21 +12,21 @@ import numpy as np
 import plotext as plx
 import recordEEG as eeg
 
-colors = ['red', 'gold', 'green', 'basil', 'indigo', 'blue', 'lilac', 'violet']
+colors = ['red','yellow',5,'green','blue',6,11,10]
 
 while True:
 
   try:
-    data = eeg.Datapoints(eeg.get_samples(samples = 30))
-  except(ValueError, IndexError):
     data = eeg.Datapoints(eeg.get_samples())
+  except(ValueError, IndexError):
+    data = eeg.Datapoints(len(eeg.get_samples().times))
     
   plx.clear_plot()
   plx.clear_terminal()
 
-  #plx.colorless()
-  plx.canvas_color('black')
-  plx.axes_color('black')
+  plx.colorless()
+  #plx.canvas_color('black')
+  plx.axes_color(16)
   plx.ticks_color('black')
   
 

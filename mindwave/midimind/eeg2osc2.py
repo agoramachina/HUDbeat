@@ -14,12 +14,9 @@ file = max(glob.glob(os.path.join(dir, 'EEGlog_*.csv')),key=os.path.getctime)
 
 # define ip and port
 #ip = '127.0.0.1'
-port =  57120		# sonic-pi
-#ip = '192.168.1.26'	# external
+#port =  57120		
 ip = '192.168.1.88'
-#port = 4560
-#ip = '192.168.1.1'
-#port = 7771        # sonic-pi
+port = 4560
 
 # setup OSC server
 sender = udp_client.SimpleUDPClient(ip, port)
