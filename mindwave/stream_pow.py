@@ -18,6 +18,7 @@ while True:
 
   try:
     data = eeg.Datapoints(eeg.get_samples())
+    print(data)
   except(ValueError, IndexError):
     data = eeg.Datapoints(len(eeg.get_samples().times))
     

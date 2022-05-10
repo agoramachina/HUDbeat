@@ -3,6 +3,7 @@ import numpy as np
 import plotext as plx
 import recordEEG as eeg
 
+ymin = -1800
 ymax = 1800
 samples = 240
 
@@ -20,6 +21,7 @@ while True:
   plx.yticks(None)
 
   y=(data)
+  print(y)
 
   #yticks = [-ymax, -ymax/2, 0, ymax/2, ymax]
   #ylabels = [-ymax, int(-ymax/2), "0 µV ", int(ymax/2), ymax]
