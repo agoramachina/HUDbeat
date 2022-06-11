@@ -6,7 +6,7 @@
 # 
 # for more details, see:
 # http://support.neurosky.com/kb/development-2/eeg-band-power-values-units-amplitudes-and-meaning
- 
+
 import time
 import numpy as np
 import plotext as plx
@@ -22,24 +22,33 @@ while True:
   except(ValueError, IndexError):
     data = eeg.Datapoints(len(eeg.get_samples().times))
     
-  plx.clear_plot()
+  plx.clear_color()
   plx.clear_terminal()
 
-  plx.colorless()
+  #plx.colorless()
   #plx.canvas_color('black')
   plx.axes_color(16)
-  plx.ticks_color('black')
+  #plx.ticks_color('black')
   
 
   plx.yscale('log')
 
-  plx.xticks(None)
-  plx.yticks(None)
-  plx.xaxis(False)
-  plx.yaxis(False)
+  #plx.xticks(None)
+  #plx.yticks(None)
+  plx.xaxes(False)
+  plx.yaxes(False)
 
-  for i in range(8):
-      plx.plot(data.times, data.powers[i], color=colors[i], marker = "•")
-            
-  plx.show()
+  for pow in data.powers:
+      #print(data.times)
+      print()
+      for i in range(8):
+        print(pow[i])
+  #for i in range(8):
+  #    #print(data.powers[i])
+  #    for pow in data.powers[i]:
+  #       plx.plot(data.powers[i], color=colors[i], marker = "•")
+           
+  #plx.show()
   time.sleep(1)
+
+
