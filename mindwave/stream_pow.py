@@ -14,7 +14,7 @@ import recordEEG as eeg
 
 #colors = ['red', 'orange', 'green', 'basil', 'indigo', 'blue', 'lilac', 'violet']
 
-colors = [197, 214, 112, 28, 45, 27, 165, 90]
+colors = [197, 214, 154, 28, 45, 27, 165, 90]
 
 
 while True:
