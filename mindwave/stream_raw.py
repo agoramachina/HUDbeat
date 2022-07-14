@@ -23,5 +23,4 @@ while True:
   plx.yticks(yticks, ylabels)
   plx.ylim(-ymax,ymax)
   plx.plot(y)
-  #plx.scatter(y)
   plx.show()

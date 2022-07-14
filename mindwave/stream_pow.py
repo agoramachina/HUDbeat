@@ -12,7 +12,9 @@ import numpy as np
 import plotext as plx
 import recordEEG as eeg
 
-colors = ['red', 'gold', 'green', 'basil', 'indigo', 'blue', 'lilac', 'violet']
+#colors = ['red', 'orange', 'green', 'basil', 'indigo', 'blue', 'lilac', 'violet']
+
+colors = ['red', 'orange', 'green', 'basil', 'indigo', 'blue', 'lilac', 'violet']
 
 while True:
 
@@ -23,13 +25,13 @@ while True:
     
   plx.clear_figure()
   plx.clear_terminal()
-  plx.clear_color()
-  
-  plx.yscale('log')
+  plx.canvas_color('black')  
 
-  #plx.ticks(0,0)
-  plx.xaxes(False)
-  plx.yaxes(False)
+  plx.yscale('log')
+  plx.xticks([])
+  plx.yticks([])
+  plx.xaxes(False, False)
+  plx.yaxes(False, False)
 
   for i in range(8):
       plx.plot(data.times, data.powers[i], color=colors[i], marker = "•")
