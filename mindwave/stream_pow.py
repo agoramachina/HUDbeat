@@ -21,14 +21,13 @@ while True:
   except(ValueError, IndexError):
     data = eeg.Datapoints(eeg.get_samples())
     
-  plx.clear_plot()
+  plx.clear_figure()
   plx.clear_terminal()
-
-  plx.colorless()
-
+  plx.clear_color()
+  
   plx.yscale('log')
 
-  plx.ticks(0,0)
+  #plx.ticks(0,0)
   plx.xaxes(False)
   plx.yaxes(False)
 
