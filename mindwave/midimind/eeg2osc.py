@@ -13,10 +13,9 @@ dir = max([f.path for f in os.scandir('../EEG_data/') if f.is_dir()])
 file = max(glob.glob(os.path.join(dir, 'EEGlog_*.csv')),key=os.path.getctime)
 
 # define ip and port
-#port =  57120		# sc
-#ip = '192.168.1.26'	# sc
 ip = '192.168.1.88'
-port = 57120	#sp
+port = 57122	#sc
+#port = 4560	#sp
 
 # setup OSC server
 sender = udp_client.SimpleUDPClient(ip, port)

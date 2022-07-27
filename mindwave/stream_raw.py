@@ -8,7 +8,7 @@ while True:
   data = eeg.get_raw(samples = 240)
   
   plx.clear_figure()
-  plx.clear_terminal()
+  #plx.clear_terminal()
   plx.clear_color()
 
   y=(data)
