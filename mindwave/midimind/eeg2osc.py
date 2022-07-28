@@ -14,7 +14,7 @@ file = max(glob.glob(os.path.join(dir, 'EEGlog_*.csv')),key=os.path.getctime)
 
 # define ip and port
 ip = '192.168.1.88'
-port = 57122	#sc
+port = 57120	#sc
 #port = 4560	#sp
 
 # setup OSC server
